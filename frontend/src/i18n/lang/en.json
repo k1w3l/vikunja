@@ -978,7 +978,8 @@
     "new": "Create a task",
     "createModal": {
       "title": "New task",
-      "submit": "Create task"
+      "submit": "Create task",
+      "chooseProject": "Select a project"
     },
     "createSuccess": "The task was successfully created.",
     "toggleSubtasks": "Show or hide subtasks",

@@ -11,6 +11,7 @@
 		:create-placeholder="$t('task.label.createPlaceholder')"
 		:search-delay="10"
 		:close-after-select="false"
+		:show-empty="true"
 		:disabled="disabled"
 		@search="findLabel"
 		@select="addLabel"
@@ -103,7 +104,13 @@ const taskStore = useTaskStore()
 const labelStore = useLabelStore()
 const {getLabelStyles} = useLabelStyles()
 
-const foundLabels = computed(() => labelStore.filterLabelsByQuery(labels.value, query.value))
+const foundLabels = computed(() => {
+	if (query.value === '') {
+		const hideIds = new Set(labels.value.map(l => l.id))
+		return labelStore.labelsArray.filter(l => !hideIds.has(l.id))
+	}
+	return labelStore.filterLabelsByQuery(labels.value, query.value)
+})
 const loading = computed(() => labelTaskService.loading || labelStore.isLoading)
 
 function findLabel(newQuery: string) {
@@ -112,7 +119,10 @@ function findLabel(newQuery: string) {
 
 async function addLabel(label: ILabel, showNotification = true) {
 	if (props.taskId === 0) {
-		emit('update:modelValue', labels.value)
+		if (!labels.value.some(l => l.id === label.id)) {
+			labels.value.push(label)
+		}
+		emit('update:modelValue', [...labels.value])
 		return
 	}
 
@@ -137,14 +147,17 @@ async function removeLabel(label: ILabel) {
 }
 
 async function createAndAddLabel(title: string) {
-	if (props.taskId === 0) {
-		return
-	}
-
 	const newLabel = await labelStore.createLabel(new LabelModel({
 		title,
 		hexColor: getRandomColorHex(),
 	}))
+	if (props.taskId === 0) {
+		labels.value.push(newLabel)
+		emit('update:modelValue', [...labels.value])
+		success({message: t('task.label.addCreateSuccess')})
+		return
+	}
+
 	addLabel(newLabel, false)
 	labels.value.push(newLabel)
 	success({message: t('task.label.addCreateSuccess')})

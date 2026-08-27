@@ -66,7 +66,10 @@
 					{{ getViewTitle(view) }}
 				</BaseButton>
 			</div>
-			<div class="project-chrome-title">
+			<div
+				ref="projectChromeTitleRef"
+				class="project-chrome-title"
+			>
 				<Dropdown
 					v-if="canCustomizeIcon"
 					class="project-icon-picker"
@@ -167,6 +170,7 @@ const viewFiltersStore = useViewFiltersStore()
 
 const switchViewContainerRef = ref<HTMLElement>()
 const switchViewRef = ref<HTMLElement>()
+const projectChromeTitleRef = ref<HTMLElement>()
 const isOverflowing = ref(false)
 const overflowChecked = ref(false)
 
@@ -176,7 +180,9 @@ function checkOverflow() {
 	}
 	const buttonsWidth = switchViewRef.value.scrollWidth
 	const containerWidth = switchViewContainerRef.value.clientWidth
-	isOverflowing.value = buttonsWidth > containerWidth
+	const titleWidth = projectChromeTitleRef.value?.offsetWidth ?? 0
+	const availableLeft = Math.max(0, (containerWidth - titleWidth) / 2 - 16)
+	isOverflowing.value = buttonsWidth > availableLeft
 	overflowChecked.value = true
 }
 
@@ -329,11 +335,28 @@ function getViewRoute(view: IProjectView) {
 .filter-container,
 :deep(.filter-container) {
 	justify-self: end;
+	align-self: center;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	inline-size: max-content;
+	max-inline-size: 100%;
+}
+
+.switch-view,
+.switch-view-dropdown {
+	justify-self: start;
+	align-self: center;
+	inline-size: max-content;
+	max-inline-size: 100%;
 }
 
 .switch-view {
 	background: var(--surface-elevated, var(--white));
 	display: inline-flex;
+	inline-size: max-content;
 	border-radius: $radius;
 	font-size: 0.85rem;
 	box-shadow: none;
@@ -347,7 +370,6 @@ function getViewRoute(view: IProjectView) {
 	pointer-events: none;
 	white-space: nowrap;
 	inset-inline-start: 0;
-	inset-inline-end: 0;
 	overflow: hidden;
 }
 

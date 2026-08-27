@@ -479,133 +479,177 @@
 							}}
 						</XButton>
 						
-						<span class="action-heading">{{ $t('task.detail.organization') }}</span>
+						<span class="action-heading-row">
+							<span class="action-heading">{{ $t('task.detail.organization') }}</span>
+							<BaseButton
+								class="action-group-toggle"
+								:aria-expanded="openActionGroups.organization"
+								:aria-label="$t('task.detail.organization')"
+								@click="toggleActionGroup('organization')"
+							>
+								<Icon :icon="openActionGroups.organization ? 'chevron-up' : 'chevron-down'" />
+							</BaseButton>
+						</span>
+						<div
+							v-show="openActionGroups.organization"
+							class="action-group-body"
+						>
+							<XButton
+								v-shortcut="SHORTCUTS.taskDetail.labels"
+								variant="secondary"
+								icon="tags"
+								@click="setFieldActive('labels')"
+							>
+								{{ $t('task.detail.actions.label') }}
+							</XButton>
+							<XButton
+								v-shortcut="SHORTCUTS.taskDetail.priority"
+								variant="secondary"
+								icon="exclamation-circle"
+								@click="setFieldActive('priority')"
+							>
+								{{ $t('task.detail.actions.priority') }}
+							</XButton>
+							<XButton
+								variant="secondary"
+								icon="percent"
+								@click="setFieldActive('percentDone')"
+							>
+								{{ $t('task.detail.actions.percentDone') }}
+							</XButton>
+							<XButton
+								v-shortcut="SHORTCUTS.taskDetail.color"
+								variant="secondary"
+								icon="fill-drip"
+								:icon-color="color"
+								@click="setFieldActive('color')"
+							>
+								{{ $t('task.detail.actions.color') }}
+							</XButton>
+						</div>
 						
-						<XButton
-							v-shortcut="SHORTCUTS.taskDetail.labels"
-							variant="secondary"
-							icon="tags"
-							@click="setFieldActive('labels')"
-						>
-							{{ $t('task.detail.actions.label') }}
-						</XButton>
-						<XButton
-							v-shortcut="SHORTCUTS.taskDetail.priority"
-							variant="secondary"
-							icon="exclamation-circle"
-							@click="setFieldActive('priority')"
-						>
-							{{ $t('task.detail.actions.priority') }}
-						</XButton>
-						<XButton
-							variant="secondary"
-							icon="percent"
-							@click="setFieldActive('percentDone')"
-						>
-							{{ $t('task.detail.actions.percentDone') }}
-						</XButton>
-						<XButton
-							v-shortcut="SHORTCUTS.taskDetail.color"
-							variant="secondary"
-							icon="fill-drip"
-							:icon-color="color"
-							@click="setFieldActive('color')"
-						>
-							{{ $t('task.detail.actions.color') }}
-						</XButton>
-						
-						<span class="action-heading">{{ $t('task.detail.management') }}</span>
+						<span class="action-heading-row">
+							<span class="action-heading">{{ $t('task.detail.management') }}</span>
+							<BaseButton
+								class="action-group-toggle"
+								:aria-expanded="openActionGroups.management"
+								:aria-label="$t('task.detail.management')"
+								@click="toggleActionGroup('management')"
+							>
+								<Icon :icon="openActionGroups.management ? 'chevron-up' : 'chevron-down'" />
+							</BaseButton>
+						</span>
 
-						<XButton
-							v-shortcut="SHORTCUTS.taskDetail.assignees"
-							v-cy="'taskDetail.assign'"
-							variant="secondary"
-							icon="users"
-							@click="setFieldActive('assignees')"
+						<div
+							v-show="openActionGroups.management"
+							class="action-group-body"
 						>
-							{{ $t('task.detail.actions.assign') }}
-						</XButton>
-						<XButton
-							v-shortcut="SHORTCUTS.taskDetail.attachments"
-							variant="secondary"
-							icon="paperclip"
-							@click="openAttachments()"
-						>
-							{{ $t('task.detail.actions.attachments') }}
-						</XButton>
-						<XButton
-							v-shortcut="SHORTCUTS.taskDetail.relatedTasks"
-							variant="secondary"
-							icon="sitemap"
-							@click="setRelatedTasksActive()"
-						>
-							{{ $t('task.detail.actions.relatedTasks') }}
-						</XButton>
-						<XButton
-							v-shortcut="SHORTCUTS.taskDetail.moveProject"
-							variant="secondary"
-							icon="list"
-							@click="setFieldActive('moveProject')"
-						>
-							{{ $t('task.detail.actions.moveProject') }}
-						</XButton>
-						<XButton
-							variant="secondary"
-							icon="copy"
-							@click="duplicateCurrentTask"
-						>
-							{{ $t('task.detail.actions.duplicate') }}
-						</XButton>
+							<XButton
+								v-shortcut="SHORTCUTS.taskDetail.assignees"
+								v-cy="'taskDetail.assign'"
+								variant="secondary"
+								icon="users"
+								@click="setFieldActive('assignees')"
+							>
+								{{ $t('task.detail.actions.assign') }}
+							</XButton>
+							<XButton
+								v-shortcut="SHORTCUTS.taskDetail.attachments"
+								variant="secondary"
+								icon="paperclip"
+								@click="openAttachments()"
+							>
+								{{ $t('task.detail.actions.attachments') }}
+							</XButton>
+							<XButton
+								v-shortcut="SHORTCUTS.taskDetail.relatedTasks"
+								variant="secondary"
+								icon="sitemap"
+								@click="setRelatedTasksActive()"
+							>
+								{{ $t('task.detail.actions.relatedTasks') }}
+							</XButton>
+							<XButton
+								v-shortcut="SHORTCUTS.taskDetail.moveProject"
+								variant="secondary"
+								icon="list"
+								@click="setFieldActive('moveProject')"
+							>
+								{{ $t('task.detail.actions.moveProject') }}
+							</XButton>
+							<XButton
+								variant="secondary"
+								icon="copy"
+								@click="duplicateCurrentTask"
+							>
+								{{ $t('task.detail.actions.duplicate') }}
+							</XButton>
+						</div>
 
-						<span class="action-heading">{{ $t('task.detail.dateAndTime') }}</span>
+						<span class="action-heading-row">
+							<span class="action-heading">{{ $t('task.detail.dateAndTime') }}</span>
+							<BaseButton
+								class="action-group-toggle"
+								:aria-expanded="openActionGroups.dateAndTime"
+								:aria-label="$t('task.detail.dateAndTime')"
+								@click="toggleActionGroup('dateAndTime')"
+							>
+								<Icon :icon="openActionGroups.dateAndTime ? 'chevron-up' : 'chevron-down'" />
+							</BaseButton>
+						</span>
 
-						<XButton
-							v-if="timeTrackingEnabled"
-							v-cy="'taskTrackTimeAction'"
-							variant="secondary"
-							:icon="['far', 'clock']"
-							@click="setFieldActive('timeTracking')"
+						<div
+							v-show="openActionGroups.dateAndTime"
+							class="action-group-body"
 						>
-							{{ $t('task.detail.actions.timeTracking') }}
-						</XButton>
+							<XButton
+								v-if="timeTrackingEnabled"
+								v-cy="'taskTrackTimeAction'"
+								variant="secondary"
+								:icon="['far', 'clock']"
+								@click="setFieldActive('timeTracking')"
+							>
+								{{ $t('task.detail.actions.timeTracking') }}
+							</XButton>
 
-						<XButton
-							v-shortcut="SHORTCUTS.taskDetail.dueDate"
-							variant="secondary"
-							icon="calendar"
-							@click="setFieldActive('dueDate')"
-						>
-							{{ $t('task.detail.actions.dueDate') }}
-						</XButton>
-						<XButton
-							variant="secondary"
-							icon="play"
-							@click="setFieldActive('startDate')"
-						>
-							{{ $t('task.detail.actions.startDate') }}
-						</XButton>
-						<XButton
-							variant="secondary"
-							icon="stop"
-							@click="setFieldActive('endDate')"
-						>
-							{{ $t('task.detail.actions.endDate') }}
-						</XButton>
-						<XButton
-							v-shortcut="SHORTCUTS.taskDetail.reminder"
-							variant="secondary"
-							:icon="['far', 'clock']"
-							@click="setFieldActive('reminders')"
-						>
-							{{ $t('task.detail.actions.reminders') }}
-						</XButton>
-						<XButton
-							variant="secondary"
-							icon="history"
-							@click="setFieldActive('repeatAfter')"
-						>
-							{{ $t('task.detail.actions.repeatAfter') }}
-						</XButton>
+							<XButton
+								v-shortcut="SHORTCUTS.taskDetail.dueDate"
+								variant="secondary"
+								icon="calendar"
+								@click="setFieldActive('dueDate')"
+							>
+								{{ $t('task.detail.actions.dueDate') }}
+							</XButton>
+							<XButton
+								variant="secondary"
+								icon="play"
+								@click="setFieldActive('startDate')"
+							>
+								{{ $t('task.detail.actions.startDate') }}
+							</XButton>
+							<XButton
+								variant="secondary"
+								icon="stop"
+								@click="setFieldActive('endDate')"
+							>
+								{{ $t('task.detail.actions.endDate') }}
+							</XButton>
+							<XButton
+								v-shortcut="SHORTCUTS.taskDetail.reminder"
+								variant="secondary"
+								:icon="['far', 'clock']"
+								@click="setFieldActive('reminders')"
+							>
+								{{ $t('task.detail.actions.reminders') }}
+							</XButton>
+							<XButton
+								variant="secondary"
+								icon="history"
+								@click="setFieldActive('repeatAfter')"
+							>
+								{{ $t('task.detail.actions.repeatAfter') }}
+							</XButton>
+						</div>
 						<XButton
 							v-shortcut="SHORTCUTS.taskDetail.delete"
 							icon="trash-alt"
@@ -998,6 +1042,35 @@ const activeFields: { [type in FieldType]: boolean } = reactive({
 	timeTracking: false,
 })
 
+type ActionGroup = 'organization' | 'management' | 'dateAndTime'
+
+const FIELD_GROUPS: Partial<Record<FieldType, ActionGroup>> = {
+	labels: 'organization',
+	priority: 'organization',
+	percentDone: 'organization',
+	color: 'organization',
+	assignees: 'management',
+	attachments: 'management',
+	relatedTasks: 'management',
+	moveProject: 'management',
+	timeTracking: 'dateAndTime',
+	dueDate: 'dateAndTime',
+	startDate: 'dateAndTime',
+	endDate: 'dateAndTime',
+	reminders: 'dateAndTime',
+	repeatAfter: 'dateAndTime',
+}
+
+const openActionGroups = reactive<Record<ActionGroup, boolean>>({
+	organization: false,
+	management: false,
+	dateAndTime: false,
+})
+
+function toggleActionGroup(group: ActionGroup) {
+	openActionGroups[group] = !openActionGroups[group]
+}
+
 function setActiveFields() {
 	// FIXME: are these lines necessary?
 	// task.startDate = task.startDate || null
@@ -1039,6 +1112,10 @@ function setFieldRef(name, e) {
 }
 
 function setFieldActive(fieldName: keyof typeof activeFields) {
+	const group = FIELD_GROUPS[fieldName]
+	if (group) {
+		openActionGroups[group] = true
+	}
 	activeFields[fieldName] = true
 	nextTick(() => {
 		const el = activeFieldElements[fieldName]
@@ -1055,6 +1132,7 @@ function setFieldActive(fieldName: keyof typeof activeFields) {
 }
 
 function openAttachments() {
+	openActionGroups.management = true
 	activeFields.attachments = true
 	nextTick(() => {
 		const el = activeFieldElements.attachments
@@ -1429,13 +1507,43 @@ h2 .button {
 	}
 }
 
+.action-heading-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin: 0.5rem 0;
+}
+
 .action-heading {
 	text-transform: uppercase;
 	color: var(--grey-700);
 	font-size: .75rem;
 	font-weight: 700;
-	margin: .5rem 0;
+	margin: 0;
 	display: inline-block;
+}
+
+.action-group-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: 1.5rem;
+	block-size: 1.5rem;
+	border-radius: $radius;
+	color: var(--grey-700);
+	flex-shrink: 0;
+
+	&:hover,
+	&:focus-visible {
+		background: var(--grey-100);
+		color: var(--grey-900);
+	}
+}
+
+.action-group-body {
+	display: flex;
+	flex-direction: column;
 }
 
 .scroll-to-comments-button {

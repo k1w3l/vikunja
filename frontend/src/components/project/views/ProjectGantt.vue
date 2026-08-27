@@ -5,6 +5,19 @@
 		:project-id="filters.projectId"
 		:view-id
 	>
+		<template #header>
+			<div class="filter-container">
+				<AddTask
+					v-if="canWrite"
+					class="d-print-none"
+					:project-id="filters.projectId"
+					:default-start-date="defaultTaskStartDate"
+					:default-end-date="defaultTaskEndDate"
+					@tasksAdded="onTasksAdded"
+				/>
+			</div>
+		</template>
+
 		<template #default>
 			<Card :has-content="false">
 				<div class="gantt-options">
@@ -54,14 +67,6 @@
 						:default-task-start-date="defaultTaskStartDate"
 						:default-task-end-date="defaultTaskEndDate"
 						@update:task="updateTask"
-					/>
-					<AddTask
-						v-if="canWrite"
-						class="gantt-add-task d-print-none"
-						:project-id="filters.projectId"
-						:default-start-date="defaultTaskStartDate"
-						:default-end-date="defaultTaskEndDate"
-						@tasksAdded="onTasksAdded"
 					/>
 				</Card>
 			</div>
@@ -162,11 +167,6 @@ const flatPickerConfig = computed(() => ({
 	z-index: 0;
 	min-inline-size: 0;
 	overflow-x: auto;
-}
-
-.gantt-add-task {
-	padding: 0.75rem 1rem;
-	border-block-start: 1px solid var(--card-border-color);
 }
 
 .gantt-options {

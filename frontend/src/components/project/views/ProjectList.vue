@@ -7,6 +7,13 @@
 	>
 		<template #header>
 			<div class="filter-container">
+				<AddTask
+					v-if="!project?.isArchived && canWrite"
+					ref="addTaskRef"
+					class="d-print-none"
+					:project-id="projectId"
+					@tasksAdded="updateTaskList"
+				/>
 				<SortPopup
 					v-model="sortByParam"
 				/>
@@ -25,14 +32,6 @@
 				:class="{ 'is-loading': loading }"
 				class="loader-container is-max-width-desktop list-view"
 			>
-				<AddTask
-					v-if="!project?.isArchived && canWrite"
-					ref="addTaskRef"
-					class="list-view__add-task d-print-none"
-					:project-id="projectId"
-					@tasksAdded="updateTaskList"
-				/>
-
 				<Card
 					:padding="false"
 					:has-content="false"
@@ -202,7 +201,7 @@ const dragHandle = computed(() => isTouchDevice.value ? '.handle' : undefined)
 const addTaskRef = ref<typeof AddTask | null>(null)
 
 function focusNewTaskInput() {
-	addTaskRef.value?.focusTaskInput()
+	addTaskRef.value?.openCreateModal()
 }
 
 function updateTaskList(newTasks: ITask[]) {
@@ -319,7 +318,7 @@ function handleListNavigation(e: KeyboardEvent) {
 		}
 
 		if (focusedIndex.value === 0) {
-			addTaskRef.value?.focusTaskInput()
+			addTaskRef.value?.openCreateModal()
 			focusedIndex.value = -1
 			return
 		}
@@ -380,13 +379,6 @@ onBeforeUnmount(() => {
 	:deep(.card) {
 		margin-block-end: 0;
 	}
-}
-
-.list-view__add-task {
-	padding: 0.75rem 1rem;
-	background: var(--white);
-	border: 1px solid var(--card-border-color);
-	border-radius: $radius;
 }
 
 .tasks {

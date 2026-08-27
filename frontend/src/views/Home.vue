@@ -23,7 +23,8 @@
 			</RouterLink>
 		</Message>
 		<AddTask
-			class="is-max-width-desktop"
+			hero
+			class="home-add-task"
 			@tasksAdded="updateTaskKey"
 		/>
 		<ImportHint v-if="tasksLoaded" />
@@ -102,9 +103,15 @@ function handleClearLabelFilter() {
 .home-salutation {
 	text-align: start;
 	margin-block-end: 1.5rem;
+	padding-block-end: 1rem;
+	border-block-end: 1px solid var(--card-border-color);
 	font-size: 1.5rem;
 	font-weight: 650;
 	letter-spacing: -0.02em;
+}
+
+.home-add-task {
+	margin-block-end: 0;
 }
 
 .show-tasks {

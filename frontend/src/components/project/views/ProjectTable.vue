@@ -7,12 +7,17 @@
 	>
 		<template #header>
 			<div class="filter-container">
+				<AddTask
+					v-if="canWrite"
+					class="d-print-none"
+					:project-id="projectId"
+					@tasksAdded="taskList.loadTasks()"
+				/>
 				<Popup>
 					<template #trigger="{toggle}">
 						<XButton
 							icon="th"
 							variant="secondary"
-							class="mie-2"
 							@click.prevent.stop="toggle()"
 						>
 							{{ $t('project.table.columns') }}
@@ -89,12 +94,6 @@
 				:class="{'is-loading': loading}"
 				class="loader-container table-view"
 			>
-				<AddTask
-					v-if="canWrite"
-					class="table-view__add-task d-print-none"
-					:project-id="projectId"
-					@tasksAdded="taskList.loadTasks()"
-				/>
 				<Card
 					:padding="false"
 					:has-content="false"
@@ -496,13 +495,6 @@ const taskDetailRoutes = computed(() => Object.fromEntries(
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
-}
-
-.table-view__add-task {
-	padding: 0.75rem 1rem;
-	background: var(--white);
-	border: 1px solid var(--card-border-color);
-	border-radius: $radius;
 }
 
 .table {

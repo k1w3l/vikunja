@@ -23,11 +23,35 @@
 					>
 				</FormField>
 
-				<FormField
-					v-if="!fixedProjectId"
-					:label="$t('task.attributes.project')"
-				>
-					<ProjectSearch v-model="selectedProject" />
+				<FormField :label="$t('task.attributes.project')">
+					<div class="select is-fullwidth">
+						<select
+							v-model.number="selectedProjectId"
+							:aria-label="$t('task.attributes.project')"
+							required
+						>
+							<option
+								disabled
+								:value="0"
+							>
+								{{ $t('task.createModal.chooseProject') }}
+							</option>
+							<option
+								v-for="project in selectableProjects"
+								:key="project.id"
+								:value="project.id"
+							>
+								{{ project.title }}
+							</option>
+						</select>
+					</div>
+				</FormField>
+
+				<FormField :label="$t('task.attributes.labels')">
+					<EditLabels
+						v-model="selectedLabels"
+						:task-id="0"
+					/>
 				</FormField>
 
 				<FormField :label="$t('task.attributes.description')">
@@ -98,21 +122,22 @@ import FormField from '@/components/input/FormField.vue'
 import Datepicker from '@/components/input/Datepicker.vue'
 import PrioritySelect from '@/components/tasks/partials/PrioritySelect.vue'
 import PercentDoneSelect from '@/components/tasks/partials/PercentDoneSelect.vue'
-import ProjectSearch from '@/components/tasks/partials/ProjectSearch.vue'
+import EditLabels from '@/components/tasks/partials/EditLabels.vue'
 
 import {PRIORITIES} from '@/constants/priorities'
+import {getProjectTitle} from '@/helpers/getProjectTitle'
 import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
 import {error, success} from '@/message'
-import type {IProject} from '@/modelTypes/IProject'
+import type {ILabel} from '@/modelTypes/ILabel'
 import type {ITask} from '@/modelTypes/ITask'
-import ProjectModel from '@/models/project'
 import {useAuthStore} from '@/stores/auth'
+import {useLabelStore} from '@/stores/labels'
 import {useProjectStore} from '@/stores/projects'
 import {useTaskStore} from '@/stores/tasks'
 
 const props = withDefaults(defineProps<{
 	open: boolean
-	projectId?: IProject['id'] | null
+	projectId?: number | null
 	bucketId?: number | null
 	defaultTitle?: string
 	defaultStartDate?: Date | string | null
@@ -134,6 +159,7 @@ const {t} = useI18n({useScope: 'global'})
 const router = useRouter()
 const authStore = useAuthStore()
 const projectStore = useProjectStore()
+const labelStore = useLabelStore()
 const taskStore = useTaskStore()
 
 const title = ref('')
@@ -143,26 +169,34 @@ const percentDone = ref(0)
 const dueDate = ref<Date | null>(null)
 const startDate = ref<Date | null>(null)
 const endDate = ref<Date | null>(null)
-const selectedProject = ref<IProject>(new ProjectModel())
+const selectedProjectId = ref(0)
+const selectedLabels = ref<ILabel[]>([])
 
 const loading = computed(() => taskStore.isLoading)
-const fixedProjectId = computed(() => {
-	if (props.projectId && props.projectId > 0) {
-		return props.projectId
+
+const selectableProjects = computed(() => {
+	const result: {id: number, title: string}[] = []
+
+	function walk(parentId: number, depth: number) {
+		const children = parentId === 0
+			? [...projectStore.notArchivedRootProjects]
+			: projectStore.getChildProjects(parentId).filter(p => !p.isArchived && p.id > 0)
+
+		for (const project of children) {
+			const prefix = depth > 0 ? `${'\u2014 '.repeat(depth)}` : ''
+			result.push({
+				id: project.id,
+				title: `${prefix}${getProjectTitle(project)}`,
+			})
+			walk(project.id, depth + 1)
+		}
 	}
-	const fromRoute = Number(router.currentRoute.value.params.projectId)
-	return fromRoute > 0 ? fromRoute : null
+
+	walk(0, 0)
+	return result
 })
 
-const canSubmit = computed(() => {
-	if (title.value.trim() === '') {
-		return false
-	}
-	if (fixedProjectId.value) {
-		return true
-	}
-	return Boolean(selectedProject.value?.id)
-})
+const canSubmit = computed(() => title.value.trim() !== '' && selectedProjectId.value > 0)
 
 function toDate(value: Date | string | null | undefined): Date | null {
 	if (!value) {
@@ -170,6 +204,17 @@ function toDate(value: Date | string | null | undefined): Date | null {
 	}
 	const date = value instanceof Date ? value : new Date(value)
 	return Number.isNaN(date.getTime()) ? null : date
+}
+
+function initialProjectId() {
+	if (props.projectId && props.projectId > 0) {
+		return props.projectId
+	}
+	const fromRoute = Number(router.currentRoute.value.params.projectId)
+	if (fromRoute > 0) {
+		return fromRoute
+	}
+	return authStore.settings.defaultProjectId || 0
 }
 
 function reset() {
@@ -180,16 +225,14 @@ function reset() {
 	dueDate.value = null
 	startDate.value = toDate(props.defaultStartDate)
 	endDate.value = toDate(props.defaultEndDate)
-	const projectId = fixedProjectId.value ?? authStore.settings.defaultProjectId
-	const existing = projectId ? projectStore.projects[projectId] : undefined
-	selectedProject.value = existing
-		? new ProjectModel({...existing})
-		: new ProjectModel(projectId ? {id: projectId} : {})
+	selectedProjectId.value = initialProjectId()
+	selectedLabels.value = []
 }
 
 watch(() => props.open, (open) => {
 	if (open) {
 		reset()
+		labelStore.loadAllLabels()
 	}
 })
 
@@ -202,11 +245,7 @@ async function submit() {
 		return
 	}
 
-	const projectId = fixedProjectId.value
-		|| selectedProject.value.id
-		|| authStore.settings.defaultProjectId
-		|| 0
-
+	const projectId = selectedProjectId.value
 	if (!projectId) {
 		error({message: t('project.create.addProjectRequired')})
 		return
@@ -242,6 +281,10 @@ async function submit() {
 			})
 		}
 
+		for (const label of selectedLabels.value) {
+			await taskStore.addLabel({label, taskId: task.id})
+		}
+
 		success({message: t('task.createSuccess')})
 		emit('created', task)
 		close()
@@ -258,5 +301,13 @@ async function submit() {
 	flex-direction: column;
 	gap: 0.75rem;
 	text-align: start;
+}
+
+.select {
+	inline-size: 100%;
+
+	select {
+		inline-size: 100%;
+	}
 }
 </style>

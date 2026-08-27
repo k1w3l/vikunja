@@ -7,15 +7,37 @@
 	>
 		<template #header>
 			<div class="filter-container">
-				<XButton
+				<AddTask
 					v-if="canAddTasks"
-					icon="plus"
-					variant="secondary"
-					class="mie-2"
-					@click="createModalOpen = true"
-				>
-					{{ $t('project.list.add') }}
-				</XButton>
+					class="d-print-none"
+					:project-id="projectId"
+					:bucket-id="view?.defaultBucketId"
+					@tasksAdded="onTasksAdded"
+				/>
+				<template v-if="canWrite && buckets.length > 0">
+					<input
+						v-if="showNewBucketInput"
+						v-model="newBucketTitle"
+						v-focus.always
+						:class="{'is-loading': loading}"
+						:disabled="loading || undefined"
+						class="input new-bucket-input"
+						:placeholder="$t('project.kanban.addBucketPlaceholder')"
+						type="text"
+						@blur="() => showNewBucketInput = false"
+						@keyup.enter="createNewBucket"
+						@keyup.esc="($event.target as HTMLInputElement).blur()"
+					>
+					<XButton
+						v-else
+						icon="plus"
+						class="d-print-none"
+						:aria-label="$t('project.kanban.addBucket')"
+						@click="() => showNewBucketInput = true"
+					>
+						{{ $t('project.kanban.addBucket') }}
+					</XButton>
+				</template>
 				<FilterPopup
 					v-if="!isSavedFilter(project)"
 					v-model="params"
@@ -197,35 +219,6 @@
 							</li>
 						</template>
 					</draggable>
-
-					<div
-						v-if="canWrite && !loading && buckets.length > 0"
-						class="bucket new-bucket"
-					>
-						<input
-							v-if="showNewBucketInput"
-							v-model="newBucketTitle"
-							v-focus.always
-							:class="{'is-loading': loading}"
-							:disabled="loading || undefined"
-							class="input"
-							:placeholder="$t('project.kanban.addBucketPlaceholder')"
-							type="text"
-							@blur="() => showNewBucketInput = false"
-							@keyup.enter="createNewBucket"
-							@keyup.esc="($event.target as HTMLInputElement).blur()"
-						>
-						<XButton
-							v-else
-							:shadow="false"
-							class="is-transparent is-fullwidth has-text-centered"
-							variant="secondary"
-							icon="plus"
-							@click="() => showNewBucketInput = true"
-						>
-							{{ $t('project.kanban.addBucket') }}
-						</XButton>
-					</div>
 				</div>
 
 				<Modal
@@ -244,13 +237,6 @@
 						</p>
 					</template>
 				</Modal>
-				<CreateTaskModal
-					:open="createModalOpen"
-					:project-id="projectId"
-					:bucket-id="view?.defaultBucketId"
-					@close="createModalOpen = false"
-					@created="onTaskCreated"
-				/>
 			</div>
 		</template>
 	</ProjectWrapper>
@@ -278,7 +264,7 @@ import {useAuthStore} from '@/stores/auth'
 
 import ProjectWrapper from '@/components/project/ProjectWrapper.vue'
 import FilterPopup from '@/components/project/partials/FilterPopup.vue'
-import CreateTaskModal from '@/components/tasks/CreateTaskModal.vue'
+import AddTask from '@/components/tasks/AddTask.vue'
 import KanbanCard from '@/components/tasks/partials/KanbanCard.vue'
 import Dropdown from '@/components/misc/Dropdown.vue'
 import DropdownItem from '@/components/misc/DropdownItem.vue'
@@ -412,7 +398,6 @@ const project = computed(() => projectId.value ? projectStore.projects[projectId
 const view = computed(() => project.value?.views.find(v => v.id === props.viewId) as IProjectView || null)
 const canWrite = computed(() => baseStore.currentProject?.maxPermission > Permissions.READ && view.value.bucketConfigurationMode === 'manual')
 const canAddTasks = computed(() => (baseStore.currentProject?.maxPermission ?? 0) > Permissions.READ && projectId.value > 0)
-const createModalOpen = ref(false)
 
 const isTouchDevice = ref(false)
 if (typeof window !== 'undefined') {
@@ -619,8 +604,10 @@ async function updateTaskPosition(e) {
 	}
 }
 
-function onTaskCreated(task: ITask) {
-	kanbanStore.addTaskToBucket(task)
+function onTasksAdded(tasks: ITask[]) {
+	for (const task of tasks) {
+		kanbanStore.addTaskToBucket(task)
+	}
 }
 
 async function createNewBucket() {
@@ -634,6 +621,7 @@ async function createNewBucket() {
 		projectViewId: props.viewId,
 	}))
 	newBucketTitle.value = ''
+	showNewBucketInput.value = false
 }
 
 function deleteBucketModal(bucketId: IBucket['id']) {
@@ -851,6 +839,10 @@ function unCollapseBucket(bucket: IBucket) {
 
 	--loader-border-color: var(--grey-500);
   }
+}
+
+.new-bucket-input {
+	inline-size: 12rem;
 }
 </style>
 
