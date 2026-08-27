@@ -67,10 +67,6 @@
 				/>
 			</FormField>
 			<FormCheckbox
-				v-model="settings.frontendSettings.showLastViewed"
-				:label="$t('user.settings.general.showLastViewed')"
-			/>
-			<FormCheckbox
 				v-model="settings.emailRemindersEnabled"
 				:label="$t('user.settings.general.emailReminders')"
 			/>

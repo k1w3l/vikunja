@@ -152,7 +152,7 @@
 									v-bind="DRAG_OPTIONS"
 									:handle="taskDragHandle"
 									:delay="isTouchDevice ? 300 : 1000"
-									:model-value="bucket.tasks"
+									:model-value="visibleBucketTasks(bucket)"
 									:group="{name: 'tasks', put: shouldAcceptDrop(bucket) && !dragBucket}"
 									:disabled="!canWrite"
 									:data-bucket-index="bucketIndex"
@@ -207,7 +207,7 @@
 												@click="toggleShowNewTaskInput(bucket.id)"
 											>
 												{{
-													bucket.tasks.length === 0 ? $t('project.kanban.addTask') : $t('project.kanban.addAnotherTask')
+													bucket.tasks.filter(t => shouldShowTaskInListView(t)).length === 0 ? $t('project.kanban.addTask') : $t('project.kanban.addAnotherTask')
 												}}
 											</XButton>
 										</li>
@@ -326,6 +326,7 @@ import {isSavedFilter, useSavedFilter} from '@/services/savedFilter'
 import {useTaskDragToProject} from '@/composables/useTaskDragToProject'
 import {success} from '@/message'
 import {useProjectStore} from '@/stores/projects'
+import {shouldShowTaskInListView} from '@/composables/useTaskListFiltering'
 import type {TaskFilterParams} from '@/services/taskCollection'
 import type {IProjectView} from '@/modelTypes/IProjectView'
 import TaskPositionService from '@/services/taskPosition'
@@ -530,6 +531,10 @@ function handleTaskContainerScroll(id: IBucket['id'], el: HTMLElement) {
 	)
 }
 
+function visibleBucketTasks(bucket: IBucket): ITask[] {
+	return bucket.tasks.filter(t => shouldShowTaskInListView(t))
+}
+
 function updateTasks(bucketId: IBucket['id'], tasks: IBucket['tasks']) {
 	const bucket = kanbanStore.getBucketById(bucketId)
 
@@ -537,9 +542,11 @@ function updateTasks(bucketId: IBucket['id'], tasks: IBucket['tasks']) {
 		return
 	}
 
+	const hidden = bucket.tasks.filter(t => !shouldShowTaskInListView(t))
+
 	kanbanStore.setBucketById({
 		...bucket,
-		tasks,
+		tasks: [...tasks, ...hidden],
 	})
 }
 
@@ -978,6 +985,8 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 	}
 
 	.bucket {
+		background: var(--bucket-surface, var(--grey-50));
+		border: 1px solid var(--card-border-color);
 		border-radius: $radius;
 		position: relative;
 
@@ -1000,7 +1009,7 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 		}
 
 		.task-item {
-			background-color: var(--grey-100);
+			background-color: transparent;
 			padding: .25rem .5rem;
 			position: relative;
 

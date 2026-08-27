@@ -986,6 +986,10 @@
     "undo": "Undo",
     "checklistTotal": "{checked} of {total} tasks",
     "checklistAllDone": "{total} tasks",
+    "inspector": {
+      "empty": "Select a task",
+      "emptyHint": "Open a task from the list or board to inspect it here."
+    },
     "show": {
       "titleCurrent": "Current Tasks",
       "noDates": "Show tasks without date",
@@ -1066,6 +1070,8 @@
       "endDate": "End Date",
       "labels": "Labels",
       "percentDone": "Progress",
+      "showInList": "Show in list",
+      "showInListHint": "When on, this subtask also appears as its own row in Overview, Upcoming, lists, and kanban. It still nests under its parent in the project list.",
       "priority": "Priority",
       "project": "Project",
       "relatedTasks": "Related Tasks",

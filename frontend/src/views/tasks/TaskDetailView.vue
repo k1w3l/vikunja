@@ -65,6 +65,22 @@
 
 			<ChecklistSummary :task="task" />
 
+			<div
+				v-if="isSubtask && canWrite"
+				class="show-in-list-field details mbs-2"
+			>
+				<FancyCheckbox
+					v-model="task.showInList"
+					:aria-label="$t('task.attributes.showInList')"
+					@update:modelValue="saveTask()"
+				>
+					{{ $t('task.attributes.showInList') }}
+				</FancyCheckbox>
+				<p class="help">
+					{{ $t('task.attributes.showInListHint') }}
+				</p>
+			</div>
+
 			<!-- Content and buttons -->
 			<div class="columns mbs-2">
 				<!-- Content -->
@@ -676,6 +692,7 @@ import BaseButton from '@/components/base/BaseButton.vue'
 import Attachments from '@/components/tasks/partials/Attachments.vue'
 import TaskTimeTracking from '@/components/time-tracking/TaskTimeTracking.vue'
 import ChecklistSummary from '@/components/tasks/partials/ChecklistSummary.vue'
+import FancyCheckbox from '@/components/input/FancyCheckbox.vue'
 import ColorPicker from '@/components/input/ColorPicker.vue'
 import Comments from '@/components/tasks/partials/Comments.vue'
 import CreatedUpdated from '@/components/tasks/partials/CreatedUpdated.vue'
@@ -833,6 +850,7 @@ const color = computed(() => {
 })
 
 const isModal = computed(() => Boolean(props.backdropView))
+const isSubtask = computed(() => (task.value.relatedTasks?.parenttask?.length ?? 0) > 0)
 
 async function attachmentUpload(file: File, onSuccess?: (url: string) => void) {
 	const uploaded = await uploadFile(props.taskId, file, onSuccess)
@@ -1231,9 +1249,9 @@ function setRelatedTasksActive() {
 }
 
 .task-view {
-	padding-block-start: 1rem;
-	padding-inline: .5rem;
-	background-color: var(--site-background);
+	padding-block-start: 0;
+	padding-inline: 0;
+	background-color: transparent;
 
 	@media screen and (min-width: $desktop) {
 		padding: 1rem;
@@ -1241,14 +1259,10 @@ function setRelatedTasksActive() {
 }
 
 .is-modal .task-view {
-	border-radius: $radius;
-	padding: 1rem;
+	border-radius: 0;
+	padding: 0;
 	color: var(--text);
-	background-color: var(--site-background) !important;
-
-	@media screen and (width <= calc(#{$desktop} + 1px)) {
-		border-radius: 0;
-	}
+	background-color: transparent !important;
 }
 
 .task-view * {
@@ -1475,8 +1489,8 @@ h2 .button {
 	background-color: var(--site-background);
 	border: 1px solid var(--grey-300);
 	color: var(--grey-500);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-	transition: all $transition;
+	box-shadow: var(--shadow-sm);
+	transition: background-color $transition, color $transition;
 
 	&:hover {
 		background-color: var(--grey-100);

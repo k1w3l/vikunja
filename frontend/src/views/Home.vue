@@ -1,6 +1,9 @@
 <template>
-	<div class="content has-text-centered">
-		<h1 v-if="salutation">
+	<div class="home-surface">
+		<h1
+			v-if="salutation"
+			class="home-salutation"
+		>
 			{{ salutation }}
 		</h1>
 
@@ -24,21 +27,11 @@
 			@tasksAdded="updateTaskKey"
 		/>
 		<ImportHint v-if="tasksLoaded" />
-		<div
-			v-if="authStore.settings.frontendSettings.showLastViewed !== false && projectHistory.length > 0"
-			class="is-max-width-desktop has-text-start mbs-4"
-		>
-			<h2>{{ $t('home.lastViewed') }}</h2>
-			<ProjectCardGrid
-				v-cy="'projectCardGrid'"
-				:projects="projectHistory"
-				:show-even-number-of-projects="true"
-			/>
-		</div>
 		<ShowTasks
 			v-if="projectStore.hasProjects"
 			:key="showTasksKey"
 			:label-ids="labelIds"
+			overview
 			class="show-tasks"
 			@tasksLoaded="tasksLoaded = true"
 			@clearLabelFilter="handleClearLabelFilter"
@@ -52,11 +45,9 @@ import {useRoute, useRouter} from 'vue-router'
 
 import Message from '@/components/misc/Message.vue'
 import ShowTasks from '@/views/tasks/ShowTasks.vue'
-import ProjectCardGrid from '@/components/project/partials/ProjectCardGrid.vue'
 import AddTask from '@/components/tasks/AddTask.vue'
 import ImportHint from '@/components/home/ImportHint.vue'
 
-import {getHistory} from '@/modules/projectHistory'
 import {parseDateOrNull} from '@/helpers/parseDateOrNull'
 import {formatDateSince, formatDisplayDate} from '@/helpers/time/formatDate'
 import {useDaytimeSalutation} from '@/composables/useDaytimeSalutation'
@@ -70,17 +61,6 @@ const authStore = useAuthStore()
 const projectStore = useProjectStore()
 const route = useRoute()
 const router = useRouter()
-
-const projectHistory = computed(() => {
-	// If we don't check this, it tries to load the project background right after logging out	
-	if(!authStore.authenticated) {
-		return []
-	}
-	
-	return getHistory()
-		.map(l => projectStore.projects[l.id])
-		.filter(l => Boolean(l))
-})
 
 const tasksLoaded = ref(false)
 
@@ -114,7 +94,20 @@ function handleClearLabelFilter() {
 </script>
 
 <style scoped lang="scss">
+.home-surface {
+	max-inline-size: $desktop;
+}
+
+.home-salutation {
+	text-align: start;
+	margin-block-end: 1.5rem;
+	font-size: 1.5rem;
+	font-weight: 650;
+	letter-spacing: -0.02em;
+}
+
 .show-tasks {
 	margin-block-start: 2rem;
+	text-align: start;
 }
 </style>

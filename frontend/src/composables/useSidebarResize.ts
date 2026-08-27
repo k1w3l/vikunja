@@ -3,7 +3,7 @@ import {useMediaQuery} from '@vueuse/core'
 import {useAuthStore} from '@/stores/auth'
 
 const BULMA_MOBILE_BREAKPOINT = 768
-const DEFAULT_SIDEBAR_WIDTH = 300
+const DEFAULT_SIDEBAR_WIDTH = 240
 const MIN_SIDEBAR_WIDTH = 200
 const MAX_SIDEBAR_WIDTH = 500
 

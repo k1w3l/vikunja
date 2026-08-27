@@ -10,15 +10,25 @@ export function useRouteWithModal() {
 	const baseStore = useBaseStore()
 	const projectStore = useProjectStore()
 
+	const isTaskDetailRoute = computed(() => route.name === 'task.detail')
+
 	const routeWithModal = computed(() => {
-		return backdropView.value
-			? router.resolve(backdropView.value) as RouteLocationNormalizedGeneric
-			: route
+		if (backdropView.value) {
+			return router.resolve(backdropView.value) as RouteLocationNormalizedGeneric
+		}
+		if (isTaskDetailRoute.value) {
+			const back = typeof window !== 'undefined' ? window.history.state?.back : undefined
+			if (typeof back === 'string' && back.length > 0 && !back.includes('/tasks/')) {
+				return router.resolve(back) as RouteLocationNormalizedGeneric
+			}
+			return router.resolve({name: 'home'}) as RouteLocationNormalizedGeneric
+		}
+		return route
 	})
 
 	const currentModal = shallowRef<VNode>()
 	watchEffect(() => {
-		if (!backdropView.value) {
+		if (!backdropView.value && !isTaskDetailRoute.value) {
 			currentModal.value = undefined
 			return
 		}
@@ -44,7 +54,7 @@ export function useRouteWithModal() {
 			return
 		}
 
-		routeProps.backdropView = backdropView.value
+		routeProps.backdropView = backdropView.value ?? route.fullPath
 
 		let component = route.matched[0]?.components?.default
 

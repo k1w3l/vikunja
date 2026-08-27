@@ -204,12 +204,13 @@ function getViewRoute(view: IProjectView) {
 }
 
 .switch-view {
-	background: var(--white);
+	background: var(--surface-elevated, var(--white));
 	display: inline-flex;
 	border-radius: $radius;
-	font-size: .75rem;
-	box-shadow: var(--shadow-sm);
-	padding: .5rem;
+	font-size: 0.85rem;
+	box-shadow: none;
+	border: 1px solid var(--card-border-color);
+	padding: .25rem;
 }
 
 .switch-view--hidden {
@@ -233,7 +234,7 @@ function getViewRoute(view: IProjectView) {
 }
 
 .dropdown-icon {
-	font-size: .6rem;
+	font-size: 0.85rem;
 }
 
 .switch-view-button {
@@ -241,7 +242,7 @@ function getViewRoute(view: IProjectView) {
 	display: block;
 	white-space: nowrap;
 	border-radius: $radius;
-	transition: all 100ms;
+	transition: color $transition, background-color $transition;
 
 	&:not(:last-child) {
 		margin-inline-end: .5rem;

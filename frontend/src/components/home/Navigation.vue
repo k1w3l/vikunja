@@ -14,8 +14,8 @@
 				:aria-label="$t('navigation.home')"
 			>
 				<Logo
-					width="164"
-					height="48"
+					width="132"
+					height="36"
 				/>
 			</RouterLink>
 			<menu class="menu-list other-menu-items">
@@ -173,46 +173,51 @@ const savedFilterProjects = computed(() => projectStore.savedFilterProjects as I
 <style lang="scss" scoped>
 .logo {
 	display: block;
+	padding-inline-start: 0.4rem;
+	margin-inline-end: 0.5rem;
+	margin-block-end: 0.8rem;
+	min-inline-size: 0;
 
-	padding-inline-start: 1rem;
-	margin-inline-end: 1rem;
-	margin-block-end: 1rem;
+	--logo-text-color: var(--rail-ink);
 
-	@media screen and (min-width: $tablet) {
-		display: none;
+	:deep(.logo) {
+		max-inline-size: 100%;
+		block-size: auto;
+		max-block-size: 2rem;
 	}
 }
 
 .menu-container {
 	--sidebar-width: #{$navbar-width};
+	--menu-nested-list-margin: 0.85rem;
 
 	display: flex;
 	flex-direction: column;
-	background: var(--site-background);
-	color: $vikunja-nav-color;
-	padding: 1rem 0;
-	transition: transform $transition-duration ease-in;
+	background: var(--rail-bg);
+	color: var(--rail-ink);
+	padding: 0.85rem 0.65rem 1.25rem;
+	transition: transform $transition-duration $ease-out-expo;
 	position: fixed;
 	inset-block-start: $navbar-height;
 	inset-block-end: 0;
 	inset-inline-start: 0;
-	transform: translateX(-100%);
 	inline-size: var(--sidebar-width);
+	overflow-x: hidden;
 	overflow-y: auto;
-
-	[dir="rtl"] & {
-		transform: translateX(100%);
-	}
+	z-index: 20;
 
 	@media screen and (max-width: $tablet) {
 		inset-block-start: 0;
-		inline-size: 70vw;
-		z-index: 20;
-	}
+		inline-size: 16rem;
+		transform: translateX(-100%);
 
-	&.is-active {
-		transform: translateX(0);
-		transition: transform $transition-duration ease-out;
+		[dir="rtl"] & {
+			transform: translateX(100%);
+		}
+
+		&.is-active {
+			transform: translateX(0);
+		}
 	}
 
 	&.is-resizing {
@@ -241,20 +246,27 @@ const savedFilterProjects = computed(() => projectStore.savedFilterProjects as I
 	li {
 		font-weight: 600;
 		font-family: $vikunja-font;
+		min-inline-size: 0;
 	}
 
 	.list-menu-link,
 	li > a {
-		padding-inline-start: 2rem;
-		display: inline-block;
+		padding-inline-start: 0.45rem;
+		display: flex;
+		align-items: center;
+		min-inline-size: 0;
+		inline-size: 100%;
 
 		.icon {
-			padding-block-end: .25rem;
+			padding-block-end: 0;
+			flex-shrink: 0;
 		}
 	}
 }
 
 .menu + .menu {
-	padding-block-start: math.div($navbar-padding, 2);
+	padding-block-start: 0.6rem;
+	margin-block-start: 0.6rem;
+	border-block-start: 1px solid #3f3a36;
 }
 </style>

@@ -10,8 +10,14 @@
 		</BaseButton>
 		<div
 			class="app-container"
-			:class="{'has-background': background || blurHash}"
-			:style="{'background-image': blurHash && `url(${blurHash})`}"
+			:class="{
+				'has-background': background || blurHash,
+				'inspector-open': inspectorOpen,
+			}"
+			:style="{
+				'background-image': blurHash && `url(${blurHash})`,
+				'--sidebar-width': sidebarWidth,
+			}"
 		>
 			<div
 				:class="{'is-visible': background}"
@@ -30,7 +36,6 @@
 					{ 'is-menu-enabled': menuActive },
 					$route.name,
 				]"
-				:style="{'--sidebar-width': sidebarWidth}"
 			>
 				<BaseButton
 					v-show="menuActive"
@@ -46,22 +51,11 @@
 					:route="routeWithModal"
 				>
 					<keep-alive :include="['project.view']">
-						<component :is="Component" />
+						<Transition name="route-fade">
+							<component :is="Component" />
+						</Transition>
 					</keep-alive>
 				</RouterView>
-
-				<Modal
-					:enabled="typeof currentModal !== 'undefined'"
-					variant="scrolling"
-					class="task-detail-view-modal"
-					:aria-label="$t('task.detail.title')"
-					@close="closeModal()"
-				>
-					<component
-						:is="currentModal"
-						@close="closeModal()"
-					/>
-				</Modal>
 
 				<BaseButton
 					v-shortcut="SHORTCUTS.showKeyboardShortcuts"
@@ -72,6 +66,23 @@
 					<Icon icon="keyboard" />
 				</BaseButton>
 			</main>
+			<aside
+				v-if="inspectorOpen"
+				class="task-inspector d-print-none"
+				:class="{'is-open': inspectorOpen}"
+				:aria-label="$t('task.detail.title')"
+			>
+				<component
+					:is="currentModal"
+					@close="closeModal()"
+				/>
+			</aside>
+			<BaseButton
+				v-show="inspectorOpen"
+				:aria-label="$t('misc.close')"
+				class="inspector-overlay d-print-none"
+				@click="closeModal()"
+			/>
 		</div>
 	</div>
 </template>
@@ -103,6 +114,8 @@ const backgroundBrightness = computed(() =>
 const {sidebarWidth} = useSidebarResize()
 
 const {routeWithModal, currentModal, closeModal} = useRouteWithModal()
+
+const inspectorOpen = computed(() => typeof currentModal.value !== 'undefined')
 
 const baseStore = useBaseStore()
 const background = computed(() => baseStore.background)
@@ -176,10 +189,10 @@ onBeforeUnmount(() => {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 2rem;
+	font-size: 1.75rem;
 	color: var(--grey-400);
 	line-height: 1;
-	transition: all $transition;
+	transition: color $transition;
 
 	@media screen and (min-width: $tablet) {
 		display: none;
@@ -192,47 +205,117 @@ onBeforeUnmount(() => {
 }
 
 .app-container {
-	min-block-size: calc(100vh - 65px);
+	--sidebar-width: #{$navbar-width};
+	--inspector-width: #{$inspector-width};
+
+	min-block-size: 100vh;
+	padding-block-start: $navbar-height;
+	padding-inline-start: var(--sidebar-width);
+	padding-inline-end: 0;
+
+	&.inspector-open {
+		padding-inline-end: var(--inspector-width);
+	}
+
+	@media screen and (max-width: $split-inspector-bp) {
+		padding-inline-end: 0;
+
+		&.inspector-open {
+			padding-inline-end: 0;
+		}
+	}
 
 	@media screen and (max-width: $tablet) {
-		padding-block-start: $navbar-height;
+		padding-inline-start: 0;
 	}
 }
 
 .app-content {
-	--sidebar-width: #{$navbar-width};
-
-	display: flow-root;
 	z-index: 10;
 	position: relative;
-	padding: 1.5rem 0.5rem 0;
-	// TODO refactor: DRY `transition-timing-function` with `./Navigation.vue`.
-	transition: margin-inline-start $transition-duration;
+	min-inline-size: 0;
+	padding: 1.25rem 1.35rem 2.5rem;
+
+	.inspector-open & {
+		border-inline-end: 1px solid var(--card-border-color);
+	}
 
 	@media screen and (max-width: $tablet) {
 		margin-inline-start: 0;
 		margin-inline-end: 0;
-		min-block-size: calc(100vh - 4rem);
+		min-block-size: calc(100vh - #{$navbar-height});
+		padding: 1rem 0.9rem 2rem;
+		border-inline-end: 0;
 	}
 
-	@media screen and (min-width: $tablet) {
-		padding: $navbar-height + 1.5rem 1.5rem 0 1.5rem;
-	}
-
-	&.is-menu-enabled {
-		@media screen and (min-width: $tablet) {
-			margin-inline-start: var(--sidebar-width);
-		}
-	}
-
-	// Used to make sure the spinner is always in the middle while loading
 	> .loader-container {
 		min-block-size: calc(100vh - #{$navbar-height + 1.5rem + 1rem});
 	}
 
-	// FIXME: This should be somehow defined inside Card.vue
 	.card {
 		background: var(--white);
+	}
+}
+
+.task-inspector {
+	position: fixed;
+	inset-block-start: $navbar-height;
+	inset-block-end: 0;
+	inset-inline-end: 0;
+	inline-size: var(--inspector-width);
+	overflow-x: hidden;
+	overflow-y: auto;
+	background: var(--inspector-bg);
+	padding: 1.25rem 1.2rem 2rem;
+	z-index: 15;
+	border-inline-start: 1px solid var(--card-border-color);
+	box-shadow: -10px 0 24px hsla(20, 14%, 10%, 0.06);
+
+	:deep(.columns) {
+		display: flex;
+		flex-direction: column;
+		margin: 0;
+	}
+
+	:deep(.column) {
+		inline-size: 100% !important;
+		padding-inline: 0;
+	}
+
+	:deep(.action-buttons) {
+		position: static;
+		inset-block-start: auto;
+	}
+
+	@media screen and (max-width: $split-inspector-bp) {
+		inline-size: min(#{$inspector-width}, 100vw);
+		transform: translateX(100%);
+		transition: transform $transition-layout $ease-out-expo;
+		z-index: 25;
+		box-shadow: none;
+
+		[dir="rtl"] & {
+			transform: translateX(-100%);
+		}
+
+		&.is-open {
+			transform: translateX(0);
+			box-shadow: -10px 0 24px hsla(20, 14%, 10%, 0.12);
+		}
+	}
+}
+
+.inspector-overlay {
+	display: none;
+}
+
+@media screen and (max-width: $split-inspector-bp) {
+	.inspector-overlay {
+		display: block;
+		position: fixed;
+		inset: $navbar-height 0 0 0;
+		background: hsla(20, 14%, 10%, 0.35);
+		z-index: 24;
 	}
 }
 
@@ -248,7 +331,7 @@ onBeforeUnmount(() => {
 	background: hsla(var(--grey-100-hsl), 0.8);
 	z-index: 5;
 	opacity: 0;
-	transition: all $transition;
+	transition: opacity $transition;
 
 	@media screen and (max-width: $tablet) {
 		display: block;
@@ -257,10 +340,10 @@ onBeforeUnmount(() => {
 }
 
 .keyboard-shortcuts-button {
-	position: fixed;
-	inset-block-end: calc(1rem - 4px);
+	position: absolute;
+	inset-block-end: 1rem;
 	inset-inline-end: 1rem;
-	z-index: 4500; // The modal has a z-index of 4000
+	z-index: 20;
 	color: var(--grey-500);
 	transition: color $transition;
 

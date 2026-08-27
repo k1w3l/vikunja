@@ -38,9 +38,48 @@ a, button, input[type='checkbox'], input[type='radio'], select, [tabindex], [con
 body {
   background: var(--site-background);
   min-height: 100vh;
- 
+  caret-color: var(--caret-color, var(--primary));
+  font-family: $family-sans-serif;
+  font-variation-settings: "CASL" 0, "CRSV" 0, "MONO" 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  font-weight: 450;
+
   @media print {
     background: #fff;
+  }
+}
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--text-strong);
+}
+
+.route-fade-enter-active {
+  transition: opacity $transition-layout $ease-out-expo, transform $transition-layout $ease-out-expo;
+}
+
+.route-fade-leave-active {
+  transition: opacity $transition-duration $ease-out-expo;
+}
+
+.route-fade-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.route-fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-fade-enter-active,
+  .route-fade-leave-active {
+    transition-duration: 0.01ms;
+  }
+
+  .route-fade-enter-from {
+    transform: none;
   }
 }
 
@@ -51,7 +90,7 @@ h4,
 h5,
 h6 {
   font-family: $vikunja-font;
-  font-weight: 400 !important;
+	font-weight: 650 !important;
 }
 
 // FIXME: these helpers should be mixins

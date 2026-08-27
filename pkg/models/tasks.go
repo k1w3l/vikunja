@@ -107,6 +107,10 @@ type Task struct {
 	// Determines how far a task is left from being done
 	PercentDone float64 `xorm:"DOUBLE null" json:"percent_done" doc:"How far the task is from done, between 0 and 1."`
 
+	// When true, a subtask also appears as its own row in Overview, Upcoming, lists, and kanban.
+	// Nested under its parent in the project list regardless. Ignored for tasks without a parent.
+	ShowInList bool `xorm:"not null default false" json:"show_in_list" doc:"When true, a subtask also appears as its own row in list-like views. Nested under its parent regardless. Ignored for tasks without a parent."`
+
 	// The task identifier, based on the project identifier and the task's index
 	Identifier string `xorm:"-" json:"identifier" readOnly:"true" doc:"The textual task identifier, derived from the project identifier and the task index (e.g. \"PROJ-12\")."`
 	// The task index, calculated per project
@@ -1295,6 +1299,7 @@ func (t *Task) updateSingleTask(s *xorm.Session, a web.Auth, fields []string) (e
 		"bucket_id",
 		"repeat_mode",
 		"cover_image_attachment_id",
+		"show_in_list",
 	}
 
 	// Validate fields if provided
@@ -1356,6 +1361,9 @@ func (t *Task) updateSingleTask(s *xorm.Session, a web.Auth, fields []string) (e
 		}
 		if !fieldSet["cover_image_attachment_id"] {
 			t.CoverImageAttachmentID = ot.CoverImageAttachmentID
+		}
+		if !fieldSet["show_in_list"] {
+			t.ShowInList = ot.ShowInList
 		}
 	}
 

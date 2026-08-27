@@ -199,6 +199,7 @@
 
 <script setup lang="ts">
 import {ref, watch, shallowReactive, onMounted, computed} from 'vue'
+import {useRouter} from 'vue-router'
 import {useI18n} from 'vue-i18n'
 
 import TaskModel, {getHexColor} from '@/models/task'
@@ -280,6 +281,7 @@ watch(
 const baseStore = useBaseStore()
 const projectStore = useProjectStore()
 const taskStore = useTaskStore()
+const router = useRouter()
 
 const project = computed(() => projectStore.projects[task.value.projectId])
 const projectColor = computed(() => project.value ? project.value?.hexColor : '')
@@ -296,8 +298,7 @@ const currentProject = computed(() => {
 const taskDetailRoute = computed(() => ({
 	name: 'task.detail',
 	params: {id: task.value.id},
-	// TODO: re-enable opening task detail in modal
-	// state: { backdropView: router.currentRoute.value.fullPath },
+	state: {backdropView: router.currentRoute.value.fullPath},
 }))
 
 function updateDueDate() {
@@ -411,12 +412,12 @@ defineExpose({
 .task {
 	display: flex;
 	flex-wrap: wrap;
-	padding: .4rem;
+	padding: .5rem .75rem;
 	transition: background-color $transition;
 	align-items: center;
 	cursor: pointer;
 	border-radius: $radius;
-	border: 2px solid transparent;
+	border: 1px solid transparent;
 
 	&:hover {
 		background-color: var(--grey-100);

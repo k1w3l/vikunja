@@ -1,6 +1,6 @@
 // these are general menu styles
 // should be in own components
-.menu {
+.menu-container .menu {
   .menu-list .list-menu-link,
   .menu-list a {
     display: flex;
@@ -22,19 +22,22 @@
     
     &.other-menu-items li,
     li > div {
-      height: 44px;
+      min-block-size: 2.25rem;
+      height: auto;
       display: flex;
       align-items: center;
+      min-inline-size: 0;
+      border-radius: $radius;
 
       &:hover {
-        background: var(--white);
+        background: #2a2522;
       }
     }
 
     li > div {
       .menu-list-dropdown {
         opacity: 1;
-        transition: $transition;
+        transition: opacity $transition;
       }
 
       @media(hover: hover) and (pointer: fine) {
@@ -53,12 +56,13 @@
     }
 
     .menu-item-icon {
-      color: var(--grey-400);
+      color: #c4bdb4;
     }
 
     .menu-list-dropdown-trigger {
       display: flex;
       padding: 0.5rem;
+      color: #c4bdb4;
     }
 
     .flip-list-move {
@@ -66,7 +70,7 @@
     }
 
     .ghost {
-      background: var(--grey-200);
+      background: #2a2522;
 
       * {
         opacity: 0;
@@ -81,32 +85,40 @@
     li, li > div {
       .collapse-project-button {
         padding: .5rem .25rem .5rem .5rem;
+        color: #c4bdb4;
 
         svg {
-          transition: all $transition;
-          color: var(--grey-400);
+          transition: transform $transition, color $transition;
+          color: #c4bdb4;
           width: 1.25rem;
         }
       }
 
       .collapse-project-button-placeholder {
-        width: 2rem;
+        width: 1.25rem;
         flex-shrink: 0;
       }
 
       > a {
-        color: $vikunja-nav-color;
-        padding: .75rem .5rem .75rem .25rem;
-        transition: all 0.2s ease;
+        color: #c4bdb4;
+        padding: 0.38rem 0.45rem;
+        transition: color $transition, background-color $transition;
 
-        border-radius: 0;
+        border-radius: $radius;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        width: 100%;
+        min-inline-size: 0;
+        inline-size: auto;
+        flex: 1 1 auto;
+
+        &:hover {
+          color: #ffffff;
+        }
 
         &.router-link-exact-active {
-          color: var(--primary);
+          color: #ffffff;
+          background: #2a2522;
         }
 
         .icon {
@@ -116,7 +128,7 @@
         }
 
         &.router-link-exact-active .icon:not(.handle) {
-          color: var(--primary);
+          color: #ffffff;
         }
 
         .handle {

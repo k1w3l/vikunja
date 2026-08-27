@@ -6,6 +6,7 @@
 			'draggable': !(loadingInternal || loading),
 			'has-light-text': !colorIsDark(color),
 			'has-custom-background-color': color ?? undefined,
+			'is-done': task.done,
 		}"
 		:style="{'background-color': color ?? undefined}"
 		:data-task-id="task.id"
@@ -256,13 +257,35 @@ $task-background: var(--white);
 	-webkit-touch-callout: none; // iOS Safari
 	user-select: none;
 	cursor: pointer;
-	box-shadow: var(--shadow-xs);
+	box-shadow: none;
+	border: 1px solid var(--card-border-color);
 	display: block;
 
-	font-size: .9rem;
+	font-size: 1rem;
 	border-radius: $radius;
 	background: $task-background;
 	overflow: hidden;
+	transition: box-shadow $transition, border-color $transition, opacity $transition;
+
+	&:hover {
+		box-shadow: var(--shadow-sm);
+		border-color: var(--grey-300);
+	}
+
+	&.is-done {
+		opacity: 0.72;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		&.is-done {
+			opacity: 0.85;
+		}
+	}
+
+	&.is-done h3 {
+		text-decoration: line-through;
+		color: var(--text-muted);
+	}
 
 	&.loader-container.is-loading::after {
 		inline-size: 1.5rem;
@@ -274,7 +297,8 @@ $task-background: var(--white);
 
 	h3 {
 		font-family: $family-sans-serif;
-		font-size: .85rem;
+		font-size: 1rem;
+		font-weight: 500;
 		word-break: break-word;
 	}
 

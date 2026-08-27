@@ -34,25 +34,14 @@
 				<Icon icon="circle-info" />
 			</BaseButton>
 
-			<ProjectSettingsDropdown
+			<BaseButton
 				v-if="canWriteCurrentProject && currentProject.id !== -1"
-				class="project-title-dropdown"
-				:project="currentProject"
+				:to="{ name: 'project.settings.edit', params: { projectId: currentProject.id } }"
+				class="project-title-button project-edit-button"
 			>
-				<template #trigger="{ toggleOpen, open }">
-					<BaseButton
-						class="project-title-button"
-						:aria-expanded="open"
-						@click="toggleOpen"
-					>
-						<span class="is-sr-only">{{ $t('project.openSettingsMenu') }}</span>
-						<Icon
-							icon="ellipsis-h"
-							class="icon"
-						/>
-					</BaseButton>
-				</template>
-			</ProjectSettingsDropdown>
+				<span class="is-sr-only">{{ $t('menu.edit') }}</span>
+				<Icon icon="pen" />
+			</BaseButton>
 		</div>
 
 		<div
@@ -137,7 +126,6 @@ import { useI18n } from 'vue-i18n'
 import { PERMISSIONS as Permissions } from '@/constants/permissions'
 import { PRO_FEATURE } from '@/constants/proFeatures'
 
-import ProjectSettingsDropdown from '@/components/project/ProjectSettingsDropdown.vue'
 import Dropdown from '@/components/misc/Dropdown.vue'
 import DropdownItem from '@/components/misc/DropdownItem.vue'
 import Notifications from '@/components/notifications/Notifications.vue'
@@ -200,7 +188,8 @@ $user-dropdown-width-mobile: 5rem;
 	gap: var(--navbar-gap-width);
 	min-block-size: $navbar-height;
 
-	background: var(--site-background);
+	background: var(--surface-elevated);
+	border-block-end: 1px solid var(--card-border-color);
 
 	@media screen and (min-width: $tablet) {
 		padding-inline-start: 2rem;
@@ -224,13 +213,6 @@ $user-dropdown-width-mobile: 5rem;
 
 .logo-link {
 	display: none;
-
-	@media screen and (min-width: $tablet) {
-		align-self: stretch;
-		display: flex;
-		align-items: center;
-		margin-inline-end: .5rem;
-	}
 }
 
 .menu-button {
@@ -238,22 +220,28 @@ $user-dropdown-width-mobile: 5rem;
 	align-self: stretch;
 	flex: 0 0 auto;
 
+	@media screen and (min-width: $tablet) {
+		display: none;
+	}
+
 	@media screen and (max-width: $tablet) {
 		margin-inline-start: 1rem;
 	}
 }
 
 .project-title-wrapper {
-	margin-inline: auto;
 	display: flex;
 	align-items: center;
-
-	// this makes the truncated text of the project title work
-	// inside the flexbox parent
 	min-inline-size: 0;
+	flex: 1 1 auto;
 
 	@media screen and (min-width: $tablet) {
 		padding-inline: var(--navbar-gap-width);
+	}
+
+	&:hover .project-edit-button,
+	&:focus-within .project-edit-button {
+		opacity: 1;
 	}
 }
 
@@ -265,15 +253,7 @@ $user-dropdown-width-mobile: 5rem;
 	white-space: nowrap;
 
 	@media screen and (min-width: $tablet) {
-		font-size: 1.75rem;
-	}
-}
-
-.project-title-dropdown {
-	align-self: stretch;
-
-	.project-title-button {
-		flex-grow: 1;
+		font-size: 1.5rem;
 	}
 }
 
@@ -287,10 +267,26 @@ $user-dropdown-width-mobile: 5rem;
 	color: var(--grey-400);
 }
 
+.project-edit-button {
+	opacity: 0;
+	transition: opacity $transition, color $transition;
+
+	&:hover,
+	&:focus-visible {
+		color: var(--grey-800);
+		opacity: 1;
+	}
+
+	@media (hover: none) {
+		opacity: 1;
+	}
+}
+
 .navbar-end {
 	flex: 0 0 auto;
 	display: flex;
 	align-items: stretch;
+	margin-inline-start: auto;
 
 	>* {
 		min-inline-size: var(--navbar-button-min-width);

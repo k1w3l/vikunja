@@ -1,31 +1,33 @@
+import {PRIORITIES} from '@/constants/priorities'
 import type {ITask} from '@/modelTypes/ITask'
 
 /**
- * Determines if a task should be displayed in the List view.
+ * Loose-row visibility for Overview, Upcoming, project list, and kanban.
  *
- * Subtasks are hidden only when their parent task is also in the current view
- * (they are rendered nested under it instead). Cross-project subtasks and
- * subtasks whose parent is not part of the result set stay visible.
- *
- * @param task - The task to check
- * @param allTasksInView - All tasks currently visible in the view
- * @returns true if the task should be shown, false if it should be hidden
+ * Tasks without a parent always show. Subtasks only appear as their own row
+ * when showInList is on; they still nest under the parent in the project list.
  */
-export function shouldShowTaskInListView(
-	task: ITask,
-	allTasksInView: ITask[],
-): boolean {
-	// If task has no parent, always show it
+export function shouldShowTaskInListView(task: ITask): boolean {
 	const parentTasksCount = task.relatedTasks?.parenttask?.length ?? 0
 	if (parentTasksCount === 0) {
 		return true
 	}
 
-	// Task has parent(s) - only hide if parent is in the same view
-	const parentTasks = task.relatedTasks?.parenttask ?? []
-	const parentIds = parentTasks.map(p => p.id)
-	const hasParentInView = allTasksInView.some(t => parentIds.includes(t.id))
+	return Boolean(task.showInList)
+}
 
-	// Show task if parent is NOT in the current view (cross-project subtask)
-	return !hasParentInView
+export function shouldShowTaskOnOverview(task: ITask, isInbox: boolean): boolean {
+	if (!shouldShowTaskInListView(task)) {
+		return false
+	}
+
+	if (isInbox) {
+		return true
+	}
+
+	if (task.percentDone > 0) {
+		return true
+	}
+
+	return task.priority > PRIORITIES.MEDIUM
 }

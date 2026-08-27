@@ -29,16 +29,11 @@
 					class="collapse-project-button-placeholder"
 				/>
 				<div class="color-bubble-wrapper">
-					<ColorBubble
-						v-if="project.hexColor !== ''"
-						:color="project.hexColor"
-						:aria-label="$t('project.color')"
-					/>
 					<span
-						v-else-if="project.id < -1"
-						class="saved-filter-icon icon menu-item-icon"
+						class="project-glyph"
+						:style="glyphStyle"
 					>
-						<Icon icon="filter" />
+						<Icon :icon="projectNavIcon(project)" />
 					</span>
 					<span
 						v-if="canEditOrder && project.id > 0 && project.maxPermission !== null && project.maxPermission > PERMISSIONS.READ"
@@ -102,10 +97,10 @@ import type {IProject} from '@/modelTypes/IProject'
 import BaseButton from '@/components/base/BaseButton.vue'
 import ProjectSettingsDropdown from '@/components/project/ProjectSettingsDropdown.vue'
 import {getProjectTitle} from '@/helpers/getProjectTitle'
-import ColorBubble from '@/components/misc/ColorBubble.vue'
 import ProjectsNavigation from '@/components/home/ProjectsNavigation.vue'
 import {PERMISSIONS} from '@/constants/permissions'
 import {isSavedFilter} from '@/services/savedFilter'
+import {projectNavIcon} from '@/helpers/projectNavIcon'
 
 const props = defineProps<{
 	project: IProject,
@@ -197,6 +192,16 @@ const canToggleFavorite = computed(() => {
 	// Saved filters (negative IDs except -1)
 	return isSavedFilter(props.project)
 })
+
+const glyphStyle = computed(() => {
+	if (!props.project.hexColor) {
+		return undefined
+	}
+	const hex = props.project.hexColor.startsWith('#')
+		? props.project.hexColor
+		: `#${props.project.hexColor}`
+	return {backgroundColor: hex}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -209,8 +214,12 @@ const canToggleFavorite = computed(() => {
 }
 
 .favorite {
+	position: absolute;
+	inset-inline-end: 1.7rem;
+	z-index: 1;
 	transition: opacity $transition, color $transition;
 	opacity: 0;
+	flex: 0 0 auto;
 
 	&:hover,
 	&.is-favorite {
@@ -227,26 +236,40 @@ const canToggleFavorite = computed(() => {
 	opacity: 1;
 }
 
-.list-menu:hover .color-bubble-wrapper > .color-bubble {
+.list-menu:hover .color-bubble-wrapper > .project-glyph {
 	opacity: 0;
 }
 
 .color-bubble-wrapper {
 	position: relative;
-	inline-size: 1rem;
-	block-size: 1rem;
+	inline-size: 1.15rem;
+	block-size: 1.15rem;
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
-	margin-inline-end: .25rem;
+	margin-inline-end: .35rem;
 	flex-shrink: 0;
 
-	.color-bubble, .icon {
-		transition: all $transition;
+	.project-glyph, .icon {
+		transition: opacity $transition;
 		position: absolute;
-		inline-size: 12px;
+		inset: 0;
 		margin: 0 !important;
 		padding: 0 !important;
+	}
+}
+
+.project-glyph {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: $radius;
+	background: #2a2522;
+	color: #c4bdb4;
+
+	:deep(svg) {
+		inline-size: 0.7rem;
+		block-size: 0.7rem;
 	}
 }
 
@@ -268,6 +291,8 @@ const canToggleFavorite = computed(() => {
 .project-menu-title {
 	overflow: hidden;
 	text-overflow: ellipsis;
+	min-inline-size: 0;
+	flex: 1 1 auto;
 }
 
 .saved-filter-icon {
@@ -283,16 +308,36 @@ const canToggleFavorite = computed(() => {
 	.color-bubble {
 		opacity: 1 !important;
 	}
+
+	.project-glyph {
+		opacity: 1 !important;
+	}
 }
 
 .navigation-item {
 	position: relative;
+	display: flex;
+	align-items: center;
+	min-inline-size: 0;
+	inline-size: 100%;
 	transition: background-color $transition, box-shadow $transition;
+}
+
+.list-menu-link {
+	flex: 1 1 auto;
+	min-inline-size: 0;
+	padding-inline-end: 2.4rem;
+}
+
+:deep(.menu-list-dropdown) {
+	position: absolute;
+	inset-inline-end: 0;
+	z-index: 1;
 }
 
 .navigation-item:has(*:focus-visible) {
 	box-shadow: 0 0 0 2px hsla(var(--primary-hsl), 0.5);
-	background-color: var(--white);
+	background-color: #2a2522;
 
 	.favorite, .menu-list-dropdown {
 		opacity: 1;

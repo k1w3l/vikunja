@@ -9,8 +9,9 @@
 
 .input,
 .textarea {
-  transition: all $transition;
+  transition: border-color $transition, box-shadow $transition;
   box-shadow: none;
+  border-radius: $radius;
 
   &.is-active,
   &.is-focused,
@@ -77,9 +78,9 @@
 // - the <h2> in Kanban.vue
 // Contenteditable form
 .input.title {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-family: $vikunja-font;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   background: transparent;
   border-color: transparent;
   margin: 0 .3rem;

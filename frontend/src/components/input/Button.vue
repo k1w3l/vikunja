@@ -87,17 +87,17 @@ const variantClass = computed<string>(() => VARIANT_CLASS_MAP[variant.value])
 	white-space: var(--button-white-space);
 
 	// Custom styles
-	transition: all $transition;
+	transition: background-color $transition, box-shadow $transition, color $transition;
 	border: 0;
-	text-transform: uppercase;
-	font-size: 0.85rem;
-	font-weight: bold;
+	text-transform: none;
+	font-size: 0.82rem;
+	font-weight: 620;
 	block-size: auto;
 	min-block-size: $button-height;
-	box-shadow: var(--shadow-sm);
+	box-shadow: var(--shadow-xs);
 	line-height: 1;
-	padding-inline: .5rem;
-	gap: .25rem;
+	padding-inline: .7rem;
+	gap: .3rem;
 
 	// Default/Primary variant colors
 	background-color: var(--primary);
@@ -109,7 +109,7 @@ const variantClass = computed<string>(() => VARIANT_CLASS_MAP[variant.value])
 	}
 
 	&:hover {
-		box-shadow: var(--shadow-md);
+		box-shadow: var(--shadow-sm);
 		background-color: var(--primary-dark, color-mix(in srgb, var(--primary) 85%, black));
 	}
 

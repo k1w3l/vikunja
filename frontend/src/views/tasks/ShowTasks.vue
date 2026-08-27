@@ -68,34 +68,66 @@
 				{{ $t('task.show.overdue') }}
 			</FancyCheckbox>
 		</p>
-		<template v-if="!loading && (!tasks || tasks.length === 0) && showNothingToDo">
+		<template v-if="!loading && !hasTasks && showNothingToDo">
 			<h3 class="has-text-centered mbs-6">
 				{{ $t('task.show.noTasks') }}
 			</h3>
 			<LlamaCool class="llama-cool" />
 		</template>
 
-		<Card
-			v-if="hasTasks"
-			:padding="false"
-			class="has-overflow"
-			:has-content="false"
-			:loading="loading"
-		>
-			<ul class="p-2 tasks">
-				<li
-					v-for="task in tasks"
-					:key="task.id"
+		<template v-if="hasTasks">
+			<template v-if="overview">
+				<section
+					v-for="group in overviewGroups"
+					:key="group.projectId"
+					class="overview-project"
 				>
-					<SingleTaskInProject
-						:show-project="true"
-						:the-task="task"
-						:can-mark-as-done="(projectStore.projects[task.projectId]?.maxPermission ?? 0) > PERMISSIONS.READ"
-						@taskUpdated="updateTasks"
-					/>
-				</li>
-			</ul>
-		</Card>
+					<h3 class="overview-project-title">
+						<span class="overview-project-glyph">
+							<Icon
+								v-if="group.project"
+								:icon="projectNavIcon(group.project)"
+							/>
+						</span>
+						{{ group.title }}
+					</h3>
+					<ul class="overview-tasks">
+						<li
+							v-for="task in group.tasks"
+							:key="task.id"
+						>
+							<SingleTaskInProject
+								:show-project="false"
+								:the-task="task"
+								:can-mark-as-done="(projectStore.projects[task.projectId]?.maxPermission ?? 0) > PERMISSIONS.READ"
+								@taskUpdated="updateTasks"
+							/>
+						</li>
+					</ul>
+				</section>
+			</template>
+			<Card
+				v-else
+				:padding="false"
+				class="has-overflow"
+				:has-content="false"
+				:loading="loading"
+			>
+				<ul class="p-2 tasks">
+					<li
+						v-for="task in visibleTasks"
+						:key="task.id"
+					>
+						<SingleTaskInProject
+							:show-project="true"
+							:the-task="task"
+							:can-mark-as-done="(projectStore.projects[task.projectId]?.maxPermission ?? 0) > PERMISSIONS.READ"
+							@taskUpdated="updateTasks"
+						/>
+					</li>
+				</ul>
+			</Card>
+		</template>
 		<div
 			v-else
 			:class="{ 'is-loading': loading}"
@@ -129,6 +161,9 @@ import {useLabelStore} from '@/stores/labels'
 import type {TaskFilterParams} from '@/services/taskCollection'
 import TaskCollectionService from '@/services/taskCollection'
 import {PERMISSIONS} from '@/constants/permissions'
+import {shouldShowTaskInListView, shouldShowTaskOnOverview} from '@/composables/useTaskListFiltering'
+import {getProjectTitle, isInboxProject} from '@/helpers/getProjectTitle'
+import {projectNavIcon} from '@/helpers/projectNavIcon'
 
 const props = withDefaults(defineProps<{
 	dateFrom?: Date | string,
@@ -136,12 +171,14 @@ const props = withDefaults(defineProps<{
 	showNulls?: boolean,
 	showOverdue?: boolean,
 	labelIds?: string[],
+	overview?: boolean,
 }>(), {
 	showNulls: false,
 	showOverdue: false,
 	dateFrom: undefined,
 	dateTo: undefined,
 	labelIds: undefined,
+	overview: false,
 })
 
 const emit = defineEmits<{
@@ -197,7 +234,46 @@ const pageTitle = computed(() => {
 			until: formatDate(props.dateTo, 'LL'),
 		})
 })
-const hasTasks = computed(() => tasks.value && tasks.value.length > 0)
+const visibleTasks = computed(() => {
+	return tasks.value.filter(task => {
+		if (props.overview) {
+			const project = projectStore.projects[task.projectId]
+			return shouldShowTaskOnOverview(task, isInboxProject(project))
+		}
+		return shouldShowTaskInListView(task)
+	})
+})
+
+const overviewGroups = computed(() => {
+	const groups = new Map<number, ITask[]>()
+	for (const task of visibleTasks.value) {
+		const existing = groups.get(task.projectId)
+		if (existing) {
+			existing.push(task)
+		} else {
+			groups.set(task.projectId, [task])
+		}
+	}
+
+	return [...groups.entries()]
+		.map(([projectId, groupedTasks]) => {
+			const project = projectStore.projects[projectId]
+			return {
+				projectId,
+				project,
+				title: project ? getProjectTitle(project) : String(projectId),
+				isInbox: isInboxProject(project),
+				tasks: groupedTasks,
+			}
+		})
+		.sort((a, b) => {
+			if (a.isInbox !== b.isInbox) {
+				return a.isInbox ? -1 : 1
+			}
+			return a.title.localeCompare(b.title)
+		})
+})
+const hasTasks = computed(() => visibleTasks.value.length > 0)
 const userAuthenticated = computed(() => authStore.authenticated)
 const loading = computed(() => taskStore.isLoading || taskCollectionService.value.loading)
 const filterIdUsedOnOverview = computed(() => authStore.settings?.frontendSettings?.filterIdUsedOnOverview)
@@ -322,6 +398,71 @@ watchEffect(() => setTitle(pageTitle.value))
 .tasks {
 	list-style: none;
 	margin: 0;
+}
+
+.overview-project {
+	margin-block-end: 1.5rem;
+	padding-block-end: 1.25rem;
+	border-block-end: 1px solid var(--card-border-color);
+
+	&:last-child {
+		margin-block-end: 0;
+		padding-block-end: 0;
+		border-block-end: 0;
+	}
+}
+
+.overview-project-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0 0 0.5rem;
+	font-family: $vikunja-font;
+	font-size: 0.95rem;
+	font-weight: 650;
+	letter-spacing: -0.02em;
+	color: var(--grey-900);
+}
+
+.overview-project-glyph {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: 1.15rem;
+	block-size: 1.15rem;
+	flex-shrink: 0;
+	border-radius: $radius;
+	background: var(--white);
+	border: 1px solid var(--card-border-color);
+	color: var(--grey-700);
+
+	:deep(svg) {
+		inline-size: 0.7rem;
+		block-size: 0.7rem;
+	}
+}
+
+.overview-tasks {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	background: var(--white);
+	border: 1px solid var(--card-border-color);
+	border-radius: $radius;
+
+	li + li {
+		border-block-start: 1px solid var(--card-border-color);
+	}
+
+	:deep(.single-task) {
+		padding: 0.55rem 0.75rem;
+	}
+
+	:deep(.task-link) {
+		font-family: $family-sans-serif;
+		font-size: 0.95rem;
+		color: var(--grey-900);
+	}
 }
 
 .show-tasks-options {

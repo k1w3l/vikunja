@@ -1,25 +1,22 @@
 // Box-shadow tokens (--shadow-xs/sm/md/lg) built from the grey color scale.
-// Dark mode overrides strengthen the shadows for contrast on dark backgrounds.
+// Rest is quiet; lift is a response, not a floating-card fashion.
 
 :root {
-  --shadow-xs: 0 1px 3px hsla(var(--grey-500-hsl), .12),
-               0 1px 2px hsla(var(--grey-500-hsl), .24);
-  --shadow-sm: 0 3px 6px hsla(var(--grey-500-hsl), .12),
-               0 2px 4px hsla(var(--grey-500-hsl), .10);
-  --shadow-md: 0 10px 20px hsla(var(--grey-500-hsl), .12),
-               0 3px 6px hsla(var(--grey-500-hsl), .08);
-  --shadow-lg: 0 15px 25px hsla(var(--grey-500-hsl), .12),
-               0 5px 10px hsla(var(--grey-500-hsl), .05);
+  --shadow-xs: 0 1px 2px hsla(var(--grey-500-hsl), .08);
+  --shadow-sm: 0 1px 2px hsla(var(--grey-500-hsl), .06),
+               0 4px 12px hsla(var(--grey-500-hsl), .06);
+  --shadow-md: 0 4px 8px hsla(var(--grey-500-hsl), .08),
+               0 12px 24px hsla(var(--grey-500-hsl), .08);
+  --shadow-lg: 0 8px 16px hsla(var(--grey-500-hsl), .10),
+               0 20px 40px hsla(var(--grey-500-hsl), .08);
 
   &.dark {
-    // Even darker shadows for dark mode
-    --shadow-xs: 0 1px 3px hsla(var(--grey-50-hsl), 0.4),
-                 0 1px 2px hsla(var(--grey-50-hsl), 0.8);
-    --shadow-sm: 0 3px 6px hsla(var(--grey-50-hsl), 0.8),
-                 0 2px 4px hsla(var(--grey-50-hsl), 0.6);
-    --shadow-md: 0 10px 20px hsla(var(--grey-50-hsl), 0.8),
-                 0 3px 6px hsla(var(--grey-50-hsl), 0.6);
-    --shadow-lg: 0 15px 25px hsla(var(--grey-50-hsl), 0.8),
-                 0 5px 10px hsla(var(--grey-50-hsl), 0.4);
+    --shadow-xs: 0 1px 2px hsla(var(--grey-50-hsl), 0.45);
+    --shadow-sm: 0 1px 2px hsla(var(--grey-50-hsl), 0.5),
+                 0 6px 16px hsla(var(--grey-50-hsl), 0.35);
+    --shadow-md: 0 6px 16px hsla(var(--grey-50-hsl), 0.55),
+                 0 16px 32px hsla(var(--grey-50-hsl), 0.4);
+    --shadow-lg: 0 12px 24px hsla(var(--grey-50-hsl), 0.55),
+                 0 24px 48px hsla(var(--grey-50-hsl), 0.35);
   }
 }

@@ -1,9 +1,10 @@
 import {describe, it, expect} from 'vitest'
-import {shouldShowTaskInListView} from './useTaskListFiltering'
+import {shouldShowTaskInListView, shouldShowTaskOnOverview} from './useTaskListFiltering'
 import type {ITask} from '@/modelTypes/ITask'
+import {PRIORITIES} from '@/constants/priorities'
 
 describe('shouldShowTaskInListView', () => {
-	it('should hide subtasks when parent is in the same project', () => {
+	it('should hide subtasks unless showInList is on', () => {
 		const parentTask: Partial<ITask> = {
 			id: 1,
 			title: 'Parent Task',
@@ -24,19 +25,11 @@ describe('shouldShowTaskInListView', () => {
 			},
 		}
 
-		const allTasks = [parentTask, subtask] as ITask[]
-
-		expect(shouldShowTaskInListView(parentTask as ITask, allTasks)).toBe(true)
-		expect(shouldShowTaskInListView(subtask as ITask, allTasks)).toBe(false)
+		expect(shouldShowTaskInListView(parentTask as ITask)).toBe(true)
+		expect(shouldShowTaskInListView(subtask as ITask)).toBe(false)
 	})
 
-	it('should show subtasks when parent is in a different project', () => {
-		const parentTask: Partial<ITask> = {
-			id: 1,
-			title: 'Parent Task in Project A',
-			projectId: 100,
-		}
-
+	it('should hide subtasks even when the parent is in a different project', () => {
 		const subtask: Partial<ITask> = {
 			id: 2,
 			title: 'Subtask in Project B',
@@ -50,10 +43,25 @@ describe('shouldShowTaskInListView', () => {
 			},
 		}
 
-		// In Project B's view, we only see the subtask
-		const tasksInProjectB = [subtask] as ITask[]
+		expect(shouldShowTaskInListView(subtask as ITask)).toBe(false)
+	})
 
-		expect(shouldShowTaskInListView(subtask as ITask, tasksInProjectB)).toBe(true)
+	it('should show a subtask as a loose row when showInList is on', () => {
+		const subtask: Partial<ITask> = {
+			id: 2,
+			title: 'Subtask',
+			projectId: 100,
+			showInList: true,
+			relatedTasks: {
+				parenttask: [{
+					id: 1,
+					title: 'Parent Task',
+					projectId: 100,
+				} as ITask],
+			},
+		}
+
+		expect(shouldShowTaskInListView(subtask as ITask)).toBe(true)
 	})
 
 	it('should show tasks with no parents', () => {
@@ -64,9 +72,7 @@ describe('shouldShowTaskInListView', () => {
 			relatedTasks: {},
 		}
 
-		const allTasks = [task] as ITask[]
-
-		expect(shouldShowTaskInListView(task as ITask, allTasks)).toBe(true)
+		expect(shouldShowTaskInListView(task as ITask)).toBe(true)
 	})
 
 	it('should show tasks with undefined relatedTasks', () => {
@@ -76,9 +82,7 @@ describe('shouldShowTaskInListView', () => {
 			projectId: 100,
 		}
 
-		const allTasks = [task] as ITask[]
-
-		expect(shouldShowTaskInListView(task as ITask, allTasks)).toBe(true)
+		expect(shouldShowTaskInListView(task as ITask)).toBe(true)
 	})
 
 	it('should show tasks with empty parenttask array', () => {
@@ -91,9 +95,19 @@ describe('shouldShowTaskInListView', () => {
 			},
 		}
 
-		const allTasks = [task] as ITask[]
+		expect(shouldShowTaskInListView(task as ITask)).toBe(true)
+	})
 
-		expect(shouldShowTaskInListView(task as ITask, allTasks)).toBe(true)
+	it('should ignore showInList on tasks without a parent', () => {
+		const task: Partial<ITask> = {
+			id: 1,
+			title: 'Regular Task',
+			projectId: 100,
+			showInList: false,
+			relatedTasks: {},
+		}
+
+		expect(shouldShowTaskInListView(task as ITask)).toBe(true)
 	})
 
 	it('should handle multiple levels of nesting within same project', () => {
@@ -122,14 +136,12 @@ describe('shouldShowTaskInListView', () => {
 			},
 		}
 
-		const allTasks = [grandparent, parent, child] as ITask[]
-
-		expect(shouldShowTaskInListView(grandparent as ITask, allTasks)).toBe(true)
-		expect(shouldShowTaskInListView(parent as ITask, allTasks)).toBe(false)
-		expect(shouldShowTaskInListView(child as ITask, allTasks)).toBe(false)
+		expect(shouldShowTaskInListView(grandparent as ITask)).toBe(true)
+		expect(shouldShowTaskInListView(parent as ITask)).toBe(false)
+		expect(shouldShowTaskInListView(child as ITask)).toBe(false)
 	})
 
-	it('should show task if it has multiple parents and none are in view', () => {
+	it('should hide a subtask when none of its parents are in view unless showInList is on', () => {
 		const subtask: Partial<ITask> = {
 			id: 3,
 			title: 'Subtask with multiple parents',
@@ -142,40 +154,7 @@ describe('shouldShowTaskInListView', () => {
 			},
 		}
 
-		// In Project 300's view, neither parent is present
-		const tasksInProject300 = [subtask] as ITask[]
-
-		expect(shouldShowTaskInListView(subtask as ITask, tasksInProject300)).toBe(true)
-	})
-
-	it('should hide task if it has multiple parents and at least one is in view', () => {
-		const parent1: Partial<ITask> = {
-			id: 1,
-			title: 'Parent 1',
-			projectId: 100,
-		}
-
-		const parent2: Partial<ITask> = {
-			id: 2,
-			title: 'Parent 2',
-			projectId: 100,
-		}
-
-		const subtask: Partial<ITask> = {
-			id: 3,
-			title: 'Subtask with multiple parents',
-			projectId: 100,
-			relatedTasks: {
-				parenttask: [
-					{id: 1, title: 'Parent 1', projectId: 100} as ITask,
-					{id: 2, title: 'Parent 2', projectId: 100} as ITask,
-				],
-			},
-		}
-
-		const allTasks = [parent1, parent2, subtask] as ITask[]
-
-		expect(shouldShowTaskInListView(subtask as ITask, allTasks)).toBe(false)
+		expect(shouldShowTaskInListView(subtask as ITask)).toBe(false)
 	})
 
 	it('should hide a subtask expanded for context when its parent is in the view', () => {
@@ -186,7 +165,6 @@ describe('shouldShowTaskInListView', () => {
 			relatedTasks: {},
 		}
 
-		// Returned by the api as an expanded subtask of the parent, not as a filter match
 		const subtask: Partial<ITask> = {
 			id: 2,
 			title: 'Subtask not matching the filter',
@@ -200,29 +178,55 @@ describe('shouldShowTaskInListView', () => {
 			},
 		}
 
-		const allTasks = [parentTask, subtask] as ITask[]
+		expect(shouldShowTaskInListView(parentTask as ITask)).toBe(true)
+		expect(shouldShowTaskInListView(subtask as ITask)).toBe(false)
+	})
+})
 
-		expect(shouldShowTaskInListView(parentTask as ITask, allTasks)).toBe(true)
-		expect(shouldShowTaskInListView(subtask as ITask, allTasks)).toBe(false)
+describe('shouldShowTaskOnOverview', () => {
+	const baseTask: Partial<ITask> = {
+		id: 1,
+		title: 'Task',
+		projectId: 100,
+		percentDone: 0,
+		priority: PRIORITIES.UNSET,
+		relatedTasks: {},
+	}
+
+	it('should show inbox tasks even without progress or high priority', () => {
+		expect(shouldShowTaskOnOverview(baseTask as ITask, true)).toBe(true)
 	})
 
-	it('should show a subtask when only it matches the filter and its parent is not in the view', () => {
+	it('should show non-inbox tasks with progress', () => {
+		expect(shouldShowTaskOnOverview({
+			...baseTask,
+			percentDone: 0.2,
+		} as ITask, false)).toBe(true)
+	})
+
+	it('should show non-inbox tasks with priority above medium', () => {
+		expect(shouldShowTaskOnOverview({
+			...baseTask,
+			priority: PRIORITIES.HIGH,
+		} as ITask, false)).toBe(true)
+	})
+
+	it('should hide non-inbox tasks with medium priority and no progress', () => {
+		expect(shouldShowTaskOnOverview({
+			...baseTask,
+			priority: PRIORITIES.MEDIUM,
+		} as ITask, false)).toBe(false)
+	})
+
+	it('should hide subtasks on overview unless showInList is on', () => {
 		const subtask: Partial<ITask> = {
-			id: 2,
-			title: 'Subtask matching filter',
-			projectId: 100,
+			...baseTask,
 			relatedTasks: {
-				parenttask: [{
-					id: 1,
-					title: 'Parent Task',
-					projectId: 100,
-				} as ITask],
+				parenttask: [{id: 9, title: 'Parent', projectId: 100} as ITask],
 			},
 		}
 
-		// Only the subtask is in the results (parent didn't match filter)
-		const allTasks = [subtask] as ITask[]
-
-		expect(shouldShowTaskInListView(subtask as ITask, allTasks)).toBe(true)
+		expect(shouldShowTaskOnOverview(subtask as ITask, true)).toBe(false)
+		expect(shouldShowTaskOnOverview({...subtask, showInList: true} as ITask, true)).toBe(true)
 	})
 })
