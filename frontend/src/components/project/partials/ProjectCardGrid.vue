@@ -1,14 +1,20 @@
 <template>
 	<ul
 		class="project-grid"
-		:class="{ 'show-even-number-of-projects': showEvenNumberOfProjects }"
+		:class="{
+			'show-even-number-of-projects': showEvenNumberOfProjects,
+			'is-compact': compact,
+		}"
 	>
 		<li
 			v-for="(item, index) in filteredProjects"
 			:key="`project_${item.id}_${index}`"
 			class="project-grid-item"
 		>
-			<ProjectCard :project="item" />
+			<ProjectCard
+				:project="item"
+				:compact="compact"
+			/>
 		</li>
 	</ul>
 </template>
@@ -24,10 +30,12 @@ const props = withDefaults(defineProps<{
 	showArchived?: boolean,
 	itemLimit?: boolean,
 	showEvenNumberOfProjects?: boolean,
+	compact?: boolean,
 }>(), {
 	showArchived: false,
 	itemLimit: false,
 	showEvenNumberOfProjects: false,
+	compact: false,
 })
 
 const filteredProjects = computed(() => {
@@ -69,6 +77,16 @@ const filteredProjects = computed(() => {
 			.project-grid-item:nth-child(5) {
 				display: none;
 			}
+		}
+	}
+
+	&.is-compact {
+		--project-grid-item-height: 5.5rem;
+		--project-grid-gap: 0.5rem;
+		--project-grid-columns: 2;
+
+		@media screen and (min-width: $tablet) {
+			--project-grid-columns: 3;
 		}
 	}
 }

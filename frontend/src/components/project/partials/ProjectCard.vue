@@ -3,7 +3,8 @@
 		class="project-card"
 		:class="{
 			'has-light-text': background !== null,
-			'has-background': blurHashUrl !== '' || background !== null
+			'has-background': blurHashUrl !== '' || background !== null,
+			'is-compact': compact,
 		}"
 		:style="{
 			'border-inline-start': project.hexColor ? `0.25rem solid ${project.hexColor}` : undefined,
@@ -63,9 +64,12 @@ import {useProjectBackground} from '@/composables/useProjectBackground'
 import {useProjectStore} from '@/stores/projects'
 import {getProjectTitle} from '@/helpers/getProjectTitle'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	project: IProject,
-}>()
+	compact?: boolean,
+}>(), {
+	compact: false,
+})
 
 const {background, blurHashUrl} = useProjectBackground(() => props.project)
 
@@ -123,7 +127,7 @@ const textOnlyDescription = computed(() => {
 }
 
 .is-archived {
-	font-size: .75rem;
+	font-size: 0.82rem;
 	float: inline-start;
 }
 
@@ -198,6 +202,16 @@ const textOnlyDescription = computed(() => {
 
 .saved-filter-icon {
 	color: var(--grey-300);
-	font-size: .75em;
+	font-size: 0.82rem;
+}
+
+.is-compact {
+	--project-card-padding: 0.5rem;
+
+	.project-title {
+		font-size: 1rem;
+		-webkit-line-clamp: 2;
+		align-self: center;
+	}
 }
 </style>

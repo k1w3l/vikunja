@@ -2,7 +2,7 @@
 	<div
 		v-cy="'projects-list'"
 		class="content loader-container"
-		:class="{'is-loading': loading}"
+		:class="{'is-loading': loading, 'is-compact': compact}"
 	>
 		<header class="project-header">
 			<FancyCheckbox
@@ -32,6 +32,7 @@
 		<ProjectCardGrid
 			:projects="projects"
 			:show-archived="showArchived"
+			:compact="compact"
 		/>
 	</div>
 </template>
@@ -48,10 +49,16 @@ import {useStorage} from '@vueuse/core'
 
 import {useProjectStore} from '@/stores/projects'
 
+const props = withDefaults(defineProps<{
+	compact?: boolean
+}>(), {
+	compact: false,
+})
+
 const {t} = useI18n()
 const projectStore = useProjectStore()
 
-useTitle(() => t('project.title'))
+useTitle(() => props.compact ? '' : t('project.projects'))
 const showArchived = useStorage('showArchived', false)
 
 const loading = computed(() => projectStore.isLoading)
@@ -97,13 +104,24 @@ const projects = computed(() => {
 }
 
 .is-archived {
-	font-size: 0.75rem;
+	font-size: 0.82rem;
 	border: 1px solid var(--grey-500);
 	color: $grey !important;
 	padding: 2px 4px;
-	border-radius: 3px;
+	border-radius: $radius;
 	font-family: $vikunja-font;
 	background: var(--white-translucent);
 	margin-inline-start: .5rem;
+}
+
+.is-compact {
+	.project-header {
+		flex-wrap: wrap;
+		margin-block-end: 0.75rem;
+	}
+
+	.action-buttons {
+		gap: 0.5rem;
+	}
 }
 </style>

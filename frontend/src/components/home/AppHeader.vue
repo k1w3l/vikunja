@@ -56,52 +56,62 @@
 					</BaseButton>
 				</template>
 
-				<DropdownItem :to="{ name: 'projects.index' }">
-					{{ $t('project.projects') }}
-				</DropdownItem>
-				<DropdownItem :to="{ name: 'labels.index' }">
-					{{ $t('label.title') }}
-				</DropdownItem>
-				<DropdownItem :to="{ name: 'teams.index' }">
-					{{ $t('team.title') }}
-				</DropdownItem>
-				<DropdownItem :to="{ name: 'user.settings' }">
-					{{ $t('user.settings.title') }}
-				</DropdownItem>
-				<DropdownItem
-					v-if="adminPanelEnabled && authStore.info?.isAdmin"
-					:to="{ name: 'admin.overview' }"
-				>
-					{{ $t('admin.title') }}
-				</DropdownItem>
-				<DropdownItem
-					v-if="imprintUrl"
-					:href="imprintUrl"
-				>
-					{{ $t('navigation.imprint') }}
-				</DropdownItem>
-				<DropdownItem
-					v-if="privacyPolicyUrl"
-					:href="privacyPolicyUrl"
-				>
-					{{ $t('navigation.privacy') }}
-				</DropdownItem>
-				<DropdownItem @click="baseStore.setKeyboardShortcutsActive(true)">
-					{{ $t('keyboardShortcuts.title') }}
-				</DropdownItem>
-				<DropdownItem :to="{ name: 'about' }">
-					{{ $t('about.title') }}
-				</DropdownItem>
-				<DropdownItem @click="authStore.logout()">
-					{{ $t('user.auth.logout') }}
-				</DropdownItem>
+				<template #default="{ close }">
+					<DropdownItem @click="openProjectsModal(close)">
+						{{ $t('project.projects') }}
+					</DropdownItem>
+					<DropdownItem @click="openLabelsModal(close)">
+						{{ $t('label.title') }}
+					</DropdownItem>
+					<DropdownItem :to="{ name: 'teams.index' }">
+						{{ $t('team.title') }}
+					</DropdownItem>
+					<DropdownItem :to="{ name: 'user.settings' }">
+						{{ $t('user.settings.title') }}
+					</DropdownItem>
+					<DropdownItem
+						v-if="adminPanelEnabled && authStore.info?.isAdmin"
+						:to="{ name: 'admin.overview' }"
+					>
+						{{ $t('admin.title') }}
+					</DropdownItem>
+					<DropdownItem
+						v-if="imprintUrl"
+						:href="imprintUrl"
+					>
+						{{ $t('navigation.imprint') }}
+					</DropdownItem>
+					<DropdownItem
+						v-if="privacyPolicyUrl"
+						:href="privacyPolicyUrl"
+					>
+						{{ $t('navigation.privacy') }}
+					</DropdownItem>
+					<DropdownItem @click="baseStore.setKeyboardShortcutsActive(true)">
+						{{ $t('keyboardShortcuts.title') }}
+					</DropdownItem>
+					<DropdownItem :to="{ name: 'about' }">
+						{{ $t('about.title') }}
+					</DropdownItem>
+					<DropdownItem @click="authStore.logout()">
+						{{ $t('user.auth.logout') }}
+					</DropdownItem>
+				</template>
 			</Dropdown>
 		</div>
 	</header>
+	<ProjectsListModal
+		:open="projectsModalOpen"
+		@close="projectsModalOpen = false"
+	/>
+	<LabelsListModal
+		:open="labelsModalOpen"
+		@close="labelsModalOpen = false"
+	/>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -115,6 +125,8 @@ import Logo from '@/components/home/Logo.vue'
 import BaseButton from '@/components/base/BaseButton.vue'
 import MenuButton from '@/components/home/MenuButton.vue'
 import OpenQuickActions from '@/components/misc/OpenQuickActions.vue'
+import ProjectsListModal from '@/components/home/ProjectsListModal.vue'
+import LabelsListModal from '@/components/home/LabelsListModal.vue'
 
 import { useBaseStore } from '@/stores/base'
 import { useConfigStore } from '@/stores/config'
@@ -140,6 +152,26 @@ const pageTitle = computed(() => {
 })
 
 const authStore = useAuthStore()
+
+const projectsModalOpen = ref(false)
+const labelsModalOpen = ref(false)
+
+function openProjectsModal(close: () => void) {
+	close()
+	labelsModalOpen.value = false
+	projectsModalOpen.value = true
+}
+
+function openLabelsModal(close: () => void) {
+	close()
+	projectsModalOpen.value = false
+	labelsModalOpen.value = true
+}
+
+watch(() => route.fullPath, () => {
+	projectsModalOpen.value = false
+	labelsModalOpen.value = false
+})
 
 const configStore = useConfigStore()
 const imprintUrl = computed(() => configStore.legal.imprintUrl)

@@ -41,38 +41,15 @@
 				/>
 			</span>
 
-			<ColorBubble
-				v-if="!showProjectSeparately && projectColor !== '' && currentProject?.id !== task.projectId"
-				:color="projectColor"
-				class="mie-1"
-			/>
-
 			<div
-				:class="{ 'done': task.done, 'show-project': showProject && project}"
-				class="tasktext"
+				:class="{ 'done': task.done }"
+				class="task-main"
 			>
-				<span class="is-inline-flex is-align-items-center">
-					<RouterLink
-						v-if="showProject && typeof project !== 'undefined'"
-						v-tooltip="$t('task.detail.belongsToProject', {project: project.title})"
-						:to="{ name: 'project.index', params: { projectId: task.projectId } }"
-						class="task-project mie-1"
-						:class="{'mie-2': task.hexColor !== ''}"
-						@click.stop
-					>
-						{{ project.title }}
-					</RouterLink>
-
+				<span class="is-inline-flex is-align-items-center task-title-row">
 					<ColorBubble
 						v-if="task.hexColor !== ''"
 						:color="getHexColor(task.hexColor)"
 						class="mie-1"
-					/>
-	
-					<PriorityLabel
-						:priority="task.priority"
-						:done="task.done"
-						class="pis-2 mie-1"
 					/>
 
 					<TaskGlanceTooltip :task="task">
@@ -85,18 +62,24 @@
 						</RouterLink>
 					</TaskGlanceTooltip>
 				</span>
+			</div>
 
+			<div class="task-meta">
 				<Labels
 					v-if="task.labels.length > 0"
-					class="labels mis-2 mie-1"
+					class="labels"
 					:labels="task.labels"
+				/>
+
+				<PriorityLabel
+					:priority="task.priority"
+					:done="task.done"
 				/>
 
 				<AssigneeList
 					v-if="task.assignees.length > 0"
 					:assignees="task.assignees"
 					:avatar-size="25"
-					class="mis-1"
 					:inline="true"
 				/>
 
@@ -108,13 +91,13 @@
 							v-tooltip="formatDateLong(task.dueDate)"
 							class="dueDate"
 							@click.prevent.stop="toggle()"
-						>	
+						>
 							<time
 								:datetime="formatISO(task.dueDate)"
 								class="is-italic"
 								:aria-expanded="isOpen ? 'true' : 'false'"
 							>
-								– {{ $t('task.detail.due', {at: dueDateFormatted}) }}
+								{{ $t('task.detail.due', {at: dueDateFormatted}) }}
 							</time>
 						</BaseButton>
 					</template>
@@ -127,7 +110,7 @@
 					</template>
 				</Popup>
 
-				<span>
+				<span class="task-meta-icons">
 					<span
 						v-if="task.attachments.length > 0"
 						class="project-task-icon"
@@ -155,6 +138,37 @@
 				</span>
 
 				<ChecklistSummary :task="task" />
+
+				<ColorBubble
+					v-if="showProjectInMeta && projectColor !== ''"
+					:color="projectColor"
+				/>
+
+				<RouterLink
+					v-if="showProjectInMeta"
+					v-tooltip="$t('task.detail.belongsToProject', {project: project.title})"
+					:to="{ name: 'project.index', params: { projectId: task.projectId } }"
+					class="task-project"
+					@click.stop
+				>
+					{{ project.title }}
+				</RouterLink>
+
+				<BaseButton
+					:class="{'is-favorite': task.isFavorite}"
+					class="favorite"
+					@click.stop="toggleFavorite"
+				>
+					<span class="is-sr-only">{{ task.isFavorite ? $t('task.detail.actions.unfavorite') : $t('task.detail.actions.favorite') }}</span>
+					<Icon
+						v-if="task.isFavorite"
+						icon="star"
+					/>
+					<Icon
+						v-else
+						:icon="['far', 'star']"
+					/>
+				</BaseButton>
 			</div>
 
 			<ProgressBar
@@ -162,38 +176,6 @@
 				:value="task.percentDone * 100"
 				is-small
 			/>
-
-			<ColorBubble
-				v-if="showProjectSeparately && projectColor !== '' && currentProject?.id !== task.projectId"
-				:color="projectColor"
-				class="mie-1"
-			/>
-
-			<RouterLink
-				v-if="showProjectSeparately"
-				v-tooltip="$t('task.detail.belongsToProject', {project: project.title})"
-				:to="{ name: 'project.index', params: { projectId: task.projectId } }"
-				class="task-project"
-				@click.stop
-			>
-				{{ project.title }}
-			</RouterLink>
-
-			<BaseButton
-				:class="{'is-favorite': task.isFavorite}"
-				class="favorite"
-				@click.stop="toggleFavorite"
-			>
-				<span class="is-sr-only">{{ task.isFavorite ? $t('task.detail.actions.unfavorite') : $t('task.detail.actions.favorite') }}</span>
-				<Icon
-					v-if="task.isFavorite"
-					icon="star"
-				/>
-				<Icon
-					v-else
-					:icon="['far', 'star']"
-				/>
-			</BaseButton>
 			<slot />
 		</div>
 		<template v-if="hasSubtasks && subtasksOpen">
@@ -306,6 +288,7 @@ const project = computed(() => projectStore.projects[task.value.projectId])
 const projectColor = computed(() => project.value ? project.value?.hexColor : '')
 
 const showProjectSeparately = computed(() => !props.showProject && currentProject.value?.id !== task.value.projectId && project.value)
+const showProjectInMeta = computed(() => Boolean((props.showProject && project.value) || showProjectSeparately.value))
 
 const currentProject = computed(() => {
 	return typeof baseStore.currentProject === 'undefined' ? {
@@ -393,6 +376,11 @@ function undoDone(checked: boolean) {
 	markAsDone(!checked, true)
 }
 
+function deferTaskUpdate(updated: ITask) {
+	task.value = updated
+	emit('taskUpdated', updated)
+}
+
 async function toggleFavorite() {
 	task.value = await taskStore.toggleFavorite(task.value)
 	emit('taskUpdated', task.value)
@@ -456,24 +444,51 @@ defineExpose({
 		}
 	}
 
+	.task-main {
+		text-overflow: ellipsis;
+		word-wrap: break-word;
+		word-break: break-word;
+		min-inline-size: 0;
+		flex: 1 1 auto;
+		overflow: hidden;
+	}
+
+	.task-title-row {
+		min-inline-size: 0;
+		max-inline-size: 100%;
+	}
+
+	.task-meta {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 0.35rem;
+		flex: 0 1 auto;
+		margin-inline-start: auto;
+	}
+
+	.task-meta-icons {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	:deep(.progress-bar) {
+		flex: 1 0 100%;
+		inline-size: 100%;
+	}
+
 	.tasktext,
 	&.tasktext {
 		text-overflow: ellipsis;
 		word-wrap: break-word;
 		word-break: break-word;
-		display: -webkit-box;
-		hyphens: auto;
-		-webkit-line-clamp: 4;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-
-		flex: 1 0 50%;
-
 	}
 
 	.dueDate {
 		display: inline-block;
-		margin-inline-start: 5px;
+		margin-inline-start: 0;
 
 		&:focus-visible {
 			box-shadow: none;
@@ -492,7 +507,7 @@ defineExpose({
 	.task-project {
 		inline-size: auto;
 		color: var(--grey-400);
-		font-size: .9rem;
+		font-size: 0.95rem;
 		white-space: nowrap;
 	}
 
@@ -580,7 +595,7 @@ defineExpose({
 		}
 	}
 
-	.tasktext.done {
+	.task-main.done {
 		text-decoration: line-through;
 		color: var(--grey-500);
 	}

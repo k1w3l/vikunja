@@ -1,6 +1,6 @@
 <template>
 	<div
-		:class="{ 'is-loading': loading}"
+		:class="{ 'is-loading': loading, 'is-compact': compact}"
 		class="loader-container"
 	>
 		<XButton
@@ -27,7 +27,7 @@
 			</p>
 		</div>
 
-		<div class="columns">
+		<div class="columns labels-columns">
 			<div class="labels-list column">
 				<RouterLink
 					v-for="label in labelStore.labelsArray"
@@ -136,6 +136,12 @@ import {useLabelStore} from '@/stores/labels'
 import { useTitle } from '@/composables/useTitle'
 import {useLabelStyles} from '@/composables/useLabelStyles'
 
+const props = withDefaults(defineProps<{
+	compact?: boolean
+}>(), {
+	compact: false,
+})
+
 const {t} = useI18n({useScope: 'global'})
 
 const labelEditLabel = ref<ILabel>(new LabelModel())
@@ -144,7 +150,7 @@ const editorActive = ref(false)
 const showDeleteModal = ref(false)
 const labelToDelete = ref<ILabel | undefined>(undefined)
 
-useTitle(() => t('label.title'))
+useTitle(() => props.compact ? '' : t('label.title'))
 
 const authStore = useAuthStore()
 const userInfo = computed(() => authStore.info)
@@ -173,21 +179,13 @@ function editLabel(label: ILabel) {
 	if (label.createdBy.id !== userInfo.value.id) {
 		return
 	}
-	// Duplicating the label to make sure it does not look like changes take effect immediatly as the label 
-	// object passed to this function here still has a reference to the store.
 	labelEditLabel.value = new LabelModel({
 		...label,
-		// The model does not support passing dates into it directly so we need to convert them first				
 		created: +label.created,
 		updated: +label.updated,
 	})
 	isLabelEdit.value = true
 
-	// This makes the editor trigger its mounted function again which makes it forget every input
-	// it currently has in its textarea. This is a counter-hack to a hack inside of vue-easymde
-	// which made it impossible to detect change from the outside. Therefore the component would
-	// not update if new content from the outside was made available.
-	// See https://github.com/NikulinIlya/vue-easymde/issues/3
 	editorActive.value = false
 	nextTick(() => editorActive.value = true)
 }
@@ -201,17 +199,39 @@ function showDeleteDialoge(label: ILabel) {
 <style lang="scss" scoped>
 .label-edit-button {
 	border-radius: 100%;
-	background-color: rgba(0,0,0,0.2);
+	background-color: color-mix(in srgb, #1c1917 25%, transparent);
 	inline-size: 1rem;
 	block-size: 1rem;
 	display: flex;
-  	align-items: center;
-  	justify-content: center;
-	color: #ffffff; // always white
+	align-items: center;
+	justify-content: center;
+	color: #ffffff;
 	margin-inline-start: .25rem;
 
 	.icon {
 		block-size: .5rem;
+	}
+}
+
+.labels-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: flex-start;
+}
+
+.is-compact {
+	h1 {
+		display: none;
+	}
+
+	.labels-columns {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.column.is-4 {
+		inline-size: 100%;
 	}
 }
 </style>

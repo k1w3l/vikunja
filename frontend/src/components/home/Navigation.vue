@@ -68,6 +68,19 @@
 					:can-edit-order="true"
 					:can-collapse="true"
 				/>
+				<menu class="menu-list">
+					<li>
+						<RouterLink
+							class="new-project-link"
+							:to="{ name: 'project.create' }"
+						>
+							<span class="menu-item-icon icon">
+								<Icon icon="plus" />
+							</span>
+							{{ $t('project.create.header') }}
+						</RouterLink>
+					</li>
+				</menu>
 			</nav>
 		</template>
 
@@ -195,5 +208,9 @@ const savedFilterProjects = computed(() => projectStore.savedFilterProjects as I
 	padding-block-start: 0.6rem;
 	margin-block-start: 0.6rem;
 	border-block-start: 1px solid #3f3a36;
+}
+
+.new-project-link {
+	margin-block-start: 0.25rem;
 }
 </style>

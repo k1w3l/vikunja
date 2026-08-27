@@ -83,45 +83,49 @@
 				:value="task.percentDone * 100"
 			/>
 			<div class="footer">
-				<Labels :labels="task.labels" />
-				<PriorityLabel
-					:priority="task.priority"
-					:done="task.done"
-					class="is-inline-flex is-align-items-center"
-				/>
-				<span
-					v-if="task.attachments.length > 0"
-					class="icon"
-					role="img"
-					:aria-label="$t('task.attributes.attachment', task.attachments.length)"
-				>
-					<Icon icon="paperclip" />
-				</span>
-				<span
-					v-if="!isEditorContentEmpty(task.description)"
-					class="icon"
-				>
-					<Icon icon="align-left" />
-				</span>
-				<span
-					v-if="task.repeatAfter.amount > 0"
-					class="icon"
-				>
-					<Icon icon="history" />
-				</span>
-				<CommentCount
-					:task="task"
-					class="project-task-icon"
-				/>
-				<AssigneeList
-					v-if="task.assignees.length > 0"
-					:assignees="task.assignees"
-					:avatar-size="24"
-				/>
-				<ChecklistSummary
-					:task="task"
-					class="checklist"
-				/>
+				<div class="footer-start">
+					<Labels :labels="task.labels" />
+					<PriorityLabel
+						:priority="task.priority"
+						:done="task.done"
+						class="is-inline-flex is-align-items-center"
+					/>
+				</div>
+				<div class="footer-end">
+					<span
+						v-if="task.attachments.length > 0"
+						class="icon"
+						role="img"
+						:aria-label="$t('task.attributes.attachment', task.attachments.length)"
+					>
+						<Icon icon="paperclip" />
+					</span>
+					<span
+						v-if="!isEditorContentEmpty(task.description)"
+						class="icon"
+					>
+						<Icon icon="align-left" />
+					</span>
+					<span
+						v-if="task.repeatAfter.amount > 0"
+						class="icon"
+					>
+						<Icon icon="history" />
+					</span>
+					<CommentCount
+						:task="task"
+						class="project-task-icon"
+					/>
+					<AssigneeList
+						v-if="task.assignees.length > 0"
+						:assignees="task.assignees"
+						:avatar-size="24"
+					/>
+					<ChecklistSummary
+						:task="task"
+						class="checklist"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -309,7 +313,7 @@ $task-background: var(--white);
 		display: flex;
 		align-items: center;
 		padding: 0 .25rem;
-		font-size: .85rem;
+		font-size: 0.82rem;
 
 		.icon {
 			margin-inline-end: .25rem;
@@ -330,9 +334,10 @@ $task-background: var(--white);
 		padding: 0;
 		display: flex;
 		flex-wrap: wrap;
-		align-items: center;
-		gap: .25rem;
-		margin-block-start: .25rem;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 0.5rem;
+		margin-block-start: 0.5rem;
 
 		:deep(.checklist-summary) {
 			padding-inline-start: 0;
@@ -352,7 +357,7 @@ $task-background: var(--white);
 		}
 
 		.priority-label {
-			font-size: .75rem;
+			font-size: 0.82rem;
 			padding: 0 .5rem 0 .25rem;
 
 			.icon {
@@ -361,6 +366,24 @@ $task-background: var(--white);
 				margin-block-start: 0;
 			}
 		}
+	}
+
+	.footer-start,
+	.footer-end {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.25rem;
+		min-inline-size: 0;
+	}
+
+	.footer-end {
+		margin-inline-start: auto;
+		justify-content: flex-end;
+	}
+
+	.footer-start :deep(.label-wrapper .tag) {
+		margin: 0;
 	}
 
 	.footer .icon,
@@ -373,7 +396,7 @@ $task-background: var(--white);
 
 	.task-id, .project-title {
 		color: var(--grey-500);
-		font-size: .8rem;
+		font-size: 0.82rem;
 		margin-block-end: .25rem;
 		display: flex;
 	}
