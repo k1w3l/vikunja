@@ -439,14 +439,6 @@
 						</div>
 					</div>
 
-					<!-- Comments -->
-					<Comments
-						:can-write="canWrite"
-						:task-id="taskId"
-						:project-id="task.projectId"
-						:initial-comments="task.comments"
-					/>
-
 					<!-- Marker element for scroll-to-bottom button visibility -->
 					<div
 						ref="contentBottomMarker"
@@ -636,16 +628,6 @@
 			/>
 		</div>
 
-		<BaseButton
-			v-if="showScrollToCommentsButton"
-			v-tooltip="$t('task.detail.scrollToBottom')"
-			class="scroll-to-comments-button d-print-none"
-			:aria-label="$t('task.detail.scrollToBottom')"
-			@click="scrollToBottom"
-		>
-			<Icon icon="chevron-down" />
-		</BaseButton>
-
 		<Modal
 			:enabled="showDeleteModal"
 			@close="showDeleteModal = false"
@@ -694,7 +676,6 @@ import TaskTimeTracking from '@/components/time-tracking/TaskTimeTracking.vue'
 import ChecklistSummary from '@/components/tasks/partials/ChecklistSummary.vue'
 import FancyCheckbox from '@/components/input/FancyCheckbox.vue'
 import ColorPicker from '@/components/input/ColorPicker.vue'
-import Comments from '@/components/tasks/partials/Comments.vue'
 import CreatedUpdated from '@/components/tasks/partials/CreatedUpdated.vue'
 import Datepicker from '@/components/input/Datepicker.vue'
 import Description from '@/components/tasks/partials/Description.vue'
@@ -905,22 +886,6 @@ function updateScrollable() {
 	}
 
 	isScrollable.value = scroller.scrollHeight > scroller.clientHeight + 1
-}
-
-const showScrollToCommentsButton = computed(() => {
-	return isScrollable.value && !bottomMarkerVisible.value
-})
-
-function scrollToBottom() {
-	if (!contentBottomMarker.value) {
-		return
-	}
-
-	contentBottomMarker.value.scrollIntoView({
-		behavior: 'smooth',
-		block: 'end',
-		inline: 'nearest',
-	})
 }
 
 useIntersectionObserver(

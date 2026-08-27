@@ -25,18 +25,19 @@
 				:class="{ 'is-loading': loading }"
 				class="loader-container is-max-width-desktop list-view"
 			>
+				<AddTask
+					v-if="!project?.isArchived && canWrite"
+					ref="addTaskRef"
+					class="list-view__add-task d-print-none"
+					:project-id="projectId"
+					@tasksAdded="updateTaskList"
+				/>
+
 				<Card
 					:padding="false"
 					:has-content="false"
 					class="has-overflow"
 				>
-					<AddTask
-						v-if="!project?.isArchived && canWrite"
-						ref="addTaskRef"
-						class="list-view__add-task d-print-none"
-						@tasksAdded="updateTaskList"
-					/>
-
 					<Nothing v-if="ctaVisible && tasks.length === 0 && !loading">
 						{{ $t('project.list.empty') }}
 						<ButtonLink
@@ -369,8 +370,35 @@ onBeforeUnmount(() => {
 	}
 }
 
+.list-view {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-inline: auto;
+	padding-block-end: 1rem;
+
+	:deep(.card) {
+		margin-block-end: 0;
+	}
+}
+
+.list-view__add-task {
+	padding: 0.75rem 1rem;
+	background: var(--white);
+	border: 1px solid var(--card-border-color);
+	border-radius: $radius;
+}
+
 .tasks {
-	padding: .5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0.75rem;
+}
+
+:deep(.single-task) {
+	background: var(--white);
+	border: 1px solid var(--card-border-color);
 }
 
 .task-ghost {
@@ -381,10 +409,6 @@ onBeforeUnmount(() => {
 	* {
 		opacity: 0;
 	}
-}
-
-.list-view__add-task {
-	padding: 1rem 1rem 0;
 }
 
 .link-share-view .card {
@@ -412,14 +436,6 @@ onBeforeUnmount(() => {
 
 	&:active {
 		cursor: grabbing;
-	}
-}
-
-.list-view {
-	padding-block-end: 1rem;
-
-	:deep(.card) {
-		margin-block-end: 0;
 	}
 }
 </style>

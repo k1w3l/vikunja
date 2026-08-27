@@ -125,6 +125,10 @@ const monthGroups = computed(() => {
 		text-align: center;
 		font-size: 1rem;
 		color: var(--grey-800);
+		flex: 0 0 auto;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 }
 
@@ -132,6 +136,10 @@ const monthGroups = computed(() => {
 	display: flex;
 
 	.timeunit {
+		flex: 0 0 auto;
+		box-sizing: border-box;
+		overflow: hidden;
+
 		.timeunit-wrapper {
 			padding: 0.5rem 0;
 			font-size: 1rem;
@@ -144,12 +152,12 @@ const monthGroups = computed(() => {
 			&.today {
 				background: var(--primary);
 				color: var(--white);
-				border-radius: 5px 5px 0 0;
+				border-radius: $radius $radius 0 0;
 				font-weight: bold;
 			}
 
 			.weekday {
-				font-size: 0.8rem;
+				font-size: 1rem;
 			}
 		}
 	}

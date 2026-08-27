@@ -55,9 +55,13 @@
 						:default-task-end-date="defaultTaskEndDate"
 						@update:task="updateTask"
 					/>
-					<TaskForm
+					<AddTask
 						v-if="canWrite"
-						@createTask="addGanttTask"
+						class="gantt-add-task d-print-none"
+						:project-id="filters.projectId"
+						:default-start-date="defaultTaskStartDate"
+						:default-end-date="defaultTaskEndDate"
+						@tasksAdded="onTasksAdded"
 					/>
 				</Card>
 			</div>
@@ -77,7 +81,7 @@ import {useFlatpickrLanguage} from '@/helpers/useFlatpickrLanguage'
 import Foo from '@/components/misc/flatpickr/Flatpickr.vue'
 import ProjectWrapper from '@/components/project/ProjectWrapper.vue'
 import FancyCheckbox from '@/components/input/FancyCheckbox.vue'
-import TaskForm from '@/components/tasks/TaskForm.vue'
+import AddTask from '@/components/tasks/AddTask.vue'
 import FormField from '@/components/input/FormField.vue'
 
 import GanttChart from '@/components/gantt/GanttChart.vue'
@@ -85,7 +89,6 @@ import {useGanttFilters} from '../../../views/project/helpers/useGanttFilters'
 import {PERMISSIONS} from '@/constants/permissions'
 
 import type {DateISO} from '@/types/DateISO'
-import type {ITask} from '@/modelTypes/ITask'
 import type {IProjectView} from '@/modelTypes/IProjectView'
 
 type Options = Flatpickr.Options.Options
@@ -107,7 +110,7 @@ const {
 	setDefaultFilters,
 	tasks,
 	isLoading,
-	addTask,
+	loadTasks,
 	updateTask,
 } = useGanttFilters(route, viewId)
 
@@ -121,13 +124,8 @@ const defaultTaskEndDate: DateISO = new Date(new Date(
 	today.getDate() + DEFAULT_DATE_RANGE_DAYS,
 ).setHours(23, 59, 0, 0)).toISOString()
 
-async function addGanttTask(title: ITask['title']) {
-	return await addTask({
-		title,
-		projectId: filters.value.projectId,
-		startDate: defaultTaskStartDate,
-		endDate: defaultTaskEndDate,
-	})
+async function onTasksAdded() {
+	await loadTasks()
 }
 
 const flatPickerEl = ref<typeof Foo | null>(null)
@@ -162,6 +160,13 @@ const flatPickerConfig = computed(() => ({
 	padding-block-end: 1rem;
 	position: relative;
 	z-index: 0;
+	min-inline-size: 0;
+	overflow-x: auto;
+}
+
+.gantt-add-task {
+	padding: 0.75rem 1rem;
+	border-block-start: 1px solid var(--card-border-color);
 }
 
 .gantt-options {

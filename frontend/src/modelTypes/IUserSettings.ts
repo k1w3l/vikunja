@@ -25,6 +25,7 @@ export interface IFrontendSettings {
 	alwaysShowBucketTaskCount: boolean
 	showLastViewed: boolean
 	sidebarWidth: number | null
+	projectIcons: Record<number, string>
 	commentSortOrder: 'asc' | 'desc'
 	desktopQuickEntryShortcut: string
 	quickAddDefaultReminders: ITaskReminder[]

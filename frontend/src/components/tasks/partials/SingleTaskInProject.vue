@@ -12,6 +12,22 @@
 			@click="openTaskDetail"
 			@keyup.enter="openTaskDetail"
 		>
+			<BaseButton
+				v-if="hasSubtasks"
+				class="subtask-toggle"
+				:aria-label="$t('task.toggleSubtasks')"
+				:aria-expanded="subtasksOpen"
+				@click.stop="subtasksOpen = !subtasksOpen"
+			>
+				<Icon
+					icon="chevron-down"
+					:class="{'is-collapsed': !subtasksOpen}"
+				/>
+			</BaseButton>
+			<span
+				v-else
+				class="subtask-toggle-placeholder"
+			/>
 			<span
 				v-tooltip="!canMarkAsDone ? $t('task.readOnlyCheckbox') : ''"
 				class="is-inline-flex is-align-items-center"
@@ -180,7 +196,7 @@
 			</BaseButton>
 			<slot />
 		</div>
-		<template v-if="typeof task.relatedTasks?.subtask !== 'undefined'">
+		<template v-if="hasSubtasks && subtasksOpen">
 			<template v-for="subtask in task.relatedTasks.subtask">
 				<template v-if="getTaskById(subtask.id)">
 					<single-task-in-project
@@ -232,6 +248,7 @@ import {playPopSound} from '@/helpers/playPop'
 import {isEditorContentEmpty} from '@/helpers/editorContentEmpty'
 import {TASK_REPEAT_MODES} from '@/types/IRepeatMode'
 import {useGlobalNow} from '@/composables/useGlobalNow'
+import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
 
 const props = withDefaults(defineProps<{
 	theTask: ITask,
@@ -266,6 +283,8 @@ const taskService = shallowReactive(new TaskService())
 const task = ref<ITask>(new TaskModel())
 
 const isRepeating = computed(() => task.value.repeatAfter.amount > 0 || (task.value.repeatAfter.amount === 0 && task.value.repeatMode === TASK_REPEAT_MODES.REPEAT_MODE_MONTH))
+const hasSubtasks = computed(() => (task.value.relatedTasks?.subtask?.length ?? 0) > 0)
+const subtasksOpen = ref(true)
 
 watch(
 	() => props.theTask,
@@ -295,11 +314,7 @@ const currentProject = computed(() => {
 	} : baseStore.currentProject
 })
 
-const taskDetailRoute = computed(() => ({
-	name: 'task.detail',
-	params: {id: task.value.id},
-	state: {backdropView: router.currentRoute.value.fullPath},
-}))
+const taskDetailRoute = computed(() => taskDetailLocation(task.value.id, router.currentRoute.value.fullPath))
 
 function updateDueDate() {
 	if (!task.value.dueDate) {
@@ -601,6 +616,29 @@ defineExpose({
 		border-inline-start-color: var(--grey-300);
 		border-block-end-color: var(--grey-300);
 	}
+}
+
+.subtask-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: 1.5rem;
+	block-size: 1.5rem;
+	flex-shrink: 0;
+	color: var(--grey-600);
+
+	:deep(svg) {
+		transition: transform $transition;
+	}
+
+	.is-collapsed {
+		transform: rotate(-90deg);
+	}
+}
+
+.subtask-toggle-placeholder {
+	inline-size: 1.5rem;
+	flex-shrink: 0;
 }
 
 .subtask-nested {

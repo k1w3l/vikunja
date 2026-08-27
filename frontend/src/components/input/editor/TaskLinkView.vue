@@ -16,6 +16,7 @@ import {nodeViewProps, NodeViewWrapper} from '@tiptap/vue-3'
 import {useRoute, useRouter} from 'vue-router'
 
 import type {ITask} from '@/modelTypes/ITask'
+import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
 import TaskLinkPill from './TaskLinkPill.vue'
 
 const props = defineProps(nodeViewProps)
@@ -28,11 +29,7 @@ function open(task: ITask) {
 	if (props.editor.isEditable) {
 		return
 	}
-	router.push({
-		name: 'task.detail',
-		params: {id: task.id},
-		state: {backdropView: route.fullPath},
-	})
+	router.push(taskDetailLocation(task.id, route.fullPath))
 }
 </script>
 

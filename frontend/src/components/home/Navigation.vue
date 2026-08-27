@@ -8,16 +8,6 @@
 			class="menu top-menu"
 			:aria-label="$t('navigation.main')"
 		>
-			<RouterLink
-				:to="{name: 'home'}"
-				class="logo"
-				:aria-label="$t('navigation.home')"
-			>
-				<Logo
-					width="132"
-					height="36"
-				/>
-			</RouterLink>
 			<menu class="menu-list other-menu-items">
 				<li>
 					<RouterLink
@@ -41,39 +31,6 @@
 						{{ $t('navigation.upcoming') }}
 					</RouterLink>
 				</li>
-				<li>
-					<RouterLink
-						v-shortcut="SHORTCUTS.navigation.projects"
-						:to="{ name: 'projects.index'}"
-					>
-						<span class="menu-item-icon icon">
-							<Icon icon="layer-group" />
-						</span>
-						{{ $t('project.projects') }}
-					</RouterLink>
-				</li>
-				<li>
-					<RouterLink
-						v-shortcut="SHORTCUTS.navigation.labels"
-						:to="{ name: 'labels.index'}"
-					>
-						<span class="menu-item-icon icon">
-							<Icon icon="tags" />
-						</span>
-						{{ $t('label.title') }}
-					</RouterLink>
-				</li>
-				<li>
-					<RouterLink
-						v-shortcut="SHORTCUTS.navigation.teams"
-						:to="{ name: 'teams.index'}"
-					>
-						<span class="menu-item-icon icon">
-							<Icon icon="users" />
-						</span>
-						{{ $t('team.title') }}
-					</RouterLink>
-				</li>
 				<li v-if="timeTrackingEnabled">
 					<RouterLink :to="{ name: 'time-tracking'}">
 						<span class="menu-item-icon icon">
@@ -90,18 +47,6 @@
 			variant="small"
 		/>
 		<template v-else>
-			<nav
-				v-if="favoriteProjects.length"
-				class="menu"
-				:aria-label="$t('project.pseudo.favorites.title')"
-			>
-				<ProjectsNavigation
-					:model-value="favoriteProjects"
-					:can-edit-order="false"
-					:can-collapse="false"
-				/>
-			</nav>
-			
 			<nav
 				v-if="savedFilterProjects.length"
 				class="menu"
@@ -145,7 +90,6 @@ import {computed} from 'vue'
 
 import {SHORTCUTS} from '@/constants/shortcuts'
 import PoweredByLink from '@/components/home/PoweredByLink.vue'
-import Logo from '@/components/home/Logo.vue'
 import Loading from '@/components/misc/Loading.vue'
 
 import {useBaseStore} from '@/stores/base'
@@ -166,27 +110,10 @@ const {sidebarWidth, isResizing, startResize, isMobile} = useSidebarResize()
 
 // Cast readonly arrays to mutable type - the arrays are not actually mutated by the component
 const projects = computed(() => projectStore.notArchivedRootProjects as IProject[])
-const favoriteProjects = computed(() => projectStore.favoriteProjects as IProject[])
 const savedFilterProjects = computed(() => projectStore.savedFilterProjects as IProject[])
 </script>
 
 <style lang="scss" scoped>
-.logo {
-	display: block;
-	padding-inline-start: 0.4rem;
-	margin-inline-end: 0.5rem;
-	margin-block-end: 0.8rem;
-	min-inline-size: 0;
-
-	--logo-text-color: var(--rail-ink);
-
-	:deep(.logo) {
-		max-inline-size: 100%;
-		block-size: auto;
-		max-block-size: 2rem;
-	}
-}
-
 .menu-container {
 	--sidebar-width: #{$navbar-width};
 	--menu-nested-list-margin: 0.85rem;

@@ -34,11 +34,10 @@
 			<p class="control">
 				<XButton
 					class="add-task-button"
-					:disabled="newTaskTitle === '' || loading || undefined"
 					icon="plus"
 					:loading="loading"
 					:aria-label="$t('project.list.add')"
-					@click="addTask()"
+					@click="openCreateModal"
 				>
 					<span class="button-text">
 						{{ $t('project.list.add') }}
@@ -54,6 +53,16 @@
 				{{ errorMessage }}
 			</p>
 		</Expandable>
+		<CreateTaskModal
+			:open="createModalOpen"
+			:project-id="projectId"
+			:bucket-id="bucketId"
+			:default-title="newTaskTitle"
+			:default-start-date="defaultStartDate"
+			:default-end-date="defaultEndDate"
+			@close="createModalOpen = false"
+			@created="onCreated"
+		/>
 	</div>
 </template>
 
@@ -68,6 +77,7 @@ import type {ITask} from '@/modelTypes/ITask'
 
 import Expandable from '@/components/base/Expandable.vue'
 import QuickAddMagic from '@/components/tasks/partials/QuickAddMagic.vue'
+import CreateTaskModal from '@/components/tasks/CreateTaskModal.vue'
 import {parseSubtasksViaIndention, type TaskWithParent} from '@/helpers/parseSubtasksViaIndention'
 import TaskRelationService from '@/services/taskRelation'
 import TaskRelationModel from '@/models/taskRelation'
@@ -80,6 +90,18 @@ import {useConfigStore} from '@/stores/config'
 import {useTaskStore} from '@/stores/tasks'
 
 import {useAutoHeightTextarea} from '@/composables/useAutoHeightTextarea'
+
+withDefaults(defineProps<{
+	projectId?: number | null
+	bucketId?: number | null
+	defaultStartDate?: Date | string | null
+	defaultEndDate?: Date | string | null
+}>(), {
+	projectId: null,
+	bucketId: null,
+	defaultStartDate: null,
+	defaultEndDate: null,
+})
 
 const emit = defineEmits<{
 	tasksAdded: [tasks: ITask[]],
@@ -108,6 +130,16 @@ const taskAdd = ref<HTMLElement | null>(null)
 const taskAddHovered = useElementHover(taskAdd)
 
 const errorMessage = ref('')
+const createModalOpen = ref(false)
+
+function openCreateModal() {
+	createModalOpen.value = true
+}
+
+function onCreated(task: ITask) {
+	newTaskTitle.value = ''
+	emit('tasksAdded', [task])
+}
 
 function resetEmptyTitleError() {
 	if (!newTaskTitle.value) {

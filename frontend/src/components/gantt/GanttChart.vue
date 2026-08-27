@@ -91,6 +91,7 @@
 <script setup lang="ts">
 import {computed, ref, watch, toRefs, nextTick, onMounted, onBeforeUnmount, onUnmounted} from 'vue'
 import {useRouter} from 'vue-router'
+import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
 import dayjs from 'dayjs'
 import {useDayjsLanguageSync} from '@/i18n/useDayjsLanguageSync'
 
@@ -126,8 +127,8 @@ const emit = defineEmits<{
   (e: 'update:task', task: ITaskPartialWithId): void
 }>()
 
-const DAY_WIDTH_PIXELS_MIN = 30
-const dayWidthPixels = ref(0)
+const DAY_WIDTH_PIXELS_MIN = 42
+const dayWidthPixels = ref(DAY_WIDTH_PIXELS_MIN)
 let resizeObserver: ResizeObserver
 
 const {tasks, filters} = toRefs(props)
@@ -547,11 +548,7 @@ function updateGanttTask(id: string, newStart: Date, newEnd: Date) {
 }
 
 function openTask(bar: GanttBarModel) {
-	router.push({
-		name: 'task.detail',
-		params: {id: bar.id},
-		state: {backdropView: router.currentRoute.value.fullPath},
-	})
+	router.push(taskDetailLocation(bar.id, router.currentRoute.value.fullPath))
 }
 
 // Double-click and drag detection
@@ -802,7 +799,8 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .gantt-container {
 	overflow-x: auto;
-	min-inline-size: 100%;
+	max-inline-size: 100%;
+	min-inline-size: 0;
 }
 
 .gantt-chart-wrapper {

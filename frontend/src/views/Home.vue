@@ -96,6 +96,7 @@ function handleClearLabelFilter() {
 <style scoped lang="scss">
 .home-surface {
 	max-inline-size: $desktop;
+	margin-inline: auto;
 }
 
 .home-salutation {
@@ -108,6 +109,7 @@ function handleClearLabelFilter() {
 
 .show-tasks {
 	margin-block-start: 2rem;
+	margin-inline: auto;
 	text-align: start;
 }
 </style>

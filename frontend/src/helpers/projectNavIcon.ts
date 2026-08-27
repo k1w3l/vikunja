@@ -23,7 +23,13 @@ const PROJECT_ICONS: IconProp[] = [
 	'filter',
 ]
 
-export function projectNavIcon(project: Pick<IProject, 'id' | 'title'>): IconProp {
+export function projectNavIcon(
+	project: Pick<IProject, 'id' | 'title'>,
+	override?: string | null,
+): IconProp {
+	if (override) {
+		return override as IconProp
+	}
 	if (project.id === -1) {
 		return 'star'
 	}
@@ -36,3 +42,5 @@ export function projectNavIcon(project: Pick<IProject, 'id' | 'title'>): IconPro
 
 	return PROJECT_ICONS[stringHash(project.title) % PROJECT_ICONS.length]
 }
+
+export {PROJECT_ICONS}

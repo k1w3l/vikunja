@@ -66,6 +66,52 @@
 					{{ getViewTitle(view) }}
 				</BaseButton>
 			</div>
+			<div class="project-chrome-title">
+				<Dropdown
+					v-if="canCustomizeIcon"
+					class="project-icon-picker"
+				>
+					<template #trigger="{ toggleOpen, open }">
+						<BaseButton
+							class="project-chrome-icon"
+							:aria-label="$t('project.chooseIcon')"
+							:aria-expanded="open"
+							@click="toggleOpen"
+						>
+							<Icon
+								v-if="currentProject.id"
+								:icon="iconFor(currentProject)"
+							/>
+						</BaseButton>
+					</template>
+					<template #default="{ close }">
+						<div class="project-icon-grid">
+							<BaseButton
+								v-for="icon in PROJECT_ICONS"
+								:key="String(icon)"
+								class="project-icon-option"
+								:class="{'is-active': String(iconFor(currentProject)) === String(icon)}"
+								:aria-label="String(icon)"
+								@click="selectIcon(icon); close()"
+							>
+								<Icon :icon="icon" />
+							</BaseButton>
+						</div>
+					</template>
+				</Dropdown>
+				<span
+					v-else
+					class="project-chrome-icon is-static"
+				>
+					<Icon
+						v-if="currentProject.id"
+						:icon="iconFor(currentProject)"
+					/>
+				</span>
+				<span class="project-chrome-name">
+					{{ currentProject.title === '' ? $t('misc.loading') : getProjectTitle(currentProject) }}
+				</span>
+			</div>
 			<slot name="header" />
 		</div>
 		<CustomTransition name="fade">
@@ -95,7 +141,10 @@ import Message from '@/components/misc/Message.vue'
 import CustomTransition from '@/components/misc/CustomTransition.vue'
 
 import {getProjectTitle} from '@/helpers/getProjectTitle'
+import {PROJECT_ICONS} from '@/helpers/projectNavIcon'
+import {useProjectIcon} from '@/composables/useProjectIcon'
 import {useTitle} from '@/composables/useTitle'
+import {PERMISSIONS} from '@/constants/permissions'
 
 import {useBaseStore} from '@/stores/base'
 import {useProjectStore} from '@/stores/projects'
@@ -139,6 +188,8 @@ useResizeObserver(switchViewContainerRef, () => {
 	requestAnimationFrame(() => checkOverflow())
 })
 
+const {iconFor, setIcon} = useProjectIcon()
+
 const currentProject = computed<IProject>(() => {
 	return baseStore.currentProject || {
 		id: 0,
@@ -148,6 +199,18 @@ const currentProject = computed<IProject>(() => {
 	}
 })
 useTitle(() => currentProject.value?.id ? getProjectTitle(currentProject.value) : '')
+
+const canCustomizeIcon = computed(() => {
+	const permission = currentProject.value.maxPermission
+	return currentProject.value.id > 0
+		&& permission !== null
+		&& permission !== undefined
+		&& permission > PERMISSIONS.READ
+})
+
+async function selectIcon(icon: (typeof PROJECT_ICONS)[number]) {
+	await setIcon(currentProject.value.id, String(icon))
+}
 
 const views = computed(() => projectStore.projects[props.projectId]?.views)
 
@@ -192,15 +255,80 @@ function getViewRoute(view: IProjectView) {
 	min-block-size: $switch-view-height;
 	margin-block-end: 1rem;
 	
-	display: flex;
-	justify-content: space-between;
-	align-items: center;	
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	align-items: center;
 	gap: 1rem;
-	
+
 	@media screen and (max-width: $tablet) {
+		display: flex;
+		flex-wrap: wrap;
 		justify-content: center;
 		flex-direction: column;
 	}
+}
+
+.project-chrome-title {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	min-inline-size: 0;
+	max-inline-size: 100%;
+}
+
+.project-chrome-name {
+	font-family: $vikunja-font;
+	font-size: 1.5rem;
+	font-weight: 650;
+	letter-spacing: -0.02em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.project-chrome-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: 2rem;
+	block-size: 2rem;
+	border-radius: $radius;
+	border: 1px solid var(--card-border-color);
+	background: var(--white);
+	color: var(--grey-800);
+	flex-shrink: 0;
+
+	&.is-static {
+		pointer-events: none;
+	}
+}
+
+.project-icon-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 2rem);
+	gap: 0.35rem;
+	padding: 0.5rem;
+}
+
+.project-icon-option {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: 2rem;
+	block-size: 2rem;
+	border-radius: $radius;
+
+	&:hover,
+	&.is-active {
+		background: var(--grey-100);
+		color: var(--primary);
+	}
+}
+
+.filter-container,
+:deep(.filter-container) {
+	justify-self: end;
 }
 
 .switch-view {

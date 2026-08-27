@@ -87,8 +87,14 @@
 		<template #default>
 			<div
 				:class="{'is-loading': loading}"
-				class="loader-container"
+				class="loader-container table-view"
 			>
+				<AddTask
+					v-if="canWrite"
+					class="table-view__add-task d-print-none"
+					:project-id="projectId"
+					@tasksAdded="taskList.loadTasks()"
+				/>
 				<Card
 					:padding="false"
 					:has-content="false"
@@ -344,10 +350,12 @@
 
 <script setup lang="ts">
 import {computed, type Ref, watch} from 'vue'
+import {useRouter} from 'vue-router'
 
 import {useStorage} from '@vueuse/core'
 
 import ProjectWrapper from '@/components/project/ProjectWrapper.vue'
+import AddTask from '@/components/tasks/AddTask.vue'
 import Done from '@/components/misc/Done.vue'
 import User from '@/components/misc/User.vue'
 import PriorityLabel from '@/components/tasks/partials/PriorityLabel.vue'
@@ -370,6 +378,8 @@ import type {IProjectView} from '@/modelTypes/IProjectView'
 import { camelCase } from 'change-case'
 import {isSavedFilter} from '@/services/savedFilter'
 import {useProjectStore} from '@/stores/projects'
+import {PERMISSIONS} from '@/constants/permissions'
+import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
 
 const props = defineProps<{
 	isLoadingProject: boolean,
@@ -378,6 +388,8 @@ const props = defineProps<{
 }>()
 
 const projectStore = useProjectStore()
+const router = useRouter()
+const canWrite = computed(() => (projectStore.projects[props.projectId]?.maxPermission ?? 0) > PERMISSIONS.READ)
 
 const ACTIVE_COLUMNS_DEFAULT = {
 	index: true,
@@ -471,21 +483,28 @@ function setActiveColumnsSortParam() {
 		}, {})
 }
 
-// TODO: re-enable opening task detail in modal
-// const router = useRouter()
 const taskDetailRoutes = computed(() => Object.fromEntries(
 	tasks.value.map(({id}) => ([
 		id,
-		{
-			name: 'task.detail',
-			params: {id},
-			// state: { backdropView: router.currentRoute.value.fullPath },
-		},
+		taskDetailLocation(id, router.currentRoute.value.fullPath),
 	])),
 ))
 </script>
 
 <style lang="scss" scoped>
+.table-view {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.table-view__add-task {
+	padding: 0.75rem 1rem;
+	background: var(--white);
+	border: 1px solid var(--card-border-color);
+	border-radius: $radius;
+}
+
 .table {
 	background: transparent;
 	overflow-x: auto;

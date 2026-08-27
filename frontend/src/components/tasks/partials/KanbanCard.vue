@@ -149,6 +149,7 @@ import AttachmentService, {PREVIEW_SIZE} from '@/services/attachment'
 import {formatDateLong, formatDisplayDate, formatISO} from '@/helpers/time/formatDate'
 import {colorIsDark} from '@/helpers/color/colorIsDark'
 import {useTaskStore} from '@/stores/tasks'
+import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
 import AssigneeList from '@/components/tasks/partials/AssigneeList.vue'
 import {playPopSound} from '@/helpers/playPop'
 import {isEditorContentEmpty} from '@/helpers/editorContentEmpty'
@@ -219,11 +220,7 @@ async function toggleTaskDone(task: ITask) {
 }
 
 function openTaskDetail() {
-	router.push({
-		name: 'task.detail',
-		params: {id: props.task.id},
-		state: {backdropView: router.currentRoute.value.fullPath},
-	})
+	router.push(taskDetailLocation(props.task.id, router.currentRoute.value.fullPath))
 }
 
 const coverImageBlobUrl = ref<string | null>(null)

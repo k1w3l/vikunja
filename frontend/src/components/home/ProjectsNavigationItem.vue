@@ -33,7 +33,7 @@
 						class="project-glyph"
 						:style="glyphStyle"
 					>
-						<Icon :icon="projectNavIcon(project)" />
+						<Icon :icon="iconFor(project)" />
 					</span>
 					<span
 						v-if="canEditOrder && project.id > 0 && project.maxPermission !== null && project.maxPermission > PERMISSIONS.READ"
@@ -100,7 +100,7 @@ import {getProjectTitle} from '@/helpers/getProjectTitle'
 import ProjectsNavigation from '@/components/home/ProjectsNavigation.vue'
 import {PERMISSIONS} from '@/constants/permissions'
 import {isSavedFilter} from '@/services/savedFilter'
-import {projectNavIcon} from '@/helpers/projectNavIcon'
+import {useProjectIcon} from '@/composables/useProjectIcon'
 
 const props = defineProps<{
 	project: IProject,
@@ -158,6 +158,7 @@ const isDropTarget = computed(() => {
 		&& props.project.maxPermission > PERMISSIONS.READ
 })
 
+const {iconFor} = useProjectIcon()
 const projectStore = useProjectStore()
 const baseStore = useBaseStore()
 const currentProject = computed(() => baseStore.currentProject)

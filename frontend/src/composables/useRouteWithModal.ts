@@ -2,6 +2,7 @@ import {computed, defineAsyncComponent, h, shallowRef, type VNode, watchEffect} 
 import {useRoute, useRouter, type RouteLocationNormalizedGeneric} from 'vue-router'
 import {useBaseStore} from '@/stores/base'
 import {useProjectStore} from '@/stores/projects'
+import {isTaskDetailPath} from '@/helpers/taskDetailBackdrop'
 
 export function useRouteWithModal() {
 	const router = useRouter()
@@ -11,14 +12,21 @@ export function useRouteWithModal() {
 	const projectStore = useProjectStore()
 
 	const isTaskDetailRoute = computed(() => route.name === 'task.detail')
+	const listBackdrop = computed(() => {
+		const backdrop = backdropView.value
+		if (typeof backdrop === 'string' && backdrop.length > 0 && !isTaskDetailPath(backdrop)) {
+			return backdrop
+		}
+		return undefined
+	})
 
 	const routeWithModal = computed(() => {
-		if (backdropView.value) {
-			return router.resolve(backdropView.value) as RouteLocationNormalizedGeneric
+		if (listBackdrop.value) {
+			return router.resolve(listBackdrop.value) as RouteLocationNormalizedGeneric
 		}
 		if (isTaskDetailRoute.value) {
 			const back = typeof window !== 'undefined' ? window.history.state?.back : undefined
-			if (typeof back === 'string' && back.length > 0 && !back.includes('/tasks/')) {
+			if (typeof back === 'string' && back.length > 0 && !isTaskDetailPath(back)) {
 				return router.resolve(back) as RouteLocationNormalizedGeneric
 			}
 			return router.resolve({name: 'home'}) as RouteLocationNormalizedGeneric
@@ -54,7 +62,7 @@ export function useRouteWithModal() {
 			return
 		}
 
-		routeProps.backdropView = backdropView.value ?? route.fullPath
+		routeProps.backdropView = listBackdrop.value ?? (isTaskDetailPath(route.fullPath) ? '/' : route.fullPath)
 
 		let component = route.matched[0]?.components?.default
 

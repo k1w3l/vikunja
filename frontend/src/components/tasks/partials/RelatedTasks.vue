@@ -82,7 +82,7 @@
 				</div>
 				<div
 					key="field-kind"
-					class="field has-addons mbe-4"
+					class="field task-relation-kind-field mbe-4"
 				>
 					<div class="control is-expanded">
 						<div class="select is-fullwidth has-defaults">
@@ -131,7 +131,7 @@
 							@update:modelValue="toggleTaskDone(task)"
 						/>
 						<RouterLink
-							:to="{ name: route.name as string, params: { id: task.id }, state: { backdropView: route.fullPath } }"
+							:to="taskDetailLocation(task.id, route.fullPath)"
 							:class="{ 'is-strikethrough': task.done}"
 						>
 							<span
@@ -198,6 +198,7 @@ import TaskModel from '@/models/task'
 import type {ITask} from '@/modelTypes/ITask'
 import type {ITaskRelation} from '@/modelTypes/ITaskRelation'
 import {RELATION_KINDS, type IRelationKind} from '@/types/IRelationKind'
+import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
 
 import TaskRelationService from '@/services/taskRelation'
 import TaskRelationModel from '@/models/taskRelation'
@@ -455,6 +456,18 @@ async function toggleTaskDone(task: ITask) {
 
 .task:hover .remove {
 	opacity: 1;
+}
+
+.task-relation-kind-field {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: stretch;
+
+	.control.is-expanded {
+		flex: 1 1 10rem;
+		min-inline-size: 0;
+	}
 }
 
 .none {

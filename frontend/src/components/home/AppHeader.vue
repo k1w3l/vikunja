@@ -18,34 +18,7 @@
 		<MenuButton class="menu-button" />
 
 		<div
-			v-if="currentProject?.id"
-			class="project-title-wrapper"
-		>
-			<span class="project-title">
-				{{ currentProject.title === '' ? $t('misc.loading') : getProjectTitle(currentProject) }}
-			</span>
-
-			<BaseButton
-				v-if="!isEditorContentEmpty(currentProject.description)"
-				:to="{ name: 'project.info', params: { projectId: currentProject.id } }"
-				class="project-title-button"
-			>
-				<span class="is-sr-only">{{ $t('project.description') }}</span>
-				<Icon icon="circle-info" />
-			</BaseButton>
-
-			<BaseButton
-				v-if="canWriteCurrentProject && currentProject.id !== -1"
-				:to="{ name: 'project.settings.edit', params: { projectId: currentProject.id } }"
-				class="project-title-button project-edit-button"
-			>
-				<span class="is-sr-only">{{ $t('menu.edit') }}</span>
-				<Icon icon="pen" />
-			</BaseButton>
-		</div>
-
-		<div
-			v-else-if="pageTitle"
+			v-if="!currentProject?.id && pageTitle"
 			class="project-title-wrapper"
 		>
 			<span class="project-title">{{ pageTitle }}</span>
@@ -83,6 +56,15 @@
 					</BaseButton>
 				</template>
 
+				<DropdownItem :to="{ name: 'projects.index' }">
+					{{ $t('project.projects') }}
+				</DropdownItem>
+				<DropdownItem :to="{ name: 'labels.index' }">
+					{{ $t('label.title') }}
+				</DropdownItem>
+				<DropdownItem :to="{ name: 'teams.index' }">
+					{{ $t('team.title') }}
+				</DropdownItem>
 				<DropdownItem :to="{ name: 'user.settings' }">
 					{{ $t('user.settings.title') }}
 				</DropdownItem>
@@ -123,7 +105,6 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { PERMISSIONS as Permissions } from '@/constants/permissions'
 import { PRO_FEATURE } from '@/constants/proFeatures'
 
 import Dropdown from '@/components/misc/Dropdown.vue'
@@ -135,28 +116,25 @@ import BaseButton from '@/components/base/BaseButton.vue'
 import MenuButton from '@/components/home/MenuButton.vue'
 import OpenQuickActions from '@/components/misc/OpenQuickActions.vue'
 
-import { getProjectTitle } from '@/helpers/getProjectTitle'
-import { isEditorContentEmpty } from '@/helpers/editorContentEmpty'
-
 import { useBaseStore } from '@/stores/base'
 import { useConfigStore } from '@/stores/config'
 import { useAuthStore } from '@/stores/auth'
 import type { IProject } from '@/modelTypes/IProject'
 
 const baseStore = useBaseStore()
-// Create a mutable copy to satisfy type requirements (readonly deep -> mutable)
 const currentProject = computed<IProject | null>(() => {
 	const project = baseStore.currentProject
 	return project ? { ...project } as IProject : null
 })
 const background = computed(() => baseStore.background)
-const canWriteCurrentProject = computed(() => baseStore.currentProject?.maxPermission !== null && baseStore.currentProject?.maxPermission !== undefined && baseStore.currentProject.maxPermission > Permissions.READ)
 const menuActive = computed(() => baseStore.menuActive)
 
-// Standalone pages (no project) surface their route's title in the header.
 const route = useRoute()
 const { t } = useI18n()
 const pageTitle = computed(() => {
+	if (route.name === 'home') {
+		return ''
+	}
 	const title = route.meta.title as string | undefined
 	return title ? t(title) : ''
 })
@@ -212,7 +190,20 @@ $user-dropdown-width-mobile: 5rem;
 }
 
 .logo-link {
-	display: none;
+	display: flex;
+	align-items: center;
+	padding-inline-start: 0.5rem;
+	flex: 0 0 auto;
+	min-inline-size: 0;
+
+	@media screen and (max-width: $tablet) {
+		display: none;
+	}
+
+	:deep(.logo) {
+		max-block-size: 2rem;
+		inline-size: auto;
+	}
 }
 
 .menu-button {

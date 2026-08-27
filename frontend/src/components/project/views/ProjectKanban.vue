@@ -7,6 +7,15 @@
 	>
 		<template #header>
 			<div class="filter-container">
+				<XButton
+					v-if="canAddTasks"
+					icon="plus"
+					variant="secondary"
+					class="mie-2"
+					@click="createModalOpen = true"
+				>
+					{{ $t('project.list.add') }}
+				</XButton>
 				<FilterPopup
 					v-if="!isSavedFilter(project)"
 					v-model="params"
@@ -27,7 +36,7 @@
 						v-bind="DRAG_OPTIONS"
 						:model-value="buckets"
 						group="buckets"
-						:disabled="!canWrite || newTaskInputFocused"
+						:disabled="!canWrite"
 						tag="ul"
 						:item-key="({id}: IBucket) => `bucket${id}`"
 						:component-data="bucketDraggableComponentData"
@@ -163,56 +172,6 @@
 									@start="handleTaskDragStart"
 									@end="updateTaskPosition"
 								>
-									<template #footer>
-										<li
-											v-if="canCreateTasks"
-											class="bucket-footer"
-										>
-											<div
-												v-if="showNewTaskInput === bucket.id"
-												class="field"
-											>
-												<div
-													class="control"
-													:class="{'is-loading': loading || taskLoading}"
-												>
-													<input
-														v-model="newTaskText"
-														v-focus.always
-														class="input"
-														:disabled="loading || taskLoading || undefined"
-														:placeholder="$t('project.kanban.addTaskPlaceholder')"
-														type="text"
-														@focusout="toggleShowNewTaskInput(bucket.id)"
-														@focusin="() => newTaskInputFocused = true"
-														@keyup.enter="addTaskToBucket(bucket.id)"
-														@keyup.esc="toggleShowNewTaskInput(bucket.id)"
-													>
-												</div>
-												<p
-													v-if="newTaskError[bucket.id] && newTaskText === ''"
-													class="help is-danger"
-												>
-													{{ $t('project.create.addTitleRequired') }}
-												</p>
-											</div>
-											<XButton
-												v-else
-												v-tooltip="bucket.limit > 0 && bucket.count >= bucket.limit ? $t('project.kanban.bucketLimitReached') : ''"
-												class="is-fullwidth has-text-centered"
-												:shadow="false"
-												icon="plus"
-												variant="secondary"
-												:disabled="bucket.limit > 0 && bucket.count >= bucket.limit"
-												@click="toggleShowNewTaskInput(bucket.id)"
-											>
-												{{
-													bucket.tasks.filter(t => shouldShowTaskInListView(t)).length === 0 ? $t('project.kanban.addTask') : $t('project.kanban.addAnotherTask')
-												}}
-											</XButton>
-										</li>
-									</template>
-
 									<template #item="{element: task}">
 										<li
 											class="task-item"
@@ -285,6 +244,13 @@
 						</p>
 					</template>
 				</Modal>
+				<CreateTaskModal
+					:open="createModalOpen"
+					:project-id="projectId"
+					:bucket-id="view?.defaultBucketId"
+					@close="createModalOpen = false"
+					@created="onTaskCreated"
+				/>
 			</div>
 		</template>
 	</ProjectWrapper>
@@ -293,6 +259,7 @@
 <script setup lang="ts">
 import {computed, nextTick, ref, watch, toRef} from 'vue'
 import {useRouter} from 'vue-router'
+import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
 import {useRouteQuery} from '@vueuse/router'
 import {useI18n} from 'vue-i18n'
 import draggable from 'zhyswan-vuedraggable'
@@ -311,6 +278,7 @@ import {useAuthStore} from '@/stores/auth'
 
 import ProjectWrapper from '@/components/project/ProjectWrapper.vue'
 import FilterPopup from '@/components/project/partials/FilterPopup.vue'
+import CreateTaskModal from '@/components/tasks/CreateTaskModal.vue'
 import KanbanCard from '@/components/tasks/partials/KanbanCard.vue'
 import Dropdown from '@/components/misc/Dropdown.vue'
 import DropdownItem from '@/components/misc/DropdownItem.vue'
@@ -383,13 +351,8 @@ const showBucketDeleteModal = ref(false)
 const bucketToDelete = ref(0)
 const bucketTitleEditable = ref(false)
 
-const newTaskText = ref('')
-const showNewTaskInput = ref<IBucket['id'] | null>(null)
-
 const newBucketTitle = ref('')
 const showNewBucketInput = ref(false)
-const newTaskError = ref<{ [id: IBucket['id']]: boolean }>({})
-const newTaskInputFocused = ref(false)
 
 const showSetLimitInput = ref(false)
 const collapsedBuckets = ref<CollapsedBuckets>({})
@@ -448,7 +411,8 @@ const bucketDraggableComponentData = computed(() => ({
 const project = computed(() => projectId.value ? projectStore.projects[projectId.value] : null)
 const view = computed(() => project.value?.views.find(v => v.id === props.viewId) as IProjectView || null)
 const canWrite = computed(() => baseStore.currentProject?.maxPermission > Permissions.READ && view.value.bucketConfigurationMode === 'manual')
-const canCreateTasks = computed(() => canWrite.value && projectId.value > 0)
+const canAddTasks = computed(() => (baseStore.currentProject?.maxPermission ?? 0) > Permissions.READ && projectId.value > 0)
+const createModalOpen = ref(false)
 
 const isTouchDevice = ref(false)
 if (typeof window !== 'undefined') {
@@ -460,11 +424,7 @@ const router = useRouter()
 const touchStartY = ref(0)
 
 function openTask(task: ITask) {
-	router.push({
-		name: 'task.detail',
-		params: {id: task.id},
-		state: {backdropView: router.currentRoute.value.fullPath},
-	})
+	router.push(taskDetailLocation(task.id, router.currentRoute.value.fullPath))
 }
 
 function onHandleTouchStart(e: TouchEvent) {
@@ -486,8 +446,6 @@ function onHandleTouchMove(e: TouchEvent) {
 const buckets = computed(() => kanbanStore.buckets)
 const loading = computed(() => kanbanStore.isLoading)
 const projectIdWithFallback = computed<number>(() => project.value?.id || projectId.value)
-
-const taskLoading = computed(() => taskStore.isLoading || taskPositionService.value.loading)
 
 watch(
 	() => ({
@@ -661,44 +619,8 @@ async function updateTaskPosition(e) {
 	}
 }
 
-function toggleShowNewTaskInput(bucketId: IBucket['id']) {
-	if (loading.value || taskLoading.value) {
-		return
-	}
-	showNewTaskInput.value = showNewTaskInput.value === bucketId 
-		? null
-		: bucketId
-	newTaskInputFocused.value = false
-}
-
-async function addTaskToBucket(bucketId: IBucket['id']) {
-	if (newTaskText.value === '') {
-		newTaskError.value[bucketId] = true
-		return
-	}
-	newTaskError.value[bucketId] = false
-
-	const task = await taskStore.createNewTask({
-		title: newTaskText.value,
-		bucketId,
-		projectId: projectIdWithFallback.value,
-	})
-	newTaskText.value = ''
+function onTaskCreated(task: ITask) {
 	kanbanStore.addTaskToBucket(task)
-	scrollTaskContainerToTop(bucketId)
-
-	const bucket = kanbanStore.getBucketById(bucketId)
-	if (bucket && bucket.limit && bucket.count >= bucket.limit) {
-		toggleShowNewTaskInput(bucketId)
-	}
-}
-
-function scrollTaskContainerToTop(bucketId: IBucket['id']) {
-	const bucketEl = taskContainerRefs.value[bucketId]
-	if (!bucketEl) {
-		return
-	}
-	bucketEl.scrollTop = 0
 }
 
 async function createNewBucket() {
@@ -961,6 +883,7 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 
 	&-bucket-container {
 		display: flex;
+		justify-content: safe center;
 		list-style: none;
 	}
 

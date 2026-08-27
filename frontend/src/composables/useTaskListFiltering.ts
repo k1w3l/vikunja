@@ -16,12 +16,12 @@ export function shouldShowTaskInListView(task: ITask): boolean {
 	return Boolean(task.showInList)
 }
 
-export function shouldShowTaskOnOverview(task: ITask, isInbox: boolean): boolean {
+export function shouldShowTaskOnOverview(task: ITask, isInbox: boolean, isDaily = false): boolean {
 	if (!shouldShowTaskInListView(task)) {
 		return false
 	}
 
-	if (isInbox) {
+	if (isInbox || isDaily) {
 		return true
 	}
 

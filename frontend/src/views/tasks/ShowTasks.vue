@@ -3,7 +3,10 @@
 		v-cy="'showTasks'"
 		class="is-max-width-desktop has-text-start"
 	>
-		<h2 class="mbe-2 title">
+		<h2
+			v-if="!overview"
+			class="mbe-2 title"
+		>
 			{{ pageTitle }}
 		</h2>
 		<Message
@@ -86,7 +89,7 @@
 						<span class="overview-project-glyph">
 							<Icon
 								v-if="group.project"
-								:icon="projectNavIcon(group.project)"
+								:icon="iconFor(group.project)"
 							/>
 						</span>
 						{{ group.title }}
@@ -162,8 +165,8 @@ import type {TaskFilterParams} from '@/services/taskCollection'
 import TaskCollectionService from '@/services/taskCollection'
 import {PERMISSIONS} from '@/constants/permissions'
 import {shouldShowTaskInListView, shouldShowTaskOnOverview} from '@/composables/useTaskListFiltering'
-import {getProjectTitle, isInboxProject} from '@/helpers/getProjectTitle'
-import {projectNavIcon} from '@/helpers/projectNavIcon'
+import {getProjectTitle, isDailyProject, isInboxProject} from '@/helpers/getProjectTitle'
+import {useProjectIcon} from '@/composables/useProjectIcon'
 
 const props = withDefaults(defineProps<{
 	dateFrom?: Date | string,
@@ -194,6 +197,7 @@ const labelStore = useLabelStore()
 const route = useRoute()
 const router = useRouter()
 const {t} = useI18n({useScope: 'global'})
+const {iconFor} = useProjectIcon()
 
 const tasks = ref<ITask[]>([])
 const showNothingToDo = ref<boolean>(false)
@@ -238,7 +242,7 @@ const visibleTasks = computed(() => {
 	return tasks.value.filter(task => {
 		if (props.overview) {
 			const project = projectStore.projects[task.projectId]
-			return shouldShowTaskOnOverview(task, isInboxProject(project))
+			return shouldShowTaskOnOverview(task, isInboxProject(project), isDailyProject(project))
 		}
 		return shouldShowTaskInListView(task)
 	})
@@ -263,10 +267,14 @@ const overviewGroups = computed(() => {
 				project,
 				title: project ? getProjectTitle(project) : String(projectId),
 				isInbox: isInboxProject(project),
+				isDaily: isDailyProject(project),
 				tasks: groupedTasks,
 			}
 		})
 		.sort((a, b) => {
+			if (a.isDaily !== b.isDaily) {
+				return a.isDaily ? -1 : 1
+			}
 			if (a.isInbox !== b.isInbox) {
 				return a.isInbox ? -1 : 1
 			}
@@ -391,7 +399,11 @@ watch(
 	([from, to, filterId]) => loadPendingTasks(from, to, filterId),
 	{immediate: true},
 )
-watchEffect(() => setTitle(pageTitle.value))
+watchEffect(() => {
+	if (!props.overview) {
+		setTitle(pageTitle.value)
+	}
+})
 </script>
 
 <style lang="scss" scoped>

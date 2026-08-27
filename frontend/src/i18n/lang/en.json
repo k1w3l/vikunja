@@ -362,6 +362,7 @@
     "favorite": "Mark this project as favorite",
     "unfavorite": "Remove this project from favorites",
     "openSettingsMenu": "Open project settings menu",
+    "chooseIcon": "Choose project icon",
     "description": "Project description",
     "favoriteDescription": "This project has all tasks marked as favorites.",
     "create": {
@@ -975,7 +976,12 @@
   },
   "task": {
     "new": "Create a task",
+    "createModal": {
+      "title": "New task",
+      "submit": "Create task"
+    },
     "createSuccess": "The task was successfully created.",
+    "toggleSubtasks": "Show or hide subtasks",
     "bulkCreateUnexpectedResponse": "The server returned an unexpected number of created tasks.",
     "addReminder": "Add a reminder…",
     "removeReminder": "Remove this reminder",

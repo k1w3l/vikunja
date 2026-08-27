@@ -263,7 +263,7 @@ onBeforeUnmount(() => {
 	inset-block-end: 0;
 	inset-inline-end: 0;
 	inline-size: var(--inspector-width);
-	overflow-x: hidden;
+	overflow-x: visible;
 	overflow-y: auto;
 	background: var(--inspector-bg);
 	padding: 1.25rem 1.2rem 2rem;
@@ -282,9 +282,14 @@ onBeforeUnmount(() => {
 		padding-inline: 0;
 	}
 
-	:deep(.action-buttons) {
-		position: static;
-		inset-block-start: auto;
+	:deep(.field.has-addons) {
+		flex-wrap: wrap;
+		row-gap: 0.5rem;
+	}
+
+	:deep(.select),
+	:deep(.select select) {
+		max-inline-size: 100%;
 	}
 
 	@media screen and (max-width: $split-inspector-bp) {

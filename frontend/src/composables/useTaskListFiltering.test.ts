@@ -197,6 +197,10 @@ describe('shouldShowTaskOnOverview', () => {
 		expect(shouldShowTaskOnOverview(baseTask as ITask, true)).toBe(true)
 	})
 
+	it('should show daily tasks even without progress or high priority', () => {
+		expect(shouldShowTaskOnOverview(baseTask as ITask, false, true)).toBe(true)
+	})
+
 	it('should show non-inbox tasks with progress', () => {
 		expect(shouldShowTaskOnOverview({
 			...baseTask,
