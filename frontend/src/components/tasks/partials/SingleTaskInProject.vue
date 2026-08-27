@@ -5,7 +5,7 @@
 	>
 		<div
 			ref="taskRoot"
-			:class="{'is-loading': taskService.loading}"
+			:class="{'is-loading': taskService.loading, 'is-completing': isCompleting}"
 			class="task loader-container single-task"
 			tabindex="-1"
 			:data-is-overdue="isOverdue || undefined"
@@ -34,6 +34,7 @@
 			>
 				<FancyCheckbox
 					v-model="task.done"
+					tone="complete"
 					:disabled="isArchived || disabled || !canMarkAsDone"
 					:aria-label="$t('task.detail.markAsDone', {task: task.title})"
 					@update:modelValue="markAsDone"
@@ -173,6 +174,7 @@
 
 			<ProgressBar
 				v-if="task.percentDone > 0"
+				class="task-progress"
 				:value="task.percentDone * 100"
 				is-small
 			/>
@@ -196,7 +198,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watch, shallowReactive, onMounted, computed} from 'vue'
+import {ref, watch, shallowReactive, onMounted, onBeforeUnmount, computed} from 'vue'
 import {useRouter} from 'vue-router'
 import {useI18n} from 'vue-i18n'
 
@@ -324,9 +326,19 @@ const isOverdue = computed(() => (
 ))
 
 let oldTask
+const isCompleting = ref(false)
+let completingTimer: ReturnType<typeof setTimeout> | undefined
 
 async function markAsDone(checked: boolean, wasReverted: boolean = false) {
 	oldTask = {...task.value}
+
+	if (checked) {
+		isCompleting.value = true
+		clearTimeout(completingTimer)
+		completingTimer = setTimeout(() => {
+			isCompleting.value = false
+		}, 400)
+	}
 
 	// Fire the request immediately and with the intended done value snapshotted, so a re-render or
 	// teardown during the animation delay can neither drop the save nor make it send a stale state.
@@ -355,7 +367,7 @@ async function markAsDone(checked: boolean, wasReverted: boolean = false) {
 			message = t('task.undoneSuccess')
 		}
 
-		success({message}, [{
+		success({message, title: false}, [{
 			title: t('task.undo'),
 			callback: () => undoDone(checked),
 		}])
@@ -405,6 +417,10 @@ function openTaskDetail(event: MouseEvent | KeyboardEvent) {
 	taskLinkRef.value?.$el.click()
 }
 
+onBeforeUnmount(() => {
+	clearTimeout(completingTimer)
+})
+
 defineExpose({
 	focus: () => taskRoot.value?.focus(),
 	click: (e: MouseEvent | KeyboardEvent) => openTaskDetail(e),
@@ -413,6 +429,9 @@ defineExpose({
 
 <style lang="scss" scoped>
 .task {
+	contain: layout style;
+	content-visibility: auto;
+	contain-intrinsic-block-size: auto 3rem;
 	display: flex;
 	flex-wrap: wrap;
 	padding: .5rem .75rem;
@@ -474,9 +493,10 @@ defineExpose({
 		gap: 0.25rem;
 	}
 
-	:deep(.progress-bar) {
+	.task-progress {
 		flex: 1 0 100%;
 		inline-size: 100%;
+		margin-block-start: 0.35rem;
 	}
 
 	.tasktext,
@@ -545,12 +565,12 @@ defineExpose({
 		border-radius: $radius;
 
 		&:hover {
-			color: var(--warning);
+			color: var(--warning-text);
 		}
 
 		&.is-favorite {
 			opacity: 1;
-			color: var(--warning);
+			color: var(--warning-text);
 		}
 	}
 
@@ -596,8 +616,23 @@ defineExpose({
 	}
 
 	.task-main.done {
-		text-decoration: line-through;
-		color: var(--grey-500);
+		color: var(--text-muted);
+
+		.task-link {
+			text-decoration: line-through;
+			text-decoration-color: var(--success-text);
+			text-decoration-thickness: 1.5px;
+			text-underline-offset: 0.2em;
+		}
+	}
+
+	&.is-completing .task-main.done .task-link {
+		background-image: linear-gradient(var(--success-text), var(--success-text));
+		background-repeat: no-repeat;
+		background-position: 0 55%;
+		background-size: 100% 1.5px;
+		text-decoration-color: transparent;
+		animation: task-strike 280ms $ease-out-expo;
 	}
 
 	span.parent-tasks {
@@ -610,7 +645,7 @@ defineExpose({
 	}
 
 	.remove {
-		color: var(--danger);
+		color: var(--danger-text);
 	}
 
 	input[type='checkbox'] {
@@ -630,6 +665,24 @@ defineExpose({
 		block-size: 2rem;
 		border-inline-start-color: var(--grey-300);
 		border-block-end-color: var(--grey-300);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		&.is-completing .task-main.done .task-link {
+			animation: none;
+			text-decoration-color: var(--success-text);
+			background-image: none;
+		}
+	}
+}
+
+@keyframes task-strike {
+	from {
+		background-size: 0 1.5px;
+	}
+
+	to {
+		background-size: 100% 1.5px;
 	}
 }
 

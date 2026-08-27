@@ -30,6 +30,7 @@
 					>
 					<XButton
 						v-else
+						variant="secondary"
 						icon="plus"
 						class="d-print-none"
 						:aria-label="$t('project.kanban.addBucket')"
@@ -278,6 +279,7 @@ import {calculateItemPosition} from '@/helpers/calculateItemPosition'
 
 import {isSavedFilter, useSavedFilter} from '@/services/savedFilter'
 import {useTaskDragToProject} from '@/composables/useTaskDragToProject'
+import {useTaskLay} from '@/composables/useTaskLay'
 import {success} from '@/message'
 import {useProjectStore} from '@/stores/projects'
 import {shouldShowTaskInListView} from '@/composables/useTaskListFiltering'
@@ -382,6 +384,7 @@ const getTaskDraggableTaskComponentData = computed(() => (bucket: IBucket) => {
 		class: [
 			'tasks',
 			{'dragging-disabled': !canWrite.value},
+			{'is-laying': isLaying.value},
 		],
 	}
 })
@@ -477,6 +480,11 @@ function handleTaskContainerScroll(id: IBucket['id'], el: HTMLElement) {
 function visibleBucketTasks(bucket: IBucket): ITask[] {
 	return bucket.tasks.filter(t => shouldShowTaskInListView(t))
 }
+
+const {isLaying} = useTaskLay(
+	() => !loading.value && buckets.value.some(bucket => visibleBucketTasks(bucket).length > 0),
+	() => `${projectId.value}:${props.viewId}`,
+)
 
 function updateTasks(bucketId: IBucket['id'], tasks: IBucket['tasks']) {
 	const bucket = kanbanStore.getBucketById(bucketId)

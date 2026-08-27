@@ -1,27 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useNow } from '@vueuse/core'
-import { useAuthStore } from '@/stores/auth'
-import { useConfigStore } from '@/stores/config'
-import { useColorScheme } from '@/composables/useColorScheme'
+import {computed} from 'vue'
+import {useColorScheme} from '@/composables/useColorScheme'
 
-import LogoFull from '@/assets/logo-full.svg?component'
-import LogoFullPride from '@/assets/logo-full-pride.svg?component'
-import {MILLISECONDS_A_HOUR} from '@/constants/date'
+import LogoMark from '@/assets/logo.svg?component'
+import {APP_NAME} from '@/constants/brand'
 
-const now = useNow({
-	interval: MILLISECONDS_A_HOUR,
-})
-
-const authStore = useAuthStore()
-const configStore = useConfigStore()
-const { isDark } = useColorScheme()
-
-const Logo = computed(() => configStore.allowIconChanges
-	&& authStore.settings.frontendSettings.allowIconChanges
-	&& now.value.getMonth() === 5
-	? LogoFullPride
-	: LogoFull)
+const {isDark} = useColorScheme()
 
 const CustomLogo = computed(() => {
 	const lightLogo = window.CUSTOM_LOGO_URL
@@ -36,25 +20,54 @@ const CustomLogo = computed(() => {
 </script>
 
 <template>
-	<div>
-		<Logo
-			v-if="!CustomLogo"
-			alt="Vikunja"
-			class="logo"
-		/>
+	<div
+		class="brand"
+		role="img"
+		:aria-label="APP_NAME"
+	>
 		<img
-			v-show="CustomLogo"
+			v-if="CustomLogo"
 			:src="CustomLogo"
-			alt="Vikunja"
-			class="logo"
+			alt=""
+			class="logo-mark"
 		>
+		<LogoMark
+			v-else
+			class="logo-mark"
+			aria-hidden="true"
+		/>
+		<span
+			class="brand-name"
+			aria-hidden="true"
+		>Vikunja<span class="brand-x">X</span></span>
 	</div>
 </template>
 
 <style lang="scss" scoped>
-.logo {
-	color: var(--logo-text-color);
-	max-inline-size: 168px;
-	max-block-size: 48px;
+.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-inline-size: 0;
+	max-inline-size: 100%;
+	color: var(--logo-text-color, var(--text));
+}
+
+.logo-mark {
+	inline-size: 2rem;
+	block-size: 2rem;
+	flex: 0 0 2rem;
+}
+
+.brand-name {
+	font-size: 1.25rem;
+	font-weight: 650;
+	letter-spacing: -0.03em;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.brand-x {
+	color: #e24e1b;
 }
 </style>

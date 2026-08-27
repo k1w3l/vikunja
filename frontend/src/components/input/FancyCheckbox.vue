@@ -4,6 +4,7 @@
 		:class="{
 			'is-disabled': disabled,
 			'is-block': isBlock,
+			'fancy-checkbox--complete': tone === 'complete',
 		}"
 		:disabled="disabled"
 		:model-value="modelValue"
@@ -29,10 +30,12 @@ withDefaults(defineProps<{
 	disabled?: boolean,
 	isBlock?: boolean,
 	ariaLabel?: string,
+	tone?: 'default' | 'complete',
 }>(), {
 	disabled: false,
 	isBlock: false,
 	ariaLabel: undefined,
+	tone: 'default',
 })
 
 const emit = defineEmits<{
@@ -61,18 +64,27 @@ const emit = defineEmits<{
 .fancy-checkbox__icon:deep() {
 	position: relative;
 	z-index: 1;
-	stroke: var(--stroke-color, #c8ccd4);
+	stroke: var(--stroke-color, var(--grey-300));
+	transform-origin: center;
 	transform: translate3d(0, 0, 0);
-	transition: all 0.2s ease;
+	transition: stroke $transition, transform $transition;
 
 	path,
 	polyline {
-		transition: all 0.2s linear, color 0.2s ease;
+		transition: stroke-dashoffset 180ms $ease-out-expo, stroke $transition;
 	}
 }
 
 .fancy-checkbox:hover input:not(:disabled) + .fancy-checkbox__icon,
 .fancy-checkbox input:checked + .fancy-checkbox__icon {
+	--stroke-color: var(--primary);
+}
+
+.fancy-checkbox--complete input:checked + .fancy-checkbox__icon {
+	--stroke-color: var(--success);
+}
+
+.fancy-checkbox--complete:hover input:not(:disabled, :checked) + .fancy-checkbox__icon {
 	--stroke-color: var(--primary);
 }
 
@@ -106,7 +118,32 @@ const emit = defineEmits<{
 
 	polyline {
 		stroke-dashoffset: 42;
-		transition-delay: 0.15s;
+		transition-delay: 0.08s;
+	}
+}
+
+.is-completing .fancy-checkbox--complete input:checked + .fancy-checkbox__icon {
+	animation: checkbox-stamp 180ms $ease-out-expo;
+}
+
+@keyframes checkbox-stamp {
+	from {
+		transform: scale(0.92);
+	}
+
+	to {
+		transform: scale(1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.fancy-checkbox__icon path,
+	.fancy-checkbox__icon polyline {
+		transition-duration: 0.01ms;
+	}
+
+	.is-completing .fancy-checkbox--complete input:checked + .fancy-checkbox__icon {
+		animation: none;
 	}
 }
 </style>

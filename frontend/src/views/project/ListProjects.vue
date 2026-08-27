@@ -74,11 +74,14 @@ const projects = computed(() => {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	flex-wrap: wrap;
 	gap: 1rem;
 	margin-block-end: 1rem;
+	min-inline-size: 0;
 
 	@media screen and (max-width: $tablet) {
 		flex-direction: column;
+		align-items: stretch;
 	}
 }
 

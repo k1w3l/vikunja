@@ -1,10 +1,6 @@
 <template>
 	<div class="no-auth-wrapper">
-		<Logo
-			class="logo"
-			width="200"
-			height="58"
-		/>
+		<Logo class="logo" />
 		<div class="noauth-container">
 			<section
 				class="image"
@@ -102,6 +98,7 @@ useTitle(() => title.value)
 	min-block-size: 60vh;
 	display: flex;
 	background-color: var(--white);
+	border: 1px solid var(--card-border-color);
 	box-shadow: var(--shadow-md);
 	overflow: hidden;
 
@@ -176,6 +173,7 @@ useTitle(() => title.value)
 
 .image-title {
 	color: hsl(0deg, 0%, 100%);
-	font-size: 2.5rem;
+	font-size: 1.75rem;
+	font-weight: 650;
 }
 </style>

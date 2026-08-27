@@ -157,10 +157,8 @@ const isFullWidth = computed(() => {
 }
 
 .logo {
-	max-inline-size: 300px;
-	inline-size: 90%;
-	margin: 1rem auto 2rem;
-	block-size: 100px;
+	max-inline-size: 18rem;
+	margin: 1rem auto 1.5rem;
 }
 
 .title {

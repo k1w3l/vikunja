@@ -9,10 +9,7 @@
 			class="logo-link"
 			:aria-label="$t('navigation.home')"
 		>
-			<Logo
-				width="164"
-				height="48"
-			/>
+			<Logo />
 		</RouterLink>
 
 		<MenuButton class="menu-button" />
@@ -232,9 +229,18 @@ $user-dropdown-width-mobile: 5rem;
 		display: none;
 	}
 
-	:deep(.logo) {
+	:deep(.brand) {
 		max-block-size: 2rem;
-		inline-size: auto;
+	}
+
+	:deep(.logo-mark) {
+		inline-size: 1.75rem;
+		block-size: 1.75rem;
+		flex-basis: 1.75rem;
+	}
+
+	:deep(.brand-name) {
+		color: var(--logo-text-color, var(--white));
 	}
 }
 

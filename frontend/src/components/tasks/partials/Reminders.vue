@@ -109,7 +109,7 @@ function removeReminderByIndex(index: number) {
 }
 
 .remove {
-	color: var(--danger);
+	color: var(--danger-text);
 	vertical-align: top;
 	padding-inline-start: .5rem;
 	line-height: 1;

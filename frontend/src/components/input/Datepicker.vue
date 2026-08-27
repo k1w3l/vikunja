@@ -34,7 +34,7 @@
 					:shadow="false"
 					@click="close"
 				>
-					{{ $t('misc.confirm') }}
+					{{ $t('input.datepicker.setDate') }}
 				</XButton>
 			</div>
 		</CustomTransition>

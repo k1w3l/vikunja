@@ -4,6 +4,7 @@ import {computed, useSlots, useId, ref, useAttrs} from 'vue'
 interface Props {
 	modelValue?: string | number
 	label?: string
+	hint?: string
 	error?: string | null
 	id?: string
 	disabled?: boolean
@@ -36,8 +37,9 @@ const generatedId = useId()
 
 const inputId = computed(() => props.id ?? generatedId)
 const errorId = computed(() => props.error ? `${inputId.value}-error` : undefined)
+const hintId = computed(() => props.hint ? `${inputId.value}-hint` : undefined)
 const attrs = useAttrs()
-const describedBy = computed(() => [attrs['aria-describedby'], errorId.value].filter(Boolean).join(' ') || undefined)
+const describedBy = computed(() => [attrs['aria-describedby'], hintId.value, errorId.value].filter(Boolean).join(' ') || undefined)
 const hasAddon = computed(() => !!slots.addon)
 
 const fieldClasses = computed(() => [
@@ -88,6 +90,8 @@ defineExpose({
 				<slot
 					:id="inputId"
 					:error-id="errorId"
+					:hint-id="hintId"
+					:described-by="describedBy"
 				>
 					<input
 						:id="inputId"
@@ -120,6 +124,8 @@ defineExpose({
 				<slot
 					:id="inputId"
 					:error-id="errorId"
+					:hint-id="hintId"
+					:described-by="describedBy"
 				>
 					<input
 						:id="inputId"
@@ -140,6 +146,13 @@ defineExpose({
 				<slot name="addon" />
 			</div>
 		</template>
+		<p
+			v-if="hint"
+			:id="hintId"
+			class="help"
+		>
+			{{ hint }}
+		</p>
 		<p
 			v-if="error"
 			:id="errorId"

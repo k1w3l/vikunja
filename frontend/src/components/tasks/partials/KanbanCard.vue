@@ -20,7 +20,11 @@
 			v-if="coverImageBlobUrl"
 			:src="coverImageBlobUrl"
 			alt=""
-			class="tw:w-full"
+			width="640"
+			height="360"
+			loading="lazy"
+			decoding="async"
+			class="kanban-cover"
 		>
 		<div class="p-2">
 			<div class="tw:flex tw:justify-between">
@@ -81,6 +85,7 @@
 				v-if="task.percentDone > 0"
 				class="task-progress"
 				:value="task.percentDone * 100"
+				is-small
 			/>
 			<div class="footer">
 				<div class="footer-start">
@@ -285,6 +290,8 @@ $task-background: var(--white);
 
 	&.is-done h3 {
 		text-decoration: line-through;
+		text-decoration-color: var(--success-text);
+		text-decoration-thickness: 1.5px;
 		color: var(--text-muted);
 	}
 
@@ -415,7 +422,7 @@ $task-background: var(--white);
 		.footer .icon,
 		.due-date,
 		.priority-label {
-			background: hsl(220, 13%, 91%);
+			background: var(--rail-ink);
 		}
 
 		// beat component-level color: var(--grey-500) so secondary text tracks the guaranteed main text color
@@ -435,7 +442,7 @@ $task-background: var(--white);
 		.footer .icon,
 		.due-date,
 		.priority-label {
-			background: hsl(215, 27.9%, 16.9%); // grey-800
+			background: var(--rail-bg);
 		}
 
 		.footer {
@@ -461,14 +468,21 @@ $task-background: var(--white);
 	}
 }
 
+.kanban-cover {
+	inline-size: 100%;
+	block-size: auto;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	background: var(--grey-200);
+}
+
 .kanban-card__done {
 	margin-inline-end: .25rem;
 }
 
 .task-progress {
-	margin: 8px 0 0;
+	margin-block-start: 0.5rem;
 	inline-size: 100%;
-	block-size: 0.5rem;
 }
 
 :deep(.comment-count) {

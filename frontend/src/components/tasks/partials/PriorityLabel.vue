@@ -57,11 +57,11 @@ const minimumPriority = computed(() => {
 }
 
 .not-so-high {
-	color: var(--warning);
+	color: var(--warning-text);
 }
 
 .negligible {
-	color: var(--info);
+	color: var(--text-muted);
 }
 
 .icon {

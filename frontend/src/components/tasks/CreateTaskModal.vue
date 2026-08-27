@@ -13,22 +13,42 @@
 				class="create-task-form"
 				@submit.prevent="submit"
 			>
-				<FormField :label="$t('task.attributes.title')">
+				<p class="help">
+					{{ $t('task.createModal.intro') }}
+				</p>
+
+				<FormField
+					v-slot="{ id, describedBy }"
+					:label="$t('task.attributes.title')"
+					:error="titleError"
+				>
 					<input
+						:id="id"
 						v-model="title"
 						v-focus
 						class="input"
 						type="text"
 						required
+						:placeholder="$t('task.createModal.titlePlaceholder')"
+						:aria-invalid="titleError ? true : undefined"
+						:aria-describedby="describedBy"
+						@input="titleError = null"
 					>
 				</FormField>
 
-				<FormField :label="$t('task.attributes.project')">
+				<FormField
+					v-slot="{ id, describedBy }"
+					:label="$t('task.attributes.project')"
+					:error="projectError"
+				>
 					<div class="select is-fullwidth">
 						<select
+							:id="id"
 							v-model.number="selectedProjectId"
-							:aria-label="$t('task.attributes.project')"
 							required
+							:aria-invalid="projectError ? true : undefined"
+							:aria-describedby="describedBy"
+							@change="projectError = null"
 						>
 							<option
 								disabled
@@ -54,11 +74,16 @@
 					/>
 				</FormField>
 
-				<FormField :label="$t('task.attributes.description')">
+				<FormField
+					v-slot="{ id }"
+					:label="$t('task.attributes.description')"
+				>
 					<textarea
+						:id="id"
 						v-model="description"
 						class="textarea"
 						rows="4"
+						:placeholder="$t('task.description.placeholder')"
 					/>
 				</FormField>
 
@@ -66,9 +91,16 @@
 					<PrioritySelect v-model="priority" />
 				</FormField>
 
-				<FormField :label="$t('task.attributes.percentDone')">
+				<FormField
+					:label="$t('task.attributes.percentDone')"
+					:hint="$t('task.createModal.progressHint')"
+				>
 					<PercentDoneSelect v-model="percentDone" />
 				</FormField>
+
+				<p class="help">
+					{{ $t('task.createModal.datesHint') }}
+				</p>
 
 				<FormField :label="$t('task.attributes.dueDate')">
 					<Datepicker
@@ -103,7 +135,6 @@
 				variant="primary"
 				:shadow="false"
 				:loading="loading"
-				:disabled="!canSubmit"
 				@click="submit"
 			>
 				{{ $t('task.createModal.submit') }}
@@ -196,7 +227,14 @@ const selectableProjects = computed(() => {
 	return result
 })
 
-const canSubmit = computed(() => title.value.trim() !== '' && selectedProjectId.value > 0)
+const titleError = ref<string | null>(null)
+const projectError = ref<string | null>(null)
+
+function validate(): boolean {
+	titleError.value = title.value.trim() === '' ? t('task.detail.titleRequired') : null
+	projectError.value = selectedProjectId.value > 0 ? null : t('task.createModal.chooseProject')
+	return titleError.value === null && projectError.value === null
+}
 
 function toDate(value: Date | string | null | undefined): Date | null {
 	if (!value) {
@@ -227,6 +265,8 @@ function reset() {
 	endDate.value = toDate(props.defaultEndDate)
 	selectedProjectId.value = initialProjectId()
 	selectedLabels.value = []
+	titleError.value = null
+	projectError.value = null
 }
 
 watch(() => props.open, (open) => {
@@ -241,15 +281,11 @@ function close() {
 }
 
 async function submit() {
-	if (!canSubmit.value || loading.value) {
+	if (loading.value || !validate()) {
 		return
 	}
 
 	const projectId = selectedProjectId.value
-	if (!projectId) {
-		error({message: t('project.create.addProjectRequired')})
-		return
-	}
 
 	try {
 		let task = await taskStore.createNewTask({
@@ -285,7 +321,7 @@ async function submit() {
 			await taskStore.addLabel({label, taskId: task.id})
 		}
 
-		success({message: t('task.createSuccess')})
+		success({message: t('task.createSuccess'), title: false})
 		emit('created', task)
 		close()
 		await router.push(taskDetailLocation(task.id, router.currentRoute.value.fullPath))

@@ -7,11 +7,11 @@
 			class="add-task-button"
 			icon="plus"
 			:loading="loading"
-			:aria-label="$t('project.list.add')"
+			:aria-label="$t('task.new')"
 			@click="openCreateModal"
 		>
 			<span class="button-text">
-				{{ $t('project.list.add') }}
+				{{ $t('task.new') }}
 			</span>
 		</XButton>
 		<CreateTaskModal

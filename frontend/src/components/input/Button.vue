@@ -75,7 +75,7 @@ const variantClass = computed<string>(() => VARIANT_CLASS_MAP[variant.value])
 .button {
 	// Button text must stay white regardless of theme, so we use a fixed value
 	// instead of var(--white) which changes in dark mode.
-	--button-text-color: #ffffff;
+	--button-text-color: var(--button-text);
 
 	// Base structure (replaces Bulma's .button)
 	display: inline-flex;
@@ -150,10 +150,10 @@ const variantClass = computed<string>(() => VARIANT_CLASS_MAP[variant.value])
 	// Secondary/Outlined variant
 	&.is-outlined {
 		background-color: var(--scheme-main);
-		color: var(--grey-900);
+		color: var(--text);
 
 		&:hover {
-			color: var(--grey-600);
+			color: var(--text-muted);
 		}
 	}
 
@@ -203,7 +203,7 @@ const variantClass = computed<string>(() => VARIANT_CLASS_MAP[variant.value])
 	&.is-danger.is-outlined {
 		background-color: transparent;
 		border: 1px solid var(--danger);
-		color: var(--danger);
+		color: var(--danger-text);
 
 		&:hover,
 		&:focus {
@@ -216,7 +216,7 @@ const variantClass = computed<string>(() => VARIANT_CLASS_MAP[variant.value])
 	// Danger + text/tertiary variant
 	&.is-danger.is-text {
 		background-color: transparent;
-		color: var(--danger);
+		color: var(--danger-text);
 
 		&:hover {
 			background-color: hsla(var(--danger-h), var(--danger-s), var(--danger-l), 0.1);

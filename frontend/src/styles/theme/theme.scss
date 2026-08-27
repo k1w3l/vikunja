@@ -21,6 +21,10 @@ a, button, input[type='checkbox'], input[type='radio'], select, [tabindex], [con
   }
 }
 
+a {
+  text-underline-offset: 0.15em;
+}
+
 :root {
   // Bulma sets this to "scroll" which gives us a scrollbar even if there's no content to scroll
   --body-overflow-y: auto;
@@ -39,6 +43,7 @@ body {
   background: var(--site-background);
   min-height: 100vh;
   caret-color: var(--caret-color, var(--primary));
+  accent-color: var(--primary);
   font-family: $family-sans-serif;
   font-variation-settings: "CASL" 0, "CRSV" 0, "MONO" 0;
   font-size: 0.95rem;
@@ -161,5 +166,5 @@ button.table {
 
 .box {
   border: 1px solid var(--grey-200);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }

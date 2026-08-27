@@ -457,7 +457,7 @@ test.describe('Task', () => {
 			await expect(page.locator('.task-view .action-buttons .button').filter({hasText: 'Delete'})).toBeVisible()
 			await page.locator('.task-view .action-buttons .button').filter({hasText: 'Delete'}).click()
 			await expect(page.locator('dialog[open] .modal-content .modal-header')).toContainText('Delete this task')
-			await page.locator('dialog[open] .modal-content .actions .button').filter({hasText: 'Do it!'}).click()
+			await page.locator('dialog[open] .modal-content .actions .button').filter({hasText: 'Delete task'}).click()
 
 			await expect(page.locator('.global-notification')).toContainText('Success')
 			await expect(page).toHaveURL(new RegExp(`/projects/${tasks[0].project_id}/`))

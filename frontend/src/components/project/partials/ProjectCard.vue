@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="cardEl"
 		class="project-card"
 		:class="{
 			'has-light-text': background !== null,
@@ -7,7 +8,7 @@
 			'is-compact': compact,
 		}"
 		:style="{
-			'border-inline-start': project.hexColor ? `0.25rem solid ${project.hexColor}` : undefined,
+			'--project-accent': project.hexColor || undefined,
 			'background-image': blurHashUrl !== '' ? `url(${blurHashUrl})` : undefined,
 		}"
 	>
@@ -55,7 +56,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed} from 'vue'
+import {computed, ref} from 'vue'
 import type {IProject} from '@/modelTypes/IProject'
 
 import BaseButton from '@/components/base/BaseButton.vue'
@@ -63,6 +64,7 @@ import BaseButton from '@/components/base/BaseButton.vue'
 import {useProjectBackground} from '@/composables/useProjectBackground'
 import {useProjectStore} from '@/stores/projects'
 import {getProjectTitle} from '@/helpers/getProjectTitle'
+import {useIntersectionObserver} from '@vueuse/core'
 
 const props = withDefaults(defineProps<{
 	project: IProject,
@@ -71,7 +73,16 @@ const props = withDefaults(defineProps<{
 	compact: false,
 })
 
-const {background, blurHashUrl} = useProjectBackground(() => props.project)
+const cardEl = ref<HTMLElement | null>(null)
+const inView = ref(typeof IntersectionObserver === 'undefined')
+const {stop} = useIntersectionObserver(cardEl, ([entry]) => {
+	if (entry?.isIntersecting) {
+		inView.value = true
+		stop()
+	}
+}, {rootMargin: '120px'})
+
+const {background, blurHashUrl} = useProjectBackground(() => props.project, {enabled: inView})
 
 const projectStore = useProjectStore()
 
@@ -83,10 +94,15 @@ const textOnlyDescription = computed(() => {
 <style lang="scss" scoped>
 .project-card {
 	--project-card-padding: 1rem;
+	contain: layout paint;
+	content-visibility: auto;
+	contain-intrinsic-block-size: auto 150px;
 	background: var(--white);
 	padding: var(--project-card-padding);
+	border: 1px solid var(--card-border-color);
+	border-inline-start-color: var(--project-accent, var(--card-border-color));
 	border-radius: $radius;
-	box-shadow: var(--shadow-sm);
+	box-shadow: none;
 	transition: box-shadow $transition;
 	position: relative;
 	overflow: hidden; // hide background
@@ -96,12 +112,11 @@ const textOnlyDescription = computed(() => {
 	flex-wrap: wrap;
 
 	&:hover {
-		box-shadow: var(--shadow-md);
+		box-shadow: var(--shadow-sm);
 	}
 
-	&:active,
-	&:focus {
-		box-shadow: var(--shadow-xs) !important;
+	&:active {
+		box-shadow: var(--shadow-xs);
 	}
 
 	> * {
@@ -134,7 +149,7 @@ const textOnlyDescription = computed(() => {
 .project-title {
 	align-self: flex-end;
 	font-family: $vikunja-font;
-	font-weight: 400;
+	font-weight: 650;
 	font-size: 1.5rem;
 	line-height: var(--title-line-height);
 	color: var(--text);
@@ -170,13 +185,13 @@ const textOnlyDescription = computed(() => {
 	opacity: 1;
 
 	&:hover {
-		color: var(--warning);
+		color: var(--warning-text);
 	}
 
 	&.is-favorite {
 		display: inline-block;
 		opacity: 1;
-		color: var(--warning);
+		color: var(--warning-text);
 	}
 }
 
@@ -213,5 +228,9 @@ const textOnlyDescription = computed(() => {
 		-webkit-line-clamp: 2;
 		align-self: center;
 	}
+}
+
+.is-compact.project-card {
+	contain-intrinsic-block-size: auto 5.5rem;
 }
 </style>

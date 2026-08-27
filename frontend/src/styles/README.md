@@ -14,7 +14,7 @@ the bottom.
 styles/
 ├── common-imports.scss     SCSS variables/mixins auto-injected into every .scss/.vue <style lang="scss">
 ├── global.scss             Entry point: pulls in Bulma partials + theme + components + tokens
-├── fonts.scss              @font-face declarations for Quicksand and Open Sans
+├── fonts.scss              @font-face / Google Fonts import for Recursive
 ├── transitions.scss        Vue <Transition> classes (fade, width)
 ├── tailwind.css            Tailwind v4 entry (utilities only, `tw` prefix)
 │
@@ -127,10 +127,10 @@ composed `--primary` re-derives automatically.
 
 ### Grey scale
 
-`--grey-50` … `--grey-900` form a Tailwind-style neutral ramp. The `-hsl` companions
-(`--grey-100-hsl`, `--grey-500-hsl`, `--grey-900-hsl`, …) expose the raw HSL tuple for
-the alpha-composition trick above. Dark mode reverses the scale: `--grey-900` becomes the
-light-mode `--grey-50` value, and so on down the ladder.
+`--grey-50` … `--grey-900` form a Tailwind-style warm stone ramp. The `-hsl` companions
+expose the raw HSL tuple for alpha-composition. Dark mode is a composed night desk in the
+same hue family (canvas darkest, cards one step up, rail darker still) — not a cool invert
+of the light ramp.
 
 ### Bulma `--scheme-*` tokens
 

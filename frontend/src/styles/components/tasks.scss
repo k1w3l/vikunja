@@ -1,3 +1,40 @@
+// Work slips laid onto the blotter. Duration/stagger/cap stay in sync with useTaskLay.ts
+.is-laying > * {
+	animation: task-lay $transition-layout $ease-out-expo backwards;
+	will-change: transform, opacity, clip-path;
+}
+
+@for $i from 1 through 8 {
+	.is-laying > *:nth-child(#{$i}) {
+		animation-delay: #{($i - 1) * 24ms};
+	}
+}
+
+.is-laying > *:nth-child(n + 9) {
+	animation-delay: 168ms;
+}
+
+@keyframes task-lay {
+	from {
+		opacity: 0;
+		transform: translate3d(0, -0.5rem, 0);
+		clip-path: inset(0 0 72% 0);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.is-laying > * {
+		animation: none;
+		will-change: auto;
+	}
+}
+
+@media print {
+	.is-laying > * {
+		animation: none;
+	}
+}
+
 // FIXME: These classes are used all over.
 // very hard to untangle
 // they have many overwrites at different positions

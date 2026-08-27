@@ -32,7 +32,7 @@
 		<KeyboardShortcuts v-if="keyboardShortcutsActive && !isQuickAddMode" />
 
 		<Teleport to="body">
-			<AddToHomeScreen v-if="!isQuickAddMode" />
+			<AddToHomeScreen v-if="!isQuickAddMode && authStore.authenticated" />
 			<UpdateNotification v-if="!isQuickAddMode" />
 			<Notification />
 			<DemoMode v-if="!isQuickAddMode" />

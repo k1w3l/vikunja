@@ -123,10 +123,12 @@
 					v-for="task in rts.tasks"
 					:key="task.id"
 					class="task"
+					:class="{'is-completing': completingId === task.id}"
 				>
 					<div class="is-flex is-align-items-center">
 						<FancyCheckbox
 							v-model="task.done"
+							tone="complete"
 							class="task-done-checkbox"
 							@update:modelValue="toggleTaskDone(task)"
 						/>
@@ -189,7 +191,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, shallowReactive, watch, computed} from 'vue'
+import {ref, reactive, shallowReactive, watch, computed, onBeforeUnmount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRoute} from 'vue-router'
 
@@ -375,11 +377,21 @@ async function createAndRelateTask(title: string) {
 	await addTaskRelation()
 }
 
+const completingId = ref<number | null>(null)
+let completingTimer: ReturnType<typeof setTimeout> | undefined
+
 async function toggleTaskDone(task: ITask) {
 	await taskStore.update(task)
 	
 	if (task.done) {
 		playPopSound()
+		completingId.value = task.id
+		clearTimeout(completingTimer)
+		completingTimer = setTimeout(() => {
+			if (completingId.value === task.id) {
+				completingId.value = null
+			}
+		}, 400)
 	}
 	
 	// Find the task in the project and update it so that it is correctly strike through
@@ -393,8 +405,15 @@ async function toggleTaskDone(task: ITask) {
 		})
 	})
 
-	success({message: t('task.detail.updateSuccess')})
+	success({
+		message: task.done ? t('task.doneSuccess') : t('task.undoneSuccess'),
+		title: false,
+	})
 }
+
+onBeforeUnmount(() => {
+	clearTimeout(completingTimer)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -443,13 +462,19 @@ async function toggleTaskDone(task: ITask) {
 		&:hover {
 			color: var(--grey-900);
 		}
+
+		&.is-strikethrough {
+			color: var(--text-muted);
+			text-decoration-color: var(--success-text);
+			text-decoration-thickness: 1.5px;
+		}
 	}
 
 }
 
 .remove {
 	text-align: center;
-	color: var(--danger);
+	color: var(--danger-text);
 	opacity: 0;
 	transition: opacity $transition;
 }

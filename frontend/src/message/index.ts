@@ -52,7 +52,7 @@ export function error(e, actions: Action[] = []) {
 export function success(e, actions: Action[] = []) {
 	notify({
 		type: 'success',
-		title: i18n.global.t('error.success'),
+		title: e?.title === false ? '' : (e?.title || i18n.global.t('error.success')),
 		text: getErrorText(e),
 		ignoreDuplicates: true,
 		data: {

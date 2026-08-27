@@ -57,7 +57,8 @@
 						:component-data="{
 							class: {
 								tasks: true,
-								'dragging-disabled': !canDragTasks || !isPositionSorting
+								'dragging-disabled': !canDragTasks || !isPositionSorting,
+								'is-laying': isLaying,
 							},
 							type: 'transition-group'
 						}"
@@ -113,6 +114,7 @@ import Pagination from '@/components/misc/Pagination.vue'
 import SortPopup from '@/components/project/partials/SortPopup.vue'
 
 import {useTaskList} from '@/composables/useTaskList'
+import {useTaskLay} from '@/composables/useTaskLay'
 import {useTaskDragToProject} from '@/composables/useTaskDragToProject'
 import {shouldShowTaskInListView} from '@/composables/useTaskListFiltering'
 import {PERMISSIONS as Permissions} from '@/constants/permissions'
@@ -170,6 +172,11 @@ watch(
 	() => {
 		tasks.value = ([...allTasks.value]).filter(t => shouldShowTaskInListView(t))
 	},
+)
+
+const {isLaying} = useTaskLay(
+	() => !loading.value && tasks.value.length > 0,
+	() => `${projectId.value}:${props.viewId}:${currentPage.value}`,
 )
 
 const isPositionSorting = computed(() => 'position' in sortByParam.value)

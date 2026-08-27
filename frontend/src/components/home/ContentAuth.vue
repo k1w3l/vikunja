@@ -52,7 +52,7 @@
 				>
 					<keep-alive :include="['project.view']">
 						<Transition name="route-fade">
-							<component :is="Component" />
+							<component :is="asRouterView(Component)" />
 						</Transition>
 					</keep-alive>
 				</RouterView>
@@ -88,7 +88,7 @@
 </template>
 
 <script lang="ts" setup>
-import {watch, computed, onBeforeUnmount} from 'vue'
+import {watch, computed, onBeforeUnmount, defineAsyncComponent, type Component} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 
 import {SHORTCUTS} from '@/constants/shortcuts'
@@ -105,6 +105,33 @@ import {useRenewTokenOnFocus} from '@/composables/useRenewTokenOnFocus'
 import {useSidebarResize} from '@/composables/useSidebarResize'
 import {useWebSocket} from '@/composables/useWebSocket'
 import {useAuthStore} from '@/stores/auth'
+
+const asyncViewCache = new WeakMap<object, Component>()
+
+function asRouterView(view: unknown) {
+	if (view == null) {
+		return view
+	}
+
+	const isThenable = typeof view === 'object' && 'then' in view
+	const isLazyLoader = typeof view === 'function' && view.length === 0
+
+	if (!isThenable && !isLazyLoader) {
+		return view
+	}
+
+	const key = view as object
+	const cached = asyncViewCache.get(key)
+	if (cached) {
+		return cached
+	}
+
+	const wrapped = isLazyLoader
+		? defineAsyncComponent(view as () => Promise<Component>)
+		: defineAsyncComponent(() => view as Promise<Component>)
+	asyncViewCache.set(key, wrapped)
+	return wrapped
+}
 
 const authStore = useAuthStore()
 const backgroundBrightness = computed(() =>

@@ -91,9 +91,36 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .vue-notification {
 	z-index: 9999;
+	border-radius: $radius;
+	box-shadow: var(--shadow-md);
 }
 
+.vue-notification.success {
+	background: var(--success);
+	border: 0;
+	color: var(--button-text);
+}
+
+.vue-notification.error {
+	background: var(--danger);
+	border: 0;
+	color: var(--button-text);
+}
+
+.notification-title {
+	font-weight: 650;
+	font-size: 0.82rem;
+}
+
+.notification-content {
+	font-weight: 450;
+}
+
+:deep(.button.is-outlined) {
+	background: var(--white);
+	color: var(--text);
+}
 </style>

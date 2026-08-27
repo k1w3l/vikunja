@@ -22,7 +22,7 @@ const computedUrl = computed(() => `${poweredByUrl}&utm_medium=${props.utmMedium
 
 <style lang="scss">
 .menu-bottom-link {
-	color: #c4bdb4;
+	color: var(--rail-muted);
 	text-align: center;
 	display: block;
 	padding-block-start: 0.75rem;

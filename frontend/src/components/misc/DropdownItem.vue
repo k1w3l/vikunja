@@ -34,7 +34,7 @@ defineProps<DropDownItemProps>()
 <style scoped lang="scss">
 .dropdown-item {
 	color: var(--text);
-	font-size: 0.875rem;
+	font-size: 0.82rem;
 	line-height: 1.5;
 	padding: $item-padding;
 	position: relative;
@@ -65,6 +65,6 @@ defineProps<DropDownItemProps>()
 }
 
 .has-text-danger .icon {
-	color: var(--danger) !important;
+	color: var(--danger-text) !important;
 }
 </style>

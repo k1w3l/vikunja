@@ -107,7 +107,7 @@ onUnmounted(() => {
 	transition: color $transition;
 
 	&:hover {
-		color: var(--danger);
+		color: var(--danger-text);
 	}
 }
 </style>

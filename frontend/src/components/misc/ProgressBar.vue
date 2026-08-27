@@ -1,132 +1,81 @@
 <template>
-	<progress
+	<div
 		class="progress-bar"
 		:class="{
 			'is-small': isSmall,
 			'is-primary': isPrimary,
 		}"
-		:value="value"
-		max="100"
+		role="progressbar"
+		:aria-valuemin="0"
+		:aria-valuemax="100"
+		:aria-valuenow="clamped"
+		:aria-valuetext="`${clamped}%`"
+		:aria-label="progressLabel"
 	>
-		{{ value }}%
-	</progress>
+		<span
+			class="progress-bar__fill"
+			:style="{ transform: `scaleX(${clamped / 100})` }"
+		/>
+	</div>
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
+import {computed} from 'vue'
+import {useI18n} from 'vue-i18n'
+
+const props = withDefaults(defineProps<{
 	value: number
 	isSmall?: boolean
 	isPrimary?: boolean
+	ariaLabel?: string
 }>(), {
 	isSmall: false,
 	isPrimary: false,
+	ariaLabel: undefined,
 })
+
+const {t} = useI18n({useScope: 'global'})
+const clamped = computed(() => Math.round(Math.min(100, Math.max(0, props.value))))
+const progressLabel = computed(() => props.ariaLabel ?? t('task.attributes.percentDone'))
 </script>
 
 <style lang="scss" scoped>
 .progress-bar {
-	--progress-height: #{$size-normal};
-	--progress-bar-background-color: var(--border-light, #{$border-light});
-	--progress-value-background-color: var(--grey-500, #{$text});
-	--progress-border-radius: #{$radius};
-	--progress-indeterminate-duration: 1.5s;
-
-	appearance: none;
-	border: none;
-	border-radius: var(--progress-border-radius);
-	block-size: var(--progress-height);
+	contain: layout paint;
+	display: block;
+	inline-size: 100%;
+	min-inline-size: 0;
+	block-size: 4px;
+	margin: 0;
 	overflow: hidden;
-	padding: 0;
-	min-inline-size: 6vw;
-
-	inline-size: 50px;
-	margin: 0 .5rem 0 0;
-	flex: 3 1 auto;
-
-	&::-moz-progress-bar,
-	&::-webkit-progress-value {
-		background: var(--progress-value-background-color);
-	}
-
-	@media screen and (max-width: $tablet) {
-		margin: 0.5rem 0 0;
-		order: 1;
-		inline-size: 100%;
-	}
-
-	&::-webkit-progress-bar {
-		background-color: var(--progress-bar-background-color);
-	}
-
-	&::-webkit-progress-value {
-		background-color: var(--progress-value-background-color);
-	}
-
-	&::-moz-progress-bar {
-		background-color: var(--progress-value-background-color);
-	}
-
-	&::-ms-fill {
-		background-color: var(--progress-value-background-color);
-		border: none;
-	}
-
-	// Colors
-	@each $name, $pair in $colors {
-		// stylelint-disable-next-line function-no-unknown
-		$color: nth($pair, 1);
-		&.is-#{$name} {
-			--progress-value-background-color: var(--#{$name}, #{$color});
-
-			&:indeterminate {
-				background-image: linear-gradient(
-						to right,
-						var(--#{$name}, #{$color}) 30%,
-						var(--progress-bar-background-color) 30%
-				);
-			}
-		}
-	}
-
-	&:indeterminate {
-		animation-duration: var(--progress-indeterminate-duration);
-		animation-iteration-count: infinite;
-		animation-name: move-indeterminate;
-		animation-timing-function: linear;
-		background-color: var(--progress-bar-background-color);
-		background-image: linear-gradient(
-				to right,
-				var(--text, #{$text}) 30%,
-				var(--progress-bar-background-color) 30%
-		);
-		background-position: top left;
-		background-repeat: no-repeat;
-		background-size: 150% 150%;
-
-		&::-webkit-progress-bar {
-			background-color: transparent;
-		}
-
-		&::-moz-progress-bar {
-			background-color: transparent;
-		}
-
-		&::-ms-fill {
-			animation-name: none;
-		}
-	}
-
-	&.is-small {
-		--progress-height: #{$size-small};
-	}
+	border-radius: $radius;
+	background: var(--grey-200);
 }
 
-@keyframes move-indeterminate {
-	from {
-		background-position: 200% 0;
-	}
-	to {
-		background-position: -200% 0;
+.progress-bar__fill {
+	display: block;
+	block-size: 100%;
+	inline-size: 100%;
+	transform-origin: 0 50%;
+	background: var(--success);
+	transition: transform $transition-layout;
+}
+
+.progress-bar:dir(rtl) .progress-bar__fill {
+	transform-origin: 100% 50%;
+}
+
+.progress-bar.is-small {
+	block-size: 3px;
+}
+
+.progress-bar.is-primary .progress-bar__fill {
+	background: var(--primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.progress-bar__fill {
+		transition: none;
 	}
 }
 </style>

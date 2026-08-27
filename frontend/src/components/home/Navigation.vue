@@ -84,11 +84,6 @@
 			</nav>
 		</template>
 
-		<PoweredByLink
-			class="mbs-auto"
-			utm-medium="navigation"
-		/>
-
 		<div
 			v-if="!isMobile"
 			class="resize-handle"
@@ -102,7 +97,6 @@
 import {computed} from 'vue'
 
 import {SHORTCUTS} from '@/constants/shortcuts'
-import PoweredByLink from '@/components/home/PoweredByLink.vue'
 import Loading from '@/components/misc/Loading.vue'
 
 import {useBaseStore} from '@/stores/base'
@@ -207,7 +201,7 @@ const savedFilterProjects = computed(() => projectStore.savedFilterProjects as I
 .menu + .menu {
 	padding-block-start: 0.6rem;
 	margin-block-start: 0.6rem;
-	border-block-start: 1px solid #3f3a36;
+	border-block-start: 1px solid var(--rail-line);
 }
 
 .new-project-link {

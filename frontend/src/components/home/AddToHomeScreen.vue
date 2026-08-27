@@ -62,10 +62,11 @@ const shouldShowMessage = computed(() => {
 	justify-content: space-between;
 	gap: 1rem;
 	padding: .5rem 1rem;
-	background: var(--grey-900);
+	background: var(--rail-bg);
+	border: 1px solid var(--rail-line);
 	border-radius: $radius;
 	font-size: .9rem;
-	color: var(--grey-200);
+	color: var(--rail-ink);
 
 	@media screen and (min-width: $tablet) {
 		display: none;

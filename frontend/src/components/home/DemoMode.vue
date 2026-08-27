@@ -38,7 +38,7 @@ const enabled = computed(() => configStore.demoModeEnabled && !hide.value)
 	text-align: center;
 	
 	&, strong {
-		color: hsl(220, 13%, 91%) !important; // --grey-200 in light mode, hardcoded because the color should not change
+		color: var(--button-text) !important;
 	}
 }
 

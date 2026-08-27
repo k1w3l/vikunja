@@ -3,7 +3,10 @@ import ProjectService from '@/services/project'
 import type {IProject} from '@/modelTypes/IProject'
 import {getBlobFromBlurHash} from '@/helpers/getBlobFromBlurHash'
 
-export function useProjectBackground(project: MaybeRefOrGetter<IProject | null>) {
+export function useProjectBackground(
+	project: MaybeRefOrGetter<IProject | null>,
+	options?: {enabled?: MaybeRefOrGetter<boolean>},
+) {
 	const background = ref<string | null>(null)
 	const backgroundLoading = ref(false)
 	const blurHashUrl = ref('')
@@ -12,10 +15,12 @@ export function useProjectBackground(project: MaybeRefOrGetter<IProject | null>)
 		() => [
 			toValue(project)?.id ?? null,
 			toValue(project)?.backgroundBlurHash ?? null,
-		] as [IProject['id'] | null, IProject['backgroundBlurHash'] | null],
-		async ([projectId, blurHash], oldValue) => {
+			options?.enabled === undefined ? true : toValue(options.enabled),
+		] as [IProject['id'] | null, IProject['backgroundBlurHash'] | null, boolean],
+		async ([projectId, blurHash, enabled], oldValue) => {
 			const projectValue = toValue(project)
 			if (
+				!enabled ||
 				projectValue === null ||
 				!projectValue.backgroundInformation ||
 				backgroundLoading.value
@@ -23,20 +28,21 @@ export function useProjectBackground(project: MaybeRefOrGetter<IProject | null>)
 				return
 			}
 
-			const [oldProjectId, oldBlurHash] = oldValue || []
+			const [oldProjectId, oldBlurHash, oldEnabled] = oldValue || []
 			if (
 				oldValue !== undefined &&
-				projectId === oldProjectId && blurHash === oldBlurHash
+				projectId === oldProjectId &&
+				blurHash === oldBlurHash &&
+				enabled === oldEnabled
 			) {
-				// project hasn't changed
 				return
 			}
 
 			backgroundLoading.value = true
 
 			try {
-				const blurHashPromise = getBlobFromBlurHash(blurHash).then((blurHash) => {
-					blurHashUrl.value = blurHash ? window.URL.createObjectURL(blurHash) : ''
+				const blurHashPromise = getBlobFromBlurHash(blurHash).then((hashBlob) => {
+					blurHashUrl.value = hashBlob ? window.URL.createObjectURL(hashBlob) : ''
 				})
 
 				const projectService = new ProjectService()

@@ -232,6 +232,6 @@ function timeRange(entry: ITimeEntry): string {
 }
 
 .entry-delete:hover {
-	color: var(--danger);
+	color: var(--danger-text);
 }
 </style>

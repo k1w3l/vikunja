@@ -454,13 +454,14 @@
 					<template v-if="canWrite">
 						<XButton
 							v-shortcut="SHORTCUTS.taskDetail.done"
-							:class="{'is-pending': !task.done}"
+							:class="{'is-done': task.done, 'is-ready': !task.done}"
 							class="button--mark-done"
 							icon="check-double"
 							variant="secondary"
+							:aria-pressed="task.done"
 							@click="toggleTaskDone()"
 						>
-							{{ task.done ? $t('task.detail.undone') : $t('task.detail.done') }}
+							{{ task.done ? $t('task.attributes.done') : $t('task.detail.done') }}
 						</XButton>
 						<TaskSubscription
 							entity="task"
@@ -674,6 +675,7 @@
 
 		<Modal
 			:enabled="showDeleteModal"
+			:submit-label="$t('task.detail.delete.confirm')"
 			@close="showDeleteModal = false"
 			@submit="deleteTask()"
 		>
@@ -1146,6 +1148,7 @@ function openAttachments() {
 async function saveTask(
 	currentTask: ITask | null = null,
 	undoCallback?: () => void,
+	toast?: {message: string, title?: string | false},
 ) {
 	if (currentTask === null) {
 		currentTask = klona(task.value)
@@ -1178,7 +1181,10 @@ async function saveTask(
 			callback: undoCallback,
 		}]
 	}
-	success({message: t('task.detail.updateSuccess')}, actions)
+	success({
+		message: toast?.message ?? t('task.detail.updateSuccess'),
+		title: toast?.title,
+	}, actions)
 }
 
 useTaskDetailShortcuts({
@@ -1196,18 +1202,23 @@ async function deleteTask() {
 }
 
 async function toggleTaskDone() {
+	const goingDone = !task.value.done
 	const newTask = {
 		...task.value,
-		done: !task.value.done,
+		done: goingDone,
 	}
 
-	if (newTask.done) {
+	if (goingDone) {
 		playPopSound()
 	}
 
 	await saveTask(
 		newTask,
 		toggleTaskDone,
+		{
+			message: goingDone ? t('task.doneSuccess') : t('task.undoneSuccess'),
+			title: false,
+		},
 	)
 }
 
@@ -1340,7 +1351,7 @@ h2 .button {
 }
 
 .remove {
-	color: var(--danger);
+	color: var(--danger-text);
 	vertical-align: middle;
 	padding-inline-start: .5rem;
 	line-height: 1;
@@ -1471,14 +1482,25 @@ h2 .button {
 			background-color: transparent;
 			box-shadow: none;
 
-			// bright brand green with fixed dark text passes contrast in both themes
-			&.is-pending {
-				background-color: var(--success);
-				color: hsl(215, 27.9%, 16.9%);
+			&.is-ready {
+				background-color: var(--primary);
+				color: var(--button-text);
 
 				&:hover,
 				&:focus {
-					filter: brightness(1.05);
+					background-color: var(--primary-dark);
+					color: var(--button-text);
+				}
+			}
+
+			&.is-done {
+				background-color: var(--success);
+				color: var(--button-text);
+
+				&:hover,
+				&:focus {
+					background-color: var(--success-text);
+					color: var(--button-text);
 				}
 			}
 		}
@@ -1516,10 +1538,9 @@ h2 .button {
 }
 
 .action-heading {
-	text-transform: uppercase;
 	color: var(--grey-700);
-	font-size: .75rem;
-	font-weight: 700;
+	font-size: 0.82rem;
+	font-weight: 620;
 	margin: 0;
 	display: inline-block;
 }

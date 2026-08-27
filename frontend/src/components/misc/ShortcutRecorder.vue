@@ -203,7 +203,7 @@ kbd {
 	padding: .25rem;
 
 	&:hover {
-		color: var(--danger);
+		color: var(--danger-text);
 	}
 }
 </style>

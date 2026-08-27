@@ -54,7 +54,7 @@
 								:shadow="false"
 								@click="$emit('submit')"
 							>
-								{{ $t('misc.doit') }}
+								{{ submitLabel || $t('misc.doit') }}
 							</XButton>
 						</div>
 					</slot>
@@ -73,11 +73,13 @@ const props = withDefaults(defineProps<{
 	overflow?: boolean,
 	wide?: boolean,
 	variant?: 'default' | 'hint-modal' | 'scrolling' | 'top',
+	submitLabel?: string,
 }>(), {
 	enabled: true,
 	overflow: false,
 	wide: false,
 	variant: 'default',
+	submitLabel: undefined,
 })
 
 defineEmits(['close', 'submit'])

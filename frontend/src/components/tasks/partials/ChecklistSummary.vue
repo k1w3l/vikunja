@@ -81,13 +81,13 @@ circle {
 	stroke: var(--grey-400);
 
 	&:last-child {
-		stroke: var(--primary);
+		stroke: var(--success-text);
 	}
 }
 
 svg.is-all-done circle {
 	&:last-child {
-		stroke: var(--success);
+		stroke: var(--success-text);
 	}
 }
 </style>

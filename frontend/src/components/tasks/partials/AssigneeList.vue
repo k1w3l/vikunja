@@ -108,7 +108,7 @@ defineEmits<{
 	position: absolute;
 	inset-block-start: 4px;
 	inset-inline-start: 2px;
-	color: var(--danger);
+	color: var(--danger-text);
 	background: var(--white);
 	display: block;
 	border-radius: 100%;

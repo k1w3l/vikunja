@@ -722,7 +722,7 @@ function focus() {
 }
 
 .create-icon {
-	color: var(--success);
+	color: var(--success-text);
 	margin-inline-end: .25rem;
 	font-size: .75rem;
 }
@@ -734,6 +734,6 @@ function focus() {
 .removal-button {
 	position: absolute;
 	inset-inline-end: .5rem;
-	color: var(--danger);
+	color: var(--danger-text);
 }
 </style>

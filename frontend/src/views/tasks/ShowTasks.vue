@@ -94,7 +94,10 @@
 						</span>
 						{{ group.title }}
 					</h3>
-					<ul class="overview-tasks">
+					<ul
+						class="overview-tasks"
+						:class="{'is-laying': isLaying}"
+					>
 						<li
 							v-for="task in group.tasks"
 							:key="task.id"
@@ -116,7 +119,10 @@
 				:has-content="false"
 				:loading="loading"
 			>
-				<ul class="p-2 tasks">
+				<ul
+					class="p-2 tasks"
+					:class="{'is-laying': isLaying}"
+				>
 					<li
 						v-for="task in visibleTasks"
 						:key="task.id"
@@ -165,6 +171,7 @@ import type {TaskFilterParams} from '@/services/taskCollection'
 import TaskCollectionService from '@/services/taskCollection'
 import {PERMISSIONS} from '@/constants/permissions'
 import {shouldShowTaskInListView, shouldShowTaskOnOverview} from '@/composables/useTaskListFiltering'
+import {useTaskLay} from '@/composables/useTaskLay'
 import {getProjectTitle, isDailyProject, isInboxProject} from '@/helpers/getProjectTitle'
 import {useProjectIcon} from '@/composables/useProjectIcon'
 
@@ -284,6 +291,10 @@ const overviewGroups = computed(() => {
 const hasTasks = computed(() => visibleTasks.value.length > 0)
 const userAuthenticated = computed(() => authStore.authenticated)
 const loading = computed(() => taskStore.isLoading || taskCollectionService.value.loading)
+const {isLaying} = useTaskLay(
+	() => !loading.value && hasTasks.value,
+	() => route.name,
+)
 const filterIdUsedOnOverview = computed(() => authStore.settings?.frontendSettings?.filterIdUsedOnOverview)
 
 interface dateStrings {
@@ -495,7 +506,7 @@ watchEffect(() => {
 		padding: 0.25rem 0.5rem;
 		
 		&:hover {
-			color: var(--danger);
+			color: var(--danger-text);
 		}
 	}
 

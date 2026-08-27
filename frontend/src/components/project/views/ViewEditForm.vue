@@ -325,7 +325,7 @@ function handleBubbleSave() {
 	button {
 		background: transparent;
 		border: none;
-		color: var(--danger);
+		color: var(--danger-text);
 		padding-inline-end: .75rem;
 		cursor: pointer;
 	}
