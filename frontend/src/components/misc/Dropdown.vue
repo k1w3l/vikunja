@@ -30,6 +30,7 @@
 				v-show="open"
 				ref="dropdownMenu"
 				class="dropdown-menu"
+				:class="{ 'is-match-trigger': matchTrigger }"
 				:style="dropdownMenuStyle"
 			>
 				<div class="dropdown-content">
@@ -43,18 +44,20 @@
 <script setup lang="ts">
 import {ref, nextTick, watch, computed} from 'vue'
 import {onClickOutside} from '@vueuse/core'
-import {computePosition, autoPlacement, offset, shift} from '@floating-ui/dom'
+import {computePosition, autoPlacement, flip, offset, shift, size} from '@floating-ui/dom'
 import type {IconProp} from '@fortawesome/fontawesome-svg-core'
 
 import CustomTransition from '@/components/misc/CustomTransition.vue'
 import BaseButton from '@/components/base/BaseButton.vue'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
 	triggerIcon?: IconProp
 	triggerLabel?: string
+	matchTrigger?: boolean
 }>(), {
 	triggerIcon: 'ellipsis-h',
 	triggerLabel: undefined,
+	matchTrigger: false,
 })
 
 const emit = defineEmits<{
@@ -90,16 +93,27 @@ async function updatePosition() {
 	await nextTick()
 
 	const {x, y} = await computePosition(dropdown.value, dropdownMenu.value, {
-		placement: 'bottom-end',
+		placement: props.matchTrigger ? 'bottom-start' : 'bottom-end',
 		strategy: 'absolute',
-		middleware: [
-			offset(dropdownMenuOffset.value),
-			autoPlacement({
-				allowedPlacements: ['bottom-end', 'top-end', 'bottom-start', 'top-start'],
-				padding: 8,
-			}),
-			shift({padding: 8}),
-		],
+		middleware: props.matchTrigger
+			? [
+				offset(dropdownMenuOffset.value),
+				flip({fallbackPlacements: ['top-start']}),
+				shift({padding: 8}),
+				size({
+					apply({rects, elements}) {
+						elements.floating.style.width = `${rects.reference.width}px`
+					},
+				}),
+			]
+			: [
+				offset(dropdownMenuOffset.value),
+				autoPlacement({
+					allowedPlacements: ['bottom-end', 'top-end', 'bottom-start', 'top-start'],
+					padding: 8,
+				}),
+				shift({padding: 8}),
+			],
 	})
 
 	dropdownPosition.value = {x, y}
@@ -169,6 +183,15 @@ onClickOutside(dropdown, (e) => {
 	position: absolute;
 	z-index: 20;
 	display: block;
+
+	&.is-match-trigger {
+		min-inline-size: 0;
+		box-sizing: border-box;
+
+		:deep(.dropdown-item) {
+			white-space: normal;
+		}
+	}
 }
 
 .dropdown-content {

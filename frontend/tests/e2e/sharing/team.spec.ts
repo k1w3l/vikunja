@@ -32,9 +32,9 @@ test.describe('Team', () => {
 
 		await page.goto('/teams')
 
-		await expect(page.locator('ul.teams')).not.toBeEmpty()
+		await expect(page.locator('.card .table')).not.toBeEmpty()
 		for (const t of teams) {
-			await expect(page.locator('ul.teams')).toContainText(t.name)
+			await expect(page.locator('.card .table')).toContainText(t.name)
 		}
 	})
 

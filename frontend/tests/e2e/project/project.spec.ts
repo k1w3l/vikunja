@@ -15,9 +15,9 @@ test.describe('Projects', () => {
 	})
 
 	test('Should create a new project', async ({authenticatedPage: page}) => {
-		await page.goto('/projects')
+		await page.goto('/')
 		await page.waitForLoadState('networkidle')
-		await page.locator('.action-buttons').getByRole('link', {name: /project/i}).click()
+		await page.locator('.new-project-link').click()
 		await expect(page).toHaveURL(/\/projects\/new/)
 		await expect(page.locator('.card-header-title')).toContainText('New project')
 		await page.locator('input[name=projectTitle]').fill('New Project')
@@ -73,8 +73,8 @@ test.describe('Projects', () => {
 		await expect(page.locator('.project-title')).not.toContainText(projects[0].title)
 		await expect(page.locator('.menu-container .menu-list').getByRole('listitem').filter({hasText: newProjectName})).toBeVisible()
 		await page.goto('/')
-		await expect(page.locator('.project-grid')).toContainText(newProjectName)
-		await expect(page.locator('.project-grid')).not.toContainText(projects[0].title)
+		await expect(page.locator('.menu-container .menu-list')).toContainText(newProjectName)
+		await expect(page.locator('.menu-container .menu-list')).not.toContainText(projects[0].title)
 	})
 
 	test('Should remove a project when deleting it', async ({authenticatedPage: page}) => {
@@ -110,18 +110,18 @@ test.describe('Projects', () => {
 		await expect(page.locator('main.app-content')).toContainText('This project is archived. It is not possible to create new or edit tasks for it.')
 	})
 
-	test('Should show all projects on the projects page', async ({authenticatedPage: page}) => {
+	test('Should show all projects in the sidebar', async ({authenticatedPage: page}) => {
 		const projects = await ProjectFactory.create(10)
 
-		await page.goto('/projects')
+		await page.goto('/')
 		await page.waitForLoadState('networkidle')
 
 		for (const p of projects) {
-			await expect(page.locator('.project-grid')).toContainText(p.title)
+			await expect(page.locator('.menu-container')).toContainText(p.title)
 		}
 	})
 
-	test('Should not show archived projects if the filter is not checked', async ({authenticatedPage: page}) => {
+	test('Should not show archived projects in the sidebar', async ({authenticatedPage: page}) => {
 		await ProjectFactory.create(1, {
 			id: 2,
 		}, false)
@@ -130,24 +130,8 @@ test.describe('Projects', () => {
 			is_archived: true,
 		}, false)
 
-		// Initial
-		await page.goto('/projects')
+		await page.goto('/')
 		await page.waitForLoadState('networkidle')
-		await expect(page.locator('.project-grid')).not.toContainText('Archived')
-
-		// Show archived - click the checkbox label text
-		await page.getByText('Show Archived').click()
-		await expect(page.locator('input[type="checkbox"]').first()).toBeChecked()
-		await expect(page.locator('.project-grid')).toContainText('Archived')
-
-		// Don't show archived
-		await page.getByText('Show Archived').click()
-		await expect(page.locator('input[type="checkbox"]').first()).not.toBeChecked()
-
-		// Second time visiting after unchecking
-		await page.goto('/projects')
-		await page.waitForLoadState('networkidle')
-		await expect(page.locator('input[type="checkbox"]').first()).not.toBeChecked()
-		await expect(page.locator('.project-grid')).not.toContainText('Archived')
+		await expect(page.locator('.menu-container')).not.toContainText('Archived')
 	})
 })

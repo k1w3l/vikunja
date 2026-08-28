@@ -80,7 +80,8 @@ const doneFormatted = computed(() => formatDateLong(props.task.doneAt))
 .created {
 	font-size: .75rem;
 	color: var(--text-muted);
-	text-align: end;
+	text-align: start;
+	line-height: 1.45;
 }
 
 .is-inline {

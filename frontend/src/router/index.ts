@@ -145,6 +145,16 @@ const router = createRouter({
 					component: () => import('@/views/user/settings/General.vue'),
 				},
 				{
+					path: '/user/settings/labels',
+					name: 'user.settings.labels',
+					component: () => import('@/views/user/settings/Labels.vue'),
+				},
+				{
+					path: '/user/settings/teams',
+					name: 'user.settings.teams',
+					component: () => import('@/views/user/settings/Teams.vue'),
+				},
+				{
 					path: '/user/settings/password-update',
 					name: 'user.settings.password-update',
 					component: () => import('@/views/user/settings/PasswordUpdate.vue'),
@@ -246,7 +256,7 @@ const router = createRouter({
 		{
 			path: '/projects',
 			name: 'projects.index',
-			component: () => import('@/views/project/ListProjects.vue'),
+			redirect: {name: 'home'},
 		},
 		{
 			path: '/projects/new',
@@ -389,7 +399,7 @@ const router = createRouter({
 		{
 			path: '/teams',
 			name: 'teams.index',
-			component: () => import('@/views/teams/ListTeams.vue'),
+			redirect: {name: 'user.settings.teams'},
 		},
 		{
 			path: '/teams/new',
@@ -407,7 +417,7 @@ const router = createRouter({
 		{
 			path: '/labels',
 			name: 'labels.index',
-			component: () => import('@/views/labels/ListLabels.vue'),
+			redirect: {name: 'user.settings.labels'},
 		},
 		{
 			path: '/labels/new',

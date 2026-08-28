@@ -73,10 +73,9 @@ async function newLabel() {
 	isSubmitting.value = true
 
 	try {
-		const newLabel = await labelStore.createLabel(label.value)
+		await labelStore.createLabel(label.value)
 		router.push({
-			name: 'labels.index',
-			params: {id: newLabel.id},
+			name: 'user.settings.labels',
 		})
 		success({message: t('label.create.success')})
 	} finally {

@@ -1,5 +1,8 @@
 <template>
-	<Dropdown class="select-dropdown">
+	<Dropdown
+		match-trigger
+		class="select-dropdown"
+	>
 		<template #trigger="{toggleOpen, open}">
 			<BaseButton
 				class="select-dropdown-trigger"

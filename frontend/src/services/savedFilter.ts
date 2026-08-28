@@ -106,7 +106,7 @@ export function useSavedFilter(projectId?: MaybeRefOrGetter<IProject['id']>) {
 		await filterService.delete(filter.value)
 		await projectStore.loadAllProjects()
 		success({message: t('filters.delete.success')})
-		router.push({name: 'projects.index'})
+		router.push({name: 'home'})
 	}
 
 	const titleValid = ref(true)

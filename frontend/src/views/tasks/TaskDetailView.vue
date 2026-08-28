@@ -645,10 +645,7 @@
 				>
 					{{ $t('task.detail.actions.delete') }}
 				</XButton>
-				<CreatedUpdated
-					inline
-					:task="task"
-				/>
+				<CreatedUpdated :task="task" />
 			</footer>
 		</div>
 
@@ -1542,11 +1539,9 @@ h2 .button {
 .inspector-footer {
 	flex-shrink: 0;
 	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	align-items: flex-end;
-	justify-content: space-between;
-	gap: 0.75rem;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.45rem;
 	padding-block: 0.65rem 0.9rem;
 	background: var(--inspector-bg);
 	border-block-start: 1px solid var(--card-border-color);
@@ -1559,10 +1554,8 @@ h2 .button {
 	}
 
 	:deep(.created) {
-		flex: 1 1 auto;
-		min-inline-size: 0;
-		text-align: end;
-		margin-inline-start: auto;
+		margin: 0;
+		text-align: start;
 	}
 }
 

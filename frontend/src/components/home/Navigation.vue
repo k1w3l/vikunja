@@ -81,6 +81,14 @@
 								{{ $t('project.create.header') }}
 							</RouterLink>
 						</li>
+						<li>
+							<RouterLink :to="{ name: 'filters.create' }">
+								<span class="menu-item-icon icon">
+									<Icon icon="filter" />
+								</span>
+								{{ $t('filters.create.title') }}
+							</RouterLink>
+						</li>
 					</menu>
 				</nav>
 			</template>

@@ -68,6 +68,10 @@
 .select-dropdown {
   display: block;
   inline-size: 100%;
+
+  :deep(.dropdown-item) {
+    white-space: normal;
+  }
 }
 
 .select-dropdown-trigger {

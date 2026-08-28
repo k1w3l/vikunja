@@ -322,7 +322,7 @@ async function save() {
 async function deleteTeam() {
 	await teamService.value.delete(team.value)
 	success({message: t('team.edit.delete.success')})
-	router.push({name: 'teams.index'})
+	router.push({name: 'user.settings.teams'})
 }
 
 async function deleteMember() {

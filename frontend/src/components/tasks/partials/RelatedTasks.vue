@@ -85,7 +85,10 @@
 					class="field task-relation-kind-field mbe-4"
 				>
 					<div class="control is-expanded">
-						<Dropdown class="select-dropdown">
+						<Dropdown
+							match-trigger
+							class="select-dropdown"
+						>
 							<template #trigger="{toggleOpen, open}">
 								<BaseButton
 									class="select-dropdown-trigger"
