@@ -34,7 +34,7 @@
   //--link-hover: #363636;
   --link-hover-border: #b5b5b5;
   --link-focus: #363636;
-  --link-focus-border: var(--link, #485fc7);
+  --link-focus-border: var(--primary);
   --link-active: #363636;
   --link-active-border: #4a4a4a;
   //--white-h: 0deg;
@@ -155,13 +155,13 @@
   --input-hover-color: var(--text-strong, #363636);
   --input-hover-border-color: var(--border-hover, #b5b5b5);
   --input-focus-color: var(--text-strong, #363636);
-  --input-focus-border-color: var(--link, #485fc7);
-  --input-focus-box-shadow-color: var(--input-focus-box-shadow-color-hsla, rgba(72, 95, 199, 0.25));
+  --input-focus-border-color: var(--primary);
+  --input-focus-box-shadow-color: hsla(var(--primary-hsl), 0.25);
   --input-disabled-color: var(--text-light, #7a7a7a);
   //--input-disabled-background-color: var(--background, whitesmoke);
   //--input-disabled-border-color: var(--background, whitesmoke);
   --input-disabled-placeholder-color: rgba(122, 122, 122, 0.3);
-  --input-arrow: var(--link, #485fc7);
+  --input-arrow: var(--primary);
   --input-icon-color: var(--border, #dbdbdb);
   --input-icon-active-color: var(--text, #4a4a4a);
   --black-bis: #121212;
@@ -258,6 +258,10 @@
   --link: var(--primary);
   --link-hover: var(--primary-dark);
   --link-visited: var(--primary-dark);
+  --dropdown-item-active-background-color: var(--primary);
+  --dropdown-item-active-color: var(--primary-invert);
+  --dropdown-item-hover-background-color: hsla(var(--primary-hsl), 0.16);
+  --dropdown-item-hover-color: var(--text);
 
   --border: var(--grey-200);
   --input-disabled-background-color: var(--grey-100);

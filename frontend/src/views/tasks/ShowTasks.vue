@@ -104,6 +104,7 @@
 						>
 							<SingleTaskInProject
 								:show-project="false"
+								:show-foreign-project="false"
 								:the-task="task"
 								:can-mark-as-done="(projectStore.projects[task.projectId]?.maxPermission ?? 0) > PERMISSIONS.READ"
 								@taskUpdated="updateTasks"
@@ -421,6 +422,9 @@ watchEffect(() => {
 .tasks {
 	list-style: none;
 	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
 }
 
 .overview-project {
@@ -469,19 +473,25 @@ watchEffect(() => {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	background: var(--white);
-	border: 1px solid var(--card-border-color);
-	border-radius: $radius;
-
-	li + li {
-		border-block-start: 1px solid var(--card-border-color);
-	}
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	background: transparent;
+	border: 0;
 
 	:deep(.single-task) {
 		padding: 0.55rem 0.75rem;
+		background: var(--white);
+		border: 1px solid var(--card-border-color);
+		border-radius: $radius-large;
 	}
 
 	:deep(.task-link) {
+		display: block;
+		min-inline-size: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 		font-family: $family-sans-serif;
 		font-size: 0.95rem;
 		color: var(--grey-900);

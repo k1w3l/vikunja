@@ -5,6 +5,14 @@ import {useColorScheme} from '@/composables/useColorScheme'
 import LogoMark from '@/assets/logo.svg?component'
 import {APP_NAME} from '@/constants/brand'
 
+withDefaults(defineProps<{
+	hideName?: boolean
+	stacked?: boolean
+}>(), {
+	hideName: false,
+	stacked: false,
+})
+
 const {isDark} = useColorScheme()
 
 const CustomLogo = computed(() => {
@@ -22,6 +30,10 @@ const CustomLogo = computed(() => {
 <template>
 	<div
 		class="brand"
+		:class="{
+			'is-stacked': stacked,
+			'is-mark-only': hideName,
+		}"
 		role="img"
 		:aria-label="APP_NAME"
 	>
@@ -37,6 +49,7 @@ const CustomLogo = computed(() => {
 			aria-hidden="true"
 		/>
 		<span
+			v-if="!hideName"
 			class="brand-name"
 			aria-hidden="true"
 		>Vikunja<span class="brand-x">X</span></span>
@@ -60,6 +73,10 @@ const CustomLogo = computed(() => {
 }
 
 .brand-name {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0;
+	font-family: $vikunja-font;
 	font-size: 1.25rem;
 	font-weight: 650;
 	letter-spacing: -0.03em;
@@ -69,5 +86,32 @@ const CustomLogo = computed(() => {
 
 .brand-x {
 	color: #e24e1b;
+	font-size: 1em;
+	font-weight: 700;
+	line-height: inherit;
+	letter-spacing: inherit;
+}
+
+.is-stacked {
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.85rem;
+	text-align: center;
+
+	.logo-mark {
+		inline-size: 5.25rem;
+		block-size: 5.25rem;
+		flex-basis: 5.25rem;
+	}
+
+	.brand-name {
+		font-size: 1.75rem;
+		justify-content: center;
+	}
+}
+
+.is-mark-only {
+	gap: 0;
 }
 </style>

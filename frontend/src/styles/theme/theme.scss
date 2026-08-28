@@ -28,6 +28,25 @@ a {
 :root {
   // Bulma sets this to "scroll" which gives us a scrollbar even if there's no content to scroll
   --body-overflow-y: auto;
+  accent-color: var(--primary);
+}
+
+.dropdown-content {
+  background-color: var(--white);
+}
+
+.dropdown-item.is-active,
+a.dropdown-item.is-active,
+button.dropdown-item.is-active {
+  background-color: var(--primary);
+  color: var(--primary-invert, #fff);
+}
+
+.dropdown-item:hover:not(.is-disabled):not(.is-active),
+a.dropdown-item:hover:not(.is-disabled):not(.is-active),
+button.dropdown-item:hover:not(.is-disabled):not(.is-active) {
+  background-color: hsla(var(--primary-hsl), 0.16);
+  color: var(--text);
 }
 
 // The LanguageTool browser plugin creates a custom element with shadow root for textareas.

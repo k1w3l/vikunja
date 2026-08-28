@@ -199,7 +199,7 @@ $user-dropdown-width-mobile: 5rem;
 	border-block-end: 1px solid var(--card-border-color);
 
 	@media screen and (min-width: $tablet) {
-		padding-inline-start: 2rem;
+		padding-inline-start: 0.75rem;
 		align-items: stretch;
 	}
 
@@ -221,7 +221,8 @@ $user-dropdown-width-mobile: 5rem;
 .logo-link {
 	display: flex;
 	align-items: center;
-	padding-inline-start: 0.5rem;
+	justify-content: flex-start;
+	padding-inline: 0 0.5rem;
 	flex: 0 0 auto;
 	min-inline-size: 0;
 
@@ -230,17 +231,14 @@ $user-dropdown-width-mobile: 5rem;
 	}
 
 	:deep(.brand) {
-		max-block-size: 2rem;
+		max-block-size: none;
+		overflow: visible;
 	}
 
 	:deep(.logo-mark) {
-		inline-size: 1.75rem;
-		block-size: 1.75rem;
-		flex-basis: 1.75rem;
-	}
-
-	:deep(.brand-name) {
-		color: var(--logo-text-color, var(--white));
+		inline-size: 2.15rem;
+		block-size: 2.15rem;
+		flex-basis: 2.15rem;
 	}
 }
 

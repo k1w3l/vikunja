@@ -4,85 +4,98 @@
 		class="menu-container"
 		:style="{'--sidebar-width': sidebarWidth}"
 	>
-		<nav
-			class="menu top-menu"
-			:aria-label="$t('navigation.main')"
-		>
-			<menu class="menu-list other-menu-items">
-				<li>
-					<RouterLink
-						v-shortcut="SHORTCUTS.navigation.overview"
-						:to="{ name: 'home'}"
-					>
-						<span class="menu-item-icon icon">
-							<Icon icon="calendar" />
-						</span>
-						{{ $t('navigation.overview') }}
-					</RouterLink>
-				</li>
-				<li>
-					<RouterLink
-						v-shortcut="SHORTCUTS.navigation.upcoming"
-						:to="{ name: 'tasks.range'}"
-					>
-						<span class="menu-item-icon icon">
-							<Icon :icon="['far', 'calendar-alt']" />
-						</span>
-						{{ $t('navigation.upcoming') }}
-					</RouterLink>
-				</li>
-				<li v-if="timeTrackingEnabled">
-					<RouterLink :to="{ name: 'time-tracking'}">
-						<span class="menu-item-icon icon">
-							<Icon :icon="['far', 'clock']" />
-						</span>
-						{{ $t('timeTracking.title') }}
-					</RouterLink>
-				</li>
-			</menu>
-		</nav>
-
-		<Loading
-			v-if="projectStore.isLoading"
-			variant="small"
-		/>
-		<template v-else>
+		<div class="menu-scroll">
 			<nav
-				v-if="savedFilterProjects.length"
-				class="menu"
-				:aria-label="$t('navigation.savedFilters')"
+				class="menu top-menu"
+				:aria-label="$t('navigation.main')"
 			>
-				<ProjectsNavigation
-					:model-value="savedFilterProjects"
-					:can-edit-order="false"
-					:can-collapse="false"
-				/>
-			</nav>
-
-			<nav
-				class="menu"
-				:aria-label="$t('project.projects')"
-			>
-				<ProjectsNavigation
-					:model-value="projects"
-					:can-edit-order="true"
-					:can-collapse="true"
-				/>
-				<menu class="menu-list">
+				<menu class="menu-list other-menu-items">
 					<li>
 						<RouterLink
-							class="new-project-link"
-							:to="{ name: 'project.create' }"
+							v-shortcut="SHORTCUTS.navigation.overview"
+							:to="{ name: 'home'}"
 						>
 							<span class="menu-item-icon icon">
-								<Icon icon="plus" />
+								<Icon icon="calendar" />
 							</span>
-							{{ $t('project.create.header') }}
+							{{ $t('navigation.overview') }}
+						</RouterLink>
+					</li>
+					<li>
+						<RouterLink
+							v-shortcut="SHORTCUTS.navigation.upcoming"
+							:to="{ name: 'tasks.range'}"
+						>
+							<span class="menu-item-icon icon">
+								<Icon :icon="['far', 'calendar-alt']" />
+							</span>
+							{{ $t('navigation.upcoming') }}
+						</RouterLink>
+					</li>
+					<li v-if="timeTrackingEnabled">
+						<RouterLink :to="{ name: 'time-tracking'}">
+							<span class="menu-item-icon icon">
+								<Icon :icon="['far', 'clock']" />
+							</span>
+							{{ $t('timeTracking.title') }}
 						</RouterLink>
 					</li>
 				</menu>
 			</nav>
-		</template>
+
+			<Loading
+				v-if="projectStore.isLoading"
+				variant="small"
+			/>
+			<template v-else>
+				<nav
+					v-if="savedFilterProjects.length"
+					class="menu"
+					:aria-label="$t('navigation.savedFilters')"
+				>
+					<ProjectsNavigation
+						:model-value="savedFilterProjects"
+						:can-edit-order="false"
+						:can-collapse="false"
+					/>
+				</nav>
+
+				<nav
+					class="menu"
+					:aria-label="$t('project.projects')"
+				>
+					<ProjectsNavigation
+						:model-value="projects"
+						:can-edit-order="true"
+						:can-collapse="true"
+					/>
+					<menu class="menu-list">
+						<li>
+							<RouterLink
+								class="new-project-link"
+								:to="{ name: 'project.create' }"
+							>
+								<span class="menu-item-icon icon">
+									<Icon icon="plus" />
+								</span>
+								{{ $t('project.create.header') }}
+							</RouterLink>
+						</li>
+					</menu>
+				</nav>
+			</template>
+		</div>
+
+		<div class="menu-footer d-print-none">
+			<BaseButton
+				v-shortcut="SHORTCUTS.showKeyboardShortcuts"
+				class="keyboard-shortcuts-button"
+				@click="baseStore.setKeyboardShortcutsActive(true)"
+			>
+				<span class="is-sr-only">{{ $t('keyboardShortcuts.title') }}</span>
+				<Icon icon="keyboard" />
+			</BaseButton>
+		</div>
 
 		<div
 			v-if="!isMobile"
@@ -98,6 +111,7 @@ import {computed} from 'vue'
 
 import {SHORTCUTS} from '@/constants/shortcuts'
 import Loading from '@/components/misc/Loading.vue'
+import BaseButton from '@/components/base/BaseButton.vue'
 
 import {useBaseStore} from '@/stores/base'
 import {useProjectStore} from '@/stores/projects'
@@ -129,15 +143,14 @@ const savedFilterProjects = computed(() => projectStore.savedFilterProjects as I
 	flex-direction: column;
 	background: var(--rail-bg);
 	color: var(--rail-ink);
-	padding: 0.85rem 0.65rem 1.25rem;
+	padding: 0.85rem 0.65rem 0.75rem;
 	transition: transform $transition-duration $ease-out-expo;
 	position: fixed;
 	inset-block-start: $navbar-height;
 	inset-block-end: 0;
 	inset-inline-start: 0;
 	inline-size: var(--sidebar-width);
-	overflow-x: hidden;
-	overflow-y: auto;
+	overflow: hidden;
 	z-index: 20;
 
 	@media screen and (max-width: $tablet) {
@@ -206,5 +219,37 @@ const savedFilterProjects = computed(() => projectStore.savedFilterProjects as I
 
 .new-project-link {
 	margin-block-start: 0.25rem;
+}
+
+.menu-scroll {
+	flex: 1 1 auto;
+	min-block-size: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.menu-footer {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	padding-block-start: 0.65rem;
+}
+
+.keyboard-shortcuts-button {
+	inline-size: 2rem;
+	min-inline-size: 2rem;
+	block-size: 2rem;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--rail-muted);
+	transition: color $transition;
+
+	&:hover,
+	&:focus-visible {
+		color: var(--rail-ink);
+	}
 }
 </style>

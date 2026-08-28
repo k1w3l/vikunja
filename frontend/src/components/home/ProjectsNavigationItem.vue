@@ -214,13 +214,34 @@ const glyphStyle = computed(() => {
 	transform: rotate(-90deg);
 }
 
-.favorite {
+.collapse-project-button {
 	position: absolute;
-	inset-inline-end: 1.7rem;
+	inset-inline-start: 0;
+	z-index: 2;
+	padding: 0.5rem 0.05rem;
+
+	:deep(svg) {
+		inline-size: 0.75rem;
+	}
+}
+
+.collapse-project-button-placeholder {
+	display: none;
+	flex: none;
+	inline-size: 0;
+}
+
+.favorite {
+	position: static;
+	inset: auto;
 	z-index: 1;
 	transition: opacity $transition, color $transition;
 	opacity: 0;
-	flex: 0 0 auto;
+	flex: 0 0 1.35rem;
+	inline-size: 1.35rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
 	&:hover,
 	&.is-favorite {
@@ -243,12 +264,12 @@ const glyphStyle = computed(() => {
 
 .color-bubble-wrapper {
 	position: relative;
-	inline-size: 1.15rem;
-	block-size: 1.15rem;
+	inline-size: 1rem;
+	block-size: 1rem;
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
-	margin-inline-end: .35rem;
+	margin-inline-end: 0.5rem;
 	flex-shrink: 0;
 
 	.project-glyph, .icon {
@@ -319,21 +340,32 @@ const glyphStyle = computed(() => {
 	position: relative;
 	display: flex;
 	align-items: center;
+	gap: 0.25rem;
 	min-inline-size: 0;
 	inline-size: 100%;
 	transition: background-color $transition, box-shadow $transition;
+	border-radius: $radius;
+}
+
+.navigation-item:has(.router-link-exact-active) {
+	background: var(--rail-active);
 }
 
 .list-menu-link {
 	flex: 1 1 auto;
 	min-inline-size: 0;
-	padding-inline-end: 2.4rem;
+	padding-inline-start: 0.45rem;
+	padding-inline-end: 0.25rem;
 }
 
 :deep(.menu-list-dropdown) {
-	position: absolute;
-	inset-inline-end: 0;
+	position: static;
+	inset: auto;
 	z-index: 1;
+	flex: 0 0 1.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .navigation-item:has(*:focus-visible) {

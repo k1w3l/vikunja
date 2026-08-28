@@ -144,7 +144,7 @@ defineExpose({
 
 	&.is-selected,
 	&:hover {
-		background: var(--grey-100);
+		background: hsla(var(--primary-hsl), 0.16);
 	}
 
 	&.no-results {

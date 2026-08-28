@@ -933,7 +933,7 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 
 		.task-item {
 			background-color: transparent;
-			padding: .25rem .5rem;
+			padding: 0.35rem 0.5rem;
 			position: relative;
 
 			&:first-of-type {

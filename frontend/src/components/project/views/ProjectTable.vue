@@ -28,9 +28,6 @@
 							class="columns-filter"
 							:class="{'is-open': isOpen}"
 						>
-							<FancyCheckbox v-model="activeColumns.index">
-								#
-							</FancyCheckbox>
 							<FancyCheckbox v-model="activeColumns.done">
 								{{ $t('task.attributes.done') }}
 							</FancyCheckbox>
@@ -391,7 +388,7 @@ const router = useRouter()
 const canWrite = computed(() => (projectStore.projects[props.projectId]?.maxPermission ?? 0) > PERMISSIONS.READ)
 
 const ACTIVE_COLUMNS_DEFAULT = {
-	index: true,
+	index: false,
 	done: true,
 	project: false,
 	title: true,
@@ -414,6 +411,7 @@ const SORT_BY_DEFAULT: SortBy = {
 }
 
 const activeColumns = useStorage('tableViewColumns', {...ACTIVE_COLUMNS_DEFAULT})
+activeColumns.value.index = false
 const sortBy = useStorage<SortBy>('tableViewSortBy', {...SORT_BY_DEFAULT})
 
 const taskList = useTaskList(

@@ -85,23 +85,39 @@
 					class="field task-relation-kind-field mbe-4"
 				>
 					<div class="control is-expanded">
-						<div class="select is-fullwidth has-defaults">
-							<select
-								v-model="newTaskRelation.kind"
-								:aria-label="$t('task.relation.select')"
-							>
-								<option value="unset">
+						<Dropdown class="select-dropdown">
+							<template #trigger="{toggleOpen, open}">
+								<BaseButton
+									class="select-dropdown-trigger"
+									:aria-expanded="open"
+									:aria-label="$t('task.relation.select')"
+									@click="toggleOpen"
+								>
+									<span>{{ relationKindLabel }}</span>
+									<Icon
+										icon="chevron-down"
+										class="select-dropdown-chevron"
+										:class="{'is-open': open}"
+									/>
+								</BaseButton>
+							</template>
+							<template #default="{close}">
+								<DropdownItem
+									:class="{'is-active': newTaskRelation.kind === 'unset'}"
+									@click="selectRelationKind('unset', close)"
+								>
 									{{ $t('task.relation.select') }}
-								</option>
-								<option
+								</DropdownItem>
+								<DropdownItem
 									v-for="rk in RELATION_KINDS"
 									:key="`option_${rk}`"
-									:value="rk"
+									:class="{'is-active': newTaskRelation.kind === rk}"
+									@click="selectRelationKind(rk, close)"
 								>
 									{{ $t(`task.relation.kinds.${rk}`, 1) }}
-								</option>
-							</select>
-						</div>
+								</DropdownItem>
+							</template>
+						</Dropdown>
 					</div>
 					<div class="control">
 						<XButton @click="addTaskRelation()">
@@ -207,6 +223,8 @@ import TaskRelationModel from '@/models/taskRelation'
 
 import CustomTransition from '@/components/misc/CustomTransition.vue'
 import BaseButton from '@/components/base/BaseButton.vue'
+import Dropdown from '@/components/misc/Dropdown.vue'
+import DropdownItem from '@/components/misc/DropdownItem.vue'
 import Multiselect from '@/components/input/Multiselect.vue'
 import FancyCheckbox from '@/components/input/FancyCheckbox.vue'
 import QuickAddMagic from '@/components/tasks/partials/QuickAddMagic.vue'
@@ -244,6 +262,19 @@ const newTaskRelation: TaskRelation = reactive({
 	kind: authStore.settings.frontendSettings.defaultTaskRelationType as IRelationKind,
 	task: new TaskModel(),
 })
+
+const relationKindLabel = computed(() => {
+	const kind = String(newTaskRelation.kind)
+	if (!kind || kind === 'unset') {
+		return t('task.relation.select')
+	}
+	return t(`task.relation.kinds.${kind}`, 1)
+})
+
+function selectRelationKind(kind: IRelationKind | 'unset', close: () => void) {
+	newTaskRelation.kind = kind as IRelationKind
+	close()
+}
 
 watch(
 	() => props.initialRelatedTasks,

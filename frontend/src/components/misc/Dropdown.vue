@@ -158,9 +158,10 @@ onClickOutside(dropdown, (e) => {
 }
 
 .dropdown-menu::before {
-  content: "";
-  position: absolute;
-  inset: calc(var(--hover-offset) * -1);
+	content: "";
+	position: absolute;
+	inset: calc(var(--hover-offset) * -1);
+	pointer-events: none;
 }
 
 .dropdown-menu {
@@ -171,7 +172,9 @@ onClickOutside(dropdown, (e) => {
 }
 
 .dropdown-content {
-	background-color: var(--scheme-main);
+	position: relative;
+	z-index: 1;
+	background-color: var(--white);
 	border-radius: $radius;
 	padding-block-end: .5rem;
 	padding-block-start: .5rem;

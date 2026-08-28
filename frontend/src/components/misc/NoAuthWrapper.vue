@@ -1,6 +1,9 @@
 <template>
 	<div class="no-auth-wrapper">
-		<Logo class="logo" />
+		<Logo
+			stacked
+			class="logo"
+		/>
 		<div class="noauth-container">
 			<section
 				class="image"
@@ -85,7 +88,9 @@ useTitle(() => title.value)
 	min-block-size: 100vh;
 	display: flex;
 	flex-direction: column;
-	place-items: center;
+	align-items: center;
+	justify-content: flex-start;
+	padding-block-start: 10vh;
 
 	@media screen and (max-width: $fullhd) {
 		padding-block-end: 15rem;
@@ -101,10 +106,7 @@ useTitle(() => title.value)
 	border: 1px solid var(--card-border-color);
 	box-shadow: var(--shadow-md);
 	overflow: hidden;
-
-	@media screen and (min-width: $desktop) {
-		border-radius: $radius;
-	}
+	border-radius: $radius-large;
 }
 
 .image {
@@ -168,7 +170,7 @@ useTitle(() => title.value)
 
 .logo {
 	max-inline-size: 100%;
-	margin: 1rem 0;
+	margin: 0 0 1.75rem;
 }
 
 .image-title {

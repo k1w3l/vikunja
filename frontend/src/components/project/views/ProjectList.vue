@@ -391,13 +391,14 @@ onBeforeUnmount(() => {
 .tasks {
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: 0.4rem;
 	padding: 0.75rem;
 }
 
 :deep(.single-task) {
 	background: var(--white);
 	border: 1px solid var(--card-border-color);
+	border-radius: $radius-large;
 }
 
 .task-ghost {

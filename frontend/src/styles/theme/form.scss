@@ -50,6 +50,7 @@
 .select select {
   $thickness: 1px;
   border-width: $thickness;
+  accent-color: var(--primary);
 
   &:not([multiple]) {
     height: calc(2.25rem + #{$thickness});
@@ -61,6 +62,36 @@
   &:focus,
   &:focus:not(:active) {
     box-shadow: none;
+  }
+}
+
+.select-dropdown {
+  display: block;
+  inline-size: 100%;
+}
+
+.select-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  inline-size: 100%;
+  min-block-size: 2.25rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: $radius;
+  background: var(--white);
+  color: var(--text);
+  text-align: start;
+}
+
+.select-dropdown-chevron {
+  flex-shrink: 0;
+  color: var(--grey-500);
+  transition: transform $transition;
+
+  &.is-open {
+    transform: rotate(-180deg);
   }
 }
 

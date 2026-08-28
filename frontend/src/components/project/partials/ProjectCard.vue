@@ -9,7 +9,8 @@
 		}"
 		:style="{
 			'--project-accent': project.hexColor || undefined,
-			'background-image': blurHashUrl !== '' ? `url(${blurHashUrl})` : undefined,
+			'--project-chip-fg': chipForeground,
+			'background-image': !compact && blurHashUrl !== '' ? `url(${blurHashUrl})` : undefined,
 		}"
 	>
 		<div
@@ -65,6 +66,7 @@ import {useProjectBackground} from '@/composables/useProjectBackground'
 import {useProjectStore} from '@/stores/projects'
 import {getProjectTitle} from '@/helpers/getProjectTitle'
 import {useIntersectionObserver} from '@vueuse/core'
+import {getTextColor, DARK} from '@/helpers/color/getTextColor'
 
 const props = withDefaults(defineProps<{
 	project: IProject,
@@ -88,6 +90,13 @@ const projectStore = useProjectStore()
 
 const textOnlyDescription = computed(() => {
 	return props.project.description ? props.project.description.replace(/<[^>]*>/g, '') : ''
+})
+
+const chipForeground = computed(() => {
+	if (!props.compact) {
+		return undefined
+	}
+	return props.project.hexColor ? getTextColor(props.project.hexColor) : DARK
 })
 </script>
 
@@ -113,6 +122,10 @@ const textOnlyDescription = computed(() => {
 
 	&:hover {
 		box-shadow: var(--shadow-sm);
+	}
+
+	&.is-compact:hover {
+		box-shadow: none;
 	}
 
 	&:active {
@@ -221,16 +234,51 @@ const textOnlyDescription = computed(() => {
 }
 
 .is-compact {
-	--project-card-padding: 0.5rem;
+	--project-card-padding: 0.25rem 0.6rem;
+	contain-intrinsic-block-size: auto 2rem;
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	inline-size: auto;
+	max-inline-size: 100%;
+	min-block-size: 2rem;
+	background: var(--project-accent, var(--grey-200));
+	border: 0;
+	border-inline-start-color: transparent;
+	box-shadow: none;
+
+	.project-background {
+		display: none;
+	}
 
 	.project-title {
-		font-size: 1rem;
-		-webkit-line-clamp: 2;
+		font-size: 0.82rem;
+		font-weight: 620;
+		line-height: 1.25;
+		-webkit-line-clamp: 1;
 		align-self: center;
+		margin: 0;
+		max-block-size: none;
+		color: var(--project-chip-fg, var(--grey-800));
+		text-shadow: none;
+	}
+
+	.favorite {
+		position: static;
+		inset: auto;
+		margin-inline-start: 0.25rem;
+		flex: 0 0 auto;
+		color: inherit;
 	}
 }
 
 .is-compact.project-card {
-	contain-intrinsic-block-size: auto 5.5rem;
+	contain-intrinsic-block-size: auto 2rem;
+}
+
+.is-compact.has-background .project-title,
+.is-compact.has-light-text .project-title {
+	color: var(--project-chip-fg, var(--grey-800));
+	text-shadow: none;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
 	<template v-if="kanbanView">
-		<span class="has-text-grey-light"> &gt; </span>
+		<span class="inspector-crumb__sep">›</span>
 		<template v-if="canWrite">
 			<Dropdown>
 				<template #trigger="{toggleOpen, open}">
@@ -10,21 +10,24 @@
 						:aria-label="$t('task.detail.bucketSelectLabel', {bucket: currentBucketTitle})"
 						@click="toggleOpen"
 					>
-						{{ currentBucketTitle }}
 						<Icon
-							icon="pencil-alt"
-							class="change-indicator d-print-none"
+							icon="chevron-down"
+							class="bucket-chevron d-print-none"
+							:class="{'is-open': open}"
 						/>
+						{{ currentBucketTitle }}
 					</BaseButton>
 				</template>
-				<DropdownItem
-					v-for="bucket in buckets"
-					:key="bucket.id"
-					:class="{'is-active': currentBucket?.id === bucket.id}"
-					@click="changeBucket(bucket)"
-				>
-					{{ bucket.title }}
-				</DropdownItem>
+				<template #default="{close}">
+					<DropdownItem
+						v-for="bucket in buckets"
+						:key="bucket.id"
+						:class="{'is-active': currentBucket?.id === bucket.id}"
+						@click="changeBucket(bucket, close)"
+					>
+						{{ bucket.title }}
+					</DropdownItem>
+				</template>
 			</Dropdown>
 		</template>
 		<span
@@ -134,7 +137,8 @@ const currentBucketTitle = computed(() => {
 	return currentBucket.value?.title || t('task.detail.noBucket')
 })
 
-async function changeBucket(bucket: IBucket) {
+async function changeBucket(bucket: IBucket, close?: () => void) {
+	close?.()
 	if (!kanbanView.value || currentBucket.value?.id === bucket.id) {
 		return
 	}
@@ -178,18 +182,29 @@ async function changeBucket(bucket: IBucket) {
 </script>
 
 <style lang="scss" scoped>
+.inspector-crumb__sep {
+	color: var(--grey-400);
+}
+
 .bucket-name {
-	color: var(--grey-800);
+	color: var(--text-muted);
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
 
 	&:hover {
 		color: var(--primary);
 	}
 }
 
-.change-indicator {
+.bucket-chevron {
 	font-size: .75em;
-	margin-inline-start: .25rem;
 	color: var(--grey-400);
+	transition: transform $transition;
+
+	&.is-open {
+		transform: rotate(-180deg);
+	}
 }
 
 :deep(.dropdown) {

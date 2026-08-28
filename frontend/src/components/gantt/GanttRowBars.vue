@@ -8,6 +8,28 @@
 		:aria-label="$t('project.gantt.taskBarsForRow', { rowId })"
 		:data-row-id="rowId"
 	>
+		<defs>
+			<linearGradient
+				id="gantt-cadmium-fill"
+				x1="0"
+				y1="0"
+				x2="1"
+				y2="0"
+			>
+				<stop
+					offset="0%"
+					stop-color="var(--primary-dark)"
+				/>
+				<stop
+					offset="55%"
+					stop-color="var(--primary)"
+				/>
+				<stop
+					offset="100%"
+					stop-color="hsla(var(--primary-h), var(--primary-s), 62%, 1)"
+				/>
+			</linearGradient>
+		</defs>
 		<GanttBarPrimitive
 			v-for="bar in bars"
 			:key="bar.id"
@@ -16,8 +38,7 @@
 			:timeline-end="dateToDate"
 			:on-update="(id, start, end) => emit('updateTask', id, start, end)"
 		>
-			<!-- Gradient definitions for partial-date bars -->
-			<defs v-if="bar.meta?.dateType === 'startOnly' || bar.meta?.dateType === 'endOnly'">
+			<defs v-if="isPartialDate(bar) || Boolean(bar.meta?.color)">
 				<linearGradient
 					:id="`gradient-${bar.id}`"
 					x1="0"
@@ -25,30 +46,50 @@
 					x2="1"
 					y2="0"
 				>
-					<stop
-						v-if="bar.meta?.dateType === 'endOnly'"
-						offset="0%"
-						:stop-color="getBarFill(bar)"
-						stop-opacity="0"
-					/>
-					<stop
-						v-if="bar.meta?.dateType === 'endOnly'"
-						offset="40%"
-						:stop-color="getBarFill(bar)"
-						stop-opacity="1"
-					/>
-					<stop
-						v-if="bar.meta?.dateType === 'startOnly'"
-						offset="60%"
-						:stop-color="getBarFill(bar)"
-						stop-opacity="1"
-					/>
-					<stop
-						v-if="bar.meta?.dateType === 'startOnly'"
-						offset="100%"
-						:stop-color="getBarFill(bar)"
-						stop-opacity="0"
-					/>
+					<template v-if="bar.meta?.dateType === 'endOnly'">
+						<stop
+							offset="0%"
+							:stop-color="getBarFill(bar)"
+							stop-opacity="0"
+						/>
+						<stop
+							offset="40%"
+							:stop-color="getBarFill(bar)"
+							stop-opacity="1"
+						/>
+						<stop
+							offset="100%"
+							:stop-color="getBarFillEnd(bar)"
+							stop-opacity="1"
+						/>
+					</template>
+					<template v-else-if="bar.meta?.dateType === 'startOnly'">
+						<stop
+							offset="0%"
+							:stop-color="getBarFill(bar)"
+							stop-opacity="1"
+						/>
+						<stop
+							offset="60%"
+							:stop-color="getBarFill(bar)"
+							stop-opacity="1"
+						/>
+						<stop
+							offset="100%"
+							:stop-color="getBarFillEnd(bar)"
+							stop-opacity="0"
+						/>
+					</template>
+					<template v-else>
+						<stop
+							offset="0%"
+							:stop-color="getBarFill(bar)"
+						/>
+						<stop
+							offset="100%"
+							:stop-color="getBarFillEnd(bar)"
+						/>
+					</template>
 				</linearGradient>
 			</defs>
 
@@ -355,29 +396,37 @@ function isDateless(bar: GanttBarModel) {
 }
 
 function getBarFill(bar: GanttBarModel) {
-	// Partial dates still have "actual" dates on one side — use the task color
-	if (isPartialDate(bar)) {
-		if (bar.meta?.color) {
-			return bar.meta.color
-		}
-		return 'var(--primary)'
+	if (isDateless(bar)) {
+		return 'var(--grey-100)'
 	}
 
-	if (bar.meta?.hasActualDates) {
-		if (bar.meta?.color) {
-			return bar.meta.color
-		}
-		return 'var(--primary)'
+	if (bar.meta?.color) {
+		return bar.meta.color
 	}
 
-	return 'var(--grey-100)'
+	return 'var(--primary-dark)'
+}
+
+function getBarFillEnd(bar: GanttBarModel) {
+	if (isDateless(bar)) {
+		return 'var(--grey-200)'
+	}
+
+	if (bar.meta?.color) {
+		return `color-mix(in srgb, ${bar.meta.color} 62%, #fff)`
+	}
+
+	return 'hsla(var(--primary-h), var(--primary-s), 62%, 1)'
 }
 
 function getBarFillAttr(bar: GanttBarModel): string {
-	if (isPartialDate(bar)) {
+	if (isDateless(bar)) {
+		return getBarFill(bar)
+	}
+	if (isPartialDate(bar) || bar.meta?.color) {
 		return `url(#gradient-${bar.id})`
 	}
-	return getBarFill(bar)
+	return 'url(#gantt-cadmium-fill)'
 }
 
 function getBarStroke(bar: GanttBarModel) {
@@ -455,6 +504,13 @@ function startResize(bar: GanttBarModel, edge: 'start' | 'end', event: PointerEv
 		}
 	}
 
+	rect.gantt-bar,
+	.gantt-parent-bar > rect {
+		transform-box: fill-box;
+		transform-origin: 0 50%;
+		animation: gantt-bar-grow 480ms $ease-out-expo both;
+	}
+
 	:deep(text) {
 		pointer-events: none;
 		user-select: none;
@@ -513,6 +569,23 @@ function startResize(bar: GanttBarModel, edge: 'start' | 'end', event: PointerEv
 	.gantt-bar {
 		stroke: var(--primary) !important;
 		stroke-width: 3 !important;
+	}
+}
+
+@keyframes gantt-bar-grow {
+	from {
+		transform: scaleX(0);
+	}
+
+	to {
+		transform: scaleX(1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	rect.gantt-bar,
+	.gantt-parent-bar > rect {
+		animation: none;
 	}
 }
 </style>

@@ -12,665 +12,644 @@
 			v-if="visible"
 			class="task-view"
 		>
-			<BaseButton
-				v-if="!isModal"
-				class="back-button mbs-2"
-				@click="lastProject ? router.back() : router.push(projectRoute)"
-			>
-				<Icon icon="arrow-left" />
-				{{ $t('task.detail.back') }}
-			</BaseButton>
-			<Heading
-				ref="heading"
-				:task="task"
-				:can-write="canWrite"
-				:has-close="isModal"
-				@update:task="Object.assign(task, $event)"
-				@close="$emit('close')"
-			/>
-			<nav
-				v-if="project?.id"
-				aria-label="Breadcrumb"
-				class="subtitle"
-			>
-				<template
-					v-for="p in projectStore.getAncestors(project)"
-					:key="p.id"
+			<div class="inspector-body">
+				<BaseButton
+					v-if="!isModal"
+					class="back-button mbs-2"
+					@click="lastProject ? router.back() : router.push(projectRoute)"
 				>
-					<a
-						v-if="router.options.history.state?.back?.includes('/projects/'+p.id+'/') || false"
-						v-shortcut="p.id === project?.id ? SHORTCUTS.taskDetail.openProject : ''"
-						@click="router.back()"
-					>
-						{{ getProjectTitle(p) }}
-					</a>
-					<RouterLink
-						v-else
-						v-shortcut="p.id === project?.id ? SHORTCUTS.taskDetail.openProject : ''"
-						:to="{ name: 'project.index', params: { projectId: p.id } }"
-					>
-						{{ getProjectTitle(p) }}
-					</RouterLink>
-					<span
-						v-if="p.id !== project?.id"
-						class="has-text-grey-light"
-					> &gt; </span>
-				</template>
-				<BucketSelect
+					<Icon icon="arrow-left" />
+					{{ $t('task.detail.back') }}
+				</BaseButton>
+				<Heading
+					ref="heading"
 					:task="task"
 					:can-write="canWrite"
+					:has-close="isModal"
 					@update:task="Object.assign(task, $event)"
-				/>
-			</nav>
-
-			<ChecklistSummary :task="task" />
-
-			<div
-				v-if="isSubtask && canWrite"
-				class="show-in-list-field details mbs-2"
-			>
-				<FancyCheckbox
-					v-model="task.showInList"
-					:aria-label="$t('task.attributes.showInList')"
-					@update:modelValue="saveTask()"
+					@close="$emit('close')"
 				>
-					{{ $t('task.attributes.showInList') }}
-				</FancyCheckbox>
-				<p class="help">
-					{{ $t('task.attributes.showInListHint') }}
-				</p>
-			</div>
-
-			<!-- Content and buttons -->
-			<div class="columns mbs-2">
-				<!-- Content -->
-				<div
-					:class="{'is-two-thirds': canWrite}"
-					class="column detail-content"
-				>
-					<div class="columns details">
-						<div
-							v-if="activeFields.assignees"
-							class="column assignees"
+					<template
+						v-if="project?.id"
+						#meta
+					>
+						<nav
+							aria-label="Breadcrumb"
+							class="inspector-crumb"
 						>
-							<!-- Assignees -->
-							<div class="detail-title">
-								<Icon icon="users" />
-								{{ $t('task.attributes.assignees') }}
-							</div>
-							<EditAssignees
-								v-if="canWrite"
-								:ref="e => setFieldRef('assignees', e)"
-								v-model="task.assignees"
-								:project-id="task.projectId"
-								:task-id="task.id"
+							<template
+								v-for="p in projectStore.getAncestors(project)"
+								:key="p.id"
+							>
+								<a
+									v-if="router.options.history.state?.back?.includes('/projects/'+p.id+'/') || false"
+									v-shortcut="p.id === project?.id ? SHORTCUTS.taskDetail.openProject : ''"
+									@click="router.back()"
+								>
+									{{ getProjectTitle(p) }}
+								</a>
+								<RouterLink
+									v-else
+									v-shortcut="p.id === project?.id ? SHORTCUTS.taskDetail.openProject : ''"
+									:to="{ name: 'project.index', params: { projectId: p.id } }"
+								>
+									{{ getProjectTitle(p) }}
+								</RouterLink>
+								<span
+									v-if="p.id !== project?.id"
+									class="inspector-crumb__sep"
+								>›</span>
+							</template>
+							<BucketSelect
+								:task="task"
+								:can-write="canWrite"
+								@update:task="Object.assign(task, $event)"
 							/>
-							<AssigneeList
-								v-else
-								:assignees="task.assignees"
-								class="mbs-2"
-							/>
-						</div>
-						<CustomTransition
-							name="flash-background"
-							appear
-						>
-							<div
-								v-if="activeFields.priority"
-								class="column"
-							>
-								<!-- Priority -->
-								<div class="detail-title">
-									<Icon icon="exclamation-circle" />
-									{{ $t('task.attributes.priority') }}
-								</div>
-								<PrioritySelect
-									:ref="e => setFieldRef('priority', e)"
-									v-model="task.priority"
-									:disabled="!canWrite"
-									@update:modelValue="setPriority"
-								/>
-							</div>
-						</CustomTransition>
-						<CustomTransition
-							name="flash-background"
-							appear
-						>
-							<div
-								v-if="activeFields.dueDate"
-								class="column"
-							>
-								<!-- Due Date -->
-								<div class="detail-title">
-									<Icon icon="calendar" />
-									{{ $t('task.attributes.dueDate') }}
-								</div>
-								<div class="date-input">
-									<Datepicker
-										:ref="e => setFieldRef('dueDate', e)"
-										v-model="task.dueDate"
-										:choose-date-label="$t('task.detail.chooseDueDate')"
-										:disabled="taskService.loading || !canWrite"
-										@closeOnChange="saveTask()"
-									/>
-									<BaseButton
-										v-if="task.dueDate && canWrite"
-										class="remove"
-										:aria-label="$t('task.detail.removeDueDate')"
-										@click="() => {task.dueDate = null;saveTask()}"
-									>
-										<span class="icon is-small">
-											<Icon icon="times" />
-										</span>
-									</BaseButton>
-								</div>
-							</div>
-						</CustomTransition>
-						<CustomTransition
-							name="flash-background"
-							appear
-						>
-							<div
-								v-if="activeFields.percentDone"
-								class="column"
-							>
-								<!-- Progress -->
-								<div class="detail-title">
-									<Icon icon="percent" />
-									{{ $t('task.attributes.percentDone') }}
-								</div>
-								<PercentDoneSelect
-									:ref="e => setFieldRef('percentDone', e)"
-									v-model="task.percentDone"
-									:disabled="!canWrite"
-									@update:modelValue="setPercentDone"
-								/>
-							</div>
-						</CustomTransition>
-						<CustomTransition
-							name="flash-background"
-							appear
-						>
-							<div
-								v-if="activeFields.startDate"
-								class="column"
-							>
-								<!-- Start Date -->
-								<div class="detail-title">
-									<Icon icon="play" />
-									{{ $t('task.attributes.startDate') }}
-								</div>
-								<div class="date-input">
-									<Datepicker
-										:ref="e => setFieldRef('startDate', e)"
-										v-model="task.startDate"
-										:choose-date-label="$t('task.detail.chooseStartDate')"
-										:disabled="taskService.loading || !canWrite"
-										@closeOnChange="saveTask()"
-									/>
-									<BaseButton
-										v-if="task.startDate && canWrite"
-										class="remove"
-										:aria-label="$t('task.detail.removeStartDate')"
-										@click="() => {task.startDate = null;saveTask()}"
-									>
-										<span class="icon is-small">
-											<Icon icon="times" />
-										</span>
-									</BaseButton>
-								</div>
-							</div>
-						</CustomTransition>
-						<CustomTransition
-							name="flash-background"
-							appear
-						>
-							<div
-								v-if="activeFields.endDate"
-								class="column"
-							>
-								<!-- End Date -->
-								<div class="detail-title">
-									<Icon icon="stop" />
-									{{ $t('task.attributes.endDate') }}
-								</div>
-								<div class="date-input">
-									<Datepicker
-										:ref="e => setFieldRef('endDate', e)"
-										v-model="task.endDate"
-										:choose-date-label="$t('task.detail.chooseEndDate')"
-										:disabled="taskService.loading || !canWrite"
-										@closeOnChange="saveTask()"
-									/>
-									<BaseButton
-										v-if="task.endDate && canWrite"
-										class="remove"
-										:aria-label="$t('task.detail.removeEndDate')"
-										@click="() => {task.endDate = null;saveTask()}"
-									>
-										<span class="icon is-small">
-											<Icon icon="times" />
-										</span>
-									</BaseButton>
-								</div>
-							</div>
-						</CustomTransition>
-						<CustomTransition
-							name="flash-background"
-							appear
-						>
-							<div
-								v-if="activeFields.reminders"
-								class="column"
-							>
-								<!-- Reminders -->
-								<div class="detail-title">
-									<Icon :icon="['far', 'clock']" />
-									{{ $t('task.attributes.reminders') }}
-								</div>
-								<Reminders
-									:ref="e => setFieldRef('reminders', e)"
-									v-model="task.reminders"
-									:default-relative-to="remindersDefaultRelativeTo"
-									:disabled="!canWrite"
-									@update:modelValue="saveTask()"
-								/>
-							</div>
-						</CustomTransition>
-						<CustomTransition
-							name="flash-background"
-							appear
-						>
-							<div
-								v-if="activeFields.repeatAfter"
-								class="column"
-							>
-								<!-- Repeat after -->
-								<div class="is-flex is-justify-content-space-between">
-									<div class="detail-title">
-										<Icon icon="history" />
-										{{ $t('task.attributes.repeat') }}
-									</div>
-									<BaseButton
-										v-if="canWrite"
-										class="remove"
-										:aria-label="$t('task.detail.removeRepeat')"
-										@click="removeRepeatAfter"
-									>
-										<span class="icon is-small">
-											<Icon icon="times" />
-										</span>
-									</BaseButton>
-								</div>
-								<RepeatAfter
-									:ref="e => setFieldRef('repeatAfter', e)"
-									v-model="task"
-									:disabled="!canWrite"
-									@update:modelValue="saveTask()"
-								/>
-							</div>
-						</CustomTransition>
-						<CustomTransition
-							name="flash-background"
-							appear
-						>
-							<div
-								v-if="activeFields.color"
-								class="column"
-							>
-								<!-- Color -->
-								<div class="detail-title">
-									<Icon icon="fill-drip" />
-									{{ $t('task.attributes.color') }}
-								</div>
-								<ColorPicker
-									:ref="e => setFieldRef('color', e)"
-									v-model="taskColor"
-									menu-position="bottom"
-									@update:modelValue="saveTask()"
-								/>
-							</div>
-						</CustomTransition>
-					</div>
-
-					<!-- Labels -->
-					<div
-						v-if="activeFields.labels"
-						class="labels-list details"
+						</nav>
+					</template>
+					<template
+						v-if="canWrite"
+						#actions
 					>
-						<div class="detail-title">
-							<span class="icon is-grey">
-								<Icon icon="tags" />
-							</span>
-							{{ $t('task.attributes.labels') }}
-						</div>
-						<EditLabels
-							:ref="e => setFieldRef('labels', e)"
-							v-model="task.labels"
-							:disabled="!canWrite"
-							:task-id="taskId"
-							:creatable="!authStore.isLinkShareAuth"
-							:creation-disabled-message="authStore.isLinkShareAuth ? $t('task.label.linkShareCannotCreate') : ''"
-						/>
-					</div>
-
-					<!-- Description -->
-					<div class="details content description">
-						<Description
-							:model-value="task"
-							:can-write="canWrite"
-							:attachment-upload="attachmentUpload"
-							@update:modelValue="Object.assign(task, $event)"
-						/>
-					</div>
-					
-					<!-- Reactions -->
-					<Reactions
-						v-model="task.reactions" 
-						entity-kind="tasks"
-						:entity-id="task.id"
-						class="details d-print-none"
-						:disabled="!canWrite"
-					/>
-
-					<!-- Attachments -->
-					<div
-						v-show="activeFields.attachments || hasAttachments"
-						class="content attachments"
-					>
-						<Attachments
-							:ref="e => { setFieldRef('attachments', e); attachmentsRef = e as any }"
-							:edit-enabled="canWrite"
-							:task="task"
-							@taskChanged="({coverImageAttachmentId}) => task.coverImageAttachmentId = coverImageAttachmentId"
-							@update:attachments="onAttachmentsUpdated"
-						/>
-					</div>
-
-					<!-- Time Tracking -->
-					<div
-						v-if="timeTrackingEnabled && activeFields.timeTracking"
-						:ref="e => setFieldRef('timeTracking', e)"
-						class="content time-tracking"
-					>
-						<TaskTimeTracking :task-id="task.id" />
-					</div>
-
-					<!-- Related Tasks -->
-					<div
-						v-if="activeFields.relatedTasks"
-						class="content details mbe-0"
-					>
-						<h2 class="task-section-title">
-							<span class="icon is-grey">
-								<Icon icon="sitemap" />
-							</span>
-							{{ $t('task.attributes.relatedTasks') }}
-						</h2>
-						<RelatedTasks
-							:ref="e => setFieldRef('relatedTasks', e)"
-							:edit-enabled="canWrite"
-							:initial-related-tasks="task.relatedTasks"
-							:project-id="task.projectId"
-							:show-no-relations-notice="true"
-							:task-id="taskId"
-						/>
-					</div>
-
-					<!-- Move Task -->
-					<div
-						v-if="activeFields.moveProject"
-						class="content details"
-					>
-						<h2 class="task-section-title">
-							<span class="icon is-grey">
-								<Icon icon="list" />
-							</span>
-							{{ $t('task.detail.move') }}
-						</h2>
-						<div class="field has-addons">
-							<div class="control is-expanded">
-								<ProjectSearch
-									:ref="e => setFieldRef('moveProject', e)"
-									:filter="project => project.id !== task.projectId"
-									@update:modelValue="changeProject"
-								/>
-							</div>
-						</div>
-					</div>
-
-					<!-- Marker element for scroll-to-bottom button visibility -->
-					<div
-						ref="contentBottomMarker"
-						class="content-bottom-marker"
-					/>
-				</div>
-				
-				<!-- Task Actions -->
-				<div
-					v-if="canWrite || isModal"
-					class="column is-one-third action-buttons d-print-none"
-				>
-					<template v-if="canWrite">
 						<XButton
 							v-shortcut="SHORTCUTS.taskDetail.done"
+							v-tooltip="task.done ? $t('task.attributes.done') : $t('task.detail.done')"
 							:class="{'is-done': task.done, 'is-ready': !task.done}"
-							class="button--mark-done"
-							icon="check-double"
+							class="heading-icon-btn button--mark-done"
+							:icon="task.done ? 'check' : 'check-double'"
 							variant="secondary"
+							:shadow="false"
+							:aria-label="task.done ? $t('task.attributes.done') : $t('task.detail.done')"
 							:aria-pressed="task.done"
 							@click="toggleTaskDone()"
-						>
-							{{ task.done ? $t('task.attributes.done') : $t('task.detail.done') }}
-						</XButton>
+						/>
 						<TaskSubscription
+							class="heading-icon-btn"
 							entity="task"
+							icon-only
 							:entity-id="task.id"
 							:model-value="task.subscription"
 							@update:modelValue="sub => task.subscription = sub"
 						/>
 						<XButton
 							v-shortcut="SHORTCUTS.taskDetail.favorite"
+							v-tooltip="task.isFavorite ? $t('task.detail.actions.unfavorite') : $t('task.detail.actions.favorite')"
+							class="heading-icon-btn"
 							variant="secondary"
+							:shadow="false"
 							:icon="task.isFavorite ? 'star' : ['far', 'star']"
+							:aria-label="task.isFavorite ? $t('task.detail.actions.unfavorite') : $t('task.detail.actions.favorite')"
 							@click="toggleFavorite"
+						/>
+					</template>
+				</Heading>
+
+				<ChecklistSummary :task="task" />
+
+				<div
+					v-if="isSubtask && canWrite"
+					class="show-in-list-field details mbs-2"
+				>
+					<FancyCheckbox
+						v-model="task.showInList"
+						:aria-label="$t('task.attributes.showInList')"
+						@update:modelValue="saveTask()"
+					>
+						{{ $t('task.attributes.showInList') }}
+					</FancyCheckbox>
+					<p class="help">
+						{{ $t('task.attributes.showInListHint') }}
+					</p>
+				</div>
+
+				<!-- Content and buttons -->
+				<div class="columns mbs-1">
+					<!-- Content -->
+					<div
+						:class="{'is-two-thirds': canWrite}"
+						class="column detail-content"
+					>
+						<!-- Description -->
+						<div class="details content description">
+							<Description
+								:model-value="task"
+								:can-write="canWrite"
+								:attachment-upload="attachmentUpload"
+								@update:modelValue="Object.assign(task, $event)"
+							/>
+						</div>
+
+						<div class="columns details">
+							<div
+								v-if="activeFields.assignees"
+								class="column assignees"
+							>
+								<!-- Assignees -->
+								<div class="detail-title">
+									<Icon icon="users" />
+									{{ $t('task.attributes.assignees') }}
+								</div>
+								<EditAssignees
+									v-if="canWrite"
+									:ref="e => setFieldRef('assignees', e)"
+									v-model="task.assignees"
+									:project-id="task.projectId"
+									:task-id="task.id"
+								/>
+								<AssigneeList
+									v-else
+									:assignees="task.assignees"
+									class="mbs-2"
+								/>
+							</div>
+							<CustomTransition
+								name="flash-background"
+								appear
+							>
+								<div
+									v-if="activeFields.priority"
+									class="column"
+								>
+									<!-- Priority -->
+									<div class="detail-title">
+										<Icon icon="exclamation-circle" />
+										{{ $t('task.attributes.priority') }}
+									</div>
+									<PrioritySelect
+										:ref="e => setFieldRef('priority', e)"
+										v-model="task.priority"
+										:disabled="!canWrite"
+										@update:modelValue="setPriority"
+									/>
+								</div>
+							</CustomTransition>
+							<CustomTransition
+								name="flash-background"
+								appear
+							>
+								<div
+									v-if="activeFields.dueDate"
+									class="column"
+								>
+									<!-- Due Date -->
+									<div class="detail-title">
+										<Icon icon="calendar" />
+										{{ $t('task.attributes.dueDate') }}
+									</div>
+									<div class="date-input">
+										<Datepicker
+											:ref="e => setFieldRef('dueDate', e)"
+											v-model="task.dueDate"
+											:choose-date-label="$t('task.detail.chooseDueDate')"
+											:disabled="taskService.loading || !canWrite"
+											@closeOnChange="saveTask()"
+										/>
+										<BaseButton
+											v-if="task.dueDate && canWrite"
+											class="remove"
+											:aria-label="$t('task.detail.removeDueDate')"
+											@click="() => {task.dueDate = null;saveTask()}"
+										>
+											<span class="icon is-small">
+												<Icon icon="times" />
+											</span>
+										</BaseButton>
+									</div>
+								</div>
+							</CustomTransition>
+							<CustomTransition
+								name="flash-background"
+								appear
+							>
+								<div
+									v-if="activeFields.percentDone"
+									class="column"
+								>
+									<!-- Progress -->
+									<div class="detail-title">
+										<Icon icon="percent" />
+										{{ $t('task.attributes.percentDone') }}
+									</div>
+									<PercentDoneSelect
+										:ref="e => setFieldRef('percentDone', e)"
+										v-model="task.percentDone"
+										:disabled="!canWrite"
+										@update:modelValue="setPercentDone"
+									/>
+								</div>
+							</CustomTransition>
+							<CustomTransition
+								name="flash-background"
+								appear
+							>
+								<div
+									v-if="activeFields.startDate"
+									class="column"
+								>
+									<!-- Start Date -->
+									<div class="detail-title">
+										<Icon icon="play" />
+										{{ $t('task.attributes.startDate') }}
+									</div>
+									<div class="date-input">
+										<Datepicker
+											:ref="e => setFieldRef('startDate', e)"
+											v-model="task.startDate"
+											:choose-date-label="$t('task.detail.chooseStartDate')"
+											:disabled="taskService.loading || !canWrite"
+											@closeOnChange="saveTask()"
+										/>
+										<BaseButton
+											v-if="task.startDate && canWrite"
+											class="remove"
+											:aria-label="$t('task.detail.removeStartDate')"
+											@click="() => {task.startDate = null;saveTask()}"
+										>
+											<span class="icon is-small">
+												<Icon icon="times" />
+											</span>
+										</BaseButton>
+									</div>
+								</div>
+							</CustomTransition>
+							<CustomTransition
+								name="flash-background"
+								appear
+							>
+								<div
+									v-if="activeFields.endDate"
+									class="column"
+								>
+									<!-- End Date -->
+									<div class="detail-title">
+										<Icon icon="stop" />
+										{{ $t('task.attributes.endDate') }}
+									</div>
+									<div class="date-input">
+										<Datepicker
+											:ref="e => setFieldRef('endDate', e)"
+											v-model="task.endDate"
+											:choose-date-label="$t('task.detail.chooseEndDate')"
+											:disabled="taskService.loading || !canWrite"
+											@closeOnChange="saveTask()"
+										/>
+										<BaseButton
+											v-if="task.endDate && canWrite"
+											class="remove"
+											:aria-label="$t('task.detail.removeEndDate')"
+											@click="() => {task.endDate = null;saveTask()}"
+										>
+											<span class="icon is-small">
+												<Icon icon="times" />
+											</span>
+										</BaseButton>
+									</div>
+								</div>
+							</CustomTransition>
+							<CustomTransition
+								name="flash-background"
+								appear
+							>
+								<div
+									v-if="activeFields.reminders"
+									class="column"
+								>
+									<!-- Reminders -->
+									<div class="detail-title">
+										<Icon :icon="['far', 'clock']" />
+										{{ $t('task.attributes.reminders') }}
+									</div>
+									<Reminders
+										:ref="e => setFieldRef('reminders', e)"
+										v-model="task.reminders"
+										:default-relative-to="remindersDefaultRelativeTo"
+										:disabled="!canWrite"
+										@update:modelValue="saveTask()"
+									/>
+								</div>
+							</CustomTransition>
+							<CustomTransition
+								name="flash-background"
+								appear
+							>
+								<div
+									v-if="activeFields.repeatAfter"
+									class="column"
+								>
+									<!-- Repeat after -->
+									<div class="is-flex is-justify-content-space-between">
+										<div class="detail-title">
+											<Icon icon="history" />
+											{{ $t('task.attributes.repeat') }}
+										</div>
+										<BaseButton
+											v-if="canWrite"
+											class="remove"
+											:aria-label="$t('task.detail.removeRepeat')"
+											@click="removeRepeatAfter"
+										>
+											<span class="icon is-small">
+												<Icon icon="times" />
+											</span>
+										</BaseButton>
+									</div>
+									<RepeatAfter
+										:ref="e => setFieldRef('repeatAfter', e)"
+										v-model="task"
+										:disabled="!canWrite"
+										@update:modelValue="saveTask()"
+									/>
+								</div>
+							</CustomTransition>
+						</div>
+
+						<!-- Labels -->
+						<div
+							v-if="activeFields.labels"
+							class="labels-list details"
 						>
-							{{
-								task.isFavorite ? $t('task.detail.actions.unfavorite') : $t('task.detail.actions.favorite')
-							}}
-						</XButton>
-						
-						<span class="action-heading-row">
-							<span class="action-heading">{{ $t('task.detail.organization') }}</span>
+							<div class="detail-title">
+								<span class="icon is-grey">
+									<Icon icon="tags" />
+								</span>
+								{{ $t('task.attributes.labels') }}
+							</div>
+							<EditLabels
+								:ref="e => setFieldRef('labels', e)"
+								v-model="task.labels"
+								:disabled="!canWrite"
+								:task-id="taskId"
+								:creatable="!authStore.isLinkShareAuth"
+								:creation-disabled-message="authStore.isLinkShareAuth ? $t('task.label.linkShareCannotCreate') : ''"
+							/>
+						</div>
+
+						<!-- Attachments -->
+						<div
+							v-show="activeFields.attachments"
+							class="content attachments"
+						>
+							<Attachments
+								:ref="e => { setFieldRef('attachments', e); attachmentsRef = e as any }"
+								:edit-enabled="canWrite"
+								:task="task"
+								@taskChanged="({coverImageAttachmentId}) => task.coverImageAttachmentId = coverImageAttachmentId"
+								@update:attachments="onAttachmentsUpdated"
+							/>
+						</div>
+
+						<!-- Time Tracking -->
+						<div
+							v-if="timeTrackingEnabled && activeFields.timeTracking"
+							:ref="e => setFieldRef('timeTracking', e)"
+							class="content time-tracking"
+						>
+							<TaskTimeTracking :task-id="task.id" />
+						</div>
+
+						<!-- Related Tasks -->
+						<div
+							v-if="activeFields.relatedTasks"
+							class="content details mbe-0"
+						>
+							<h2 class="task-section-title">
+								<span class="icon is-grey">
+									<Icon icon="sitemap" />
+								</span>
+								{{ $t('task.attributes.relatedTasks') }}
+							</h2>
+							<RelatedTasks
+								:ref="e => setFieldRef('relatedTasks', e)"
+								:edit-enabled="canWrite"
+								:initial-related-tasks="task.relatedTasks"
+								:project-id="task.projectId"
+								:show-no-relations-notice="true"
+								:task-id="taskId"
+							/>
+						</div>
+
+						<!-- Move Task -->
+						<div
+							v-if="activeFields.moveProject"
+							class="content details"
+						>
+							<h2 class="task-section-title">
+								<span class="icon is-grey">
+									<Icon icon="list" />
+								</span>
+								{{ $t('task.detail.move') }}
+							</h2>
+							<div class="field has-addons">
+								<div class="control is-expanded">
+									<ProjectSearch
+										:ref="e => setFieldRef('moveProject', e)"
+										:filter="project => project.id !== task.projectId"
+										@update:modelValue="changeProject"
+									/>
+								</div>
+							</div>
+						</div>
+
+						<!-- Marker element for scroll-to-bottom button visibility -->
+						<div
+							ref="contentBottomMarker"
+							class="content-bottom-marker"
+						/>
+					</div>
+				
+					<!-- Task Actions -->
+					<div
+						v-if="canWrite || isModal"
+						class="column is-one-third action-buttons d-print-none"
+					>
+						<template v-if="canWrite">
 							<BaseButton
-								class="action-group-toggle"
+								class="action-heading-row"
 								:aria-expanded="openActionGroups.organization"
-								:aria-label="$t('task.detail.organization')"
 								@click="toggleActionGroup('organization')"
 							>
-								<Icon :icon="openActionGroups.organization ? 'chevron-up' : 'chevron-down'" />
+								<Icon
+									icon="chevron-down"
+									class="action-group-chevron"
+									:class="{'is-open': openActionGroups.organization}"
+								/>
+								<span class="action-heading">{{ $t('task.detail.organization') }}</span>
 							</BaseButton>
-						</span>
-						<div
-							v-show="openActionGroups.organization"
-							class="action-group-body"
-						>
-							<XButton
-								v-shortcut="SHORTCUTS.taskDetail.labels"
-								variant="secondary"
-								icon="tags"
-								@click="setFieldActive('labels')"
+							<div
+								v-show="openActionGroups.organization"
+								class="action-group-body"
 							>
-								{{ $t('task.detail.actions.label') }}
-							</XButton>
-							<XButton
-								v-shortcut="SHORTCUTS.taskDetail.priority"
-								variant="secondary"
-								icon="exclamation-circle"
-								@click="setFieldActive('priority')"
-							>
-								{{ $t('task.detail.actions.priority') }}
-							</XButton>
-							<XButton
-								variant="secondary"
-								icon="percent"
-								@click="setFieldActive('percentDone')"
-							>
-								{{ $t('task.detail.actions.percentDone') }}
-							</XButton>
-							<XButton
-								v-shortcut="SHORTCUTS.taskDetail.color"
-								variant="secondary"
-								icon="fill-drip"
-								:icon-color="color"
-								@click="setFieldActive('color')"
-							>
-								{{ $t('task.detail.actions.color') }}
-							</XButton>
-						</div>
+								<XButton
+									v-shortcut="SHORTCUTS.taskDetail.labels"
+									variant="secondary"
+									icon="tags"
+									@click="setFieldActive('labels')"
+								>
+									{{ $t('task.detail.actions.label') }}
+								</XButton>
+								<XButton
+									v-shortcut="SHORTCUTS.taskDetail.priority"
+									variant="secondary"
+									icon="exclamation-circle"
+									@click="setFieldActive('priority')"
+								>
+									{{ $t('task.detail.actions.priority') }}
+								</XButton>
+								<XButton
+									variant="secondary"
+									icon="percent"
+									@click="setFieldActive('percentDone')"
+								>
+									{{ $t('task.detail.actions.percentDone') }}
+								</XButton>
+							</div>
 						
-						<span class="action-heading-row">
-							<span class="action-heading">{{ $t('task.detail.management') }}</span>
 							<BaseButton
-								class="action-group-toggle"
+								class="action-heading-row"
 								:aria-expanded="openActionGroups.management"
-								:aria-label="$t('task.detail.management')"
 								@click="toggleActionGroup('management')"
 							>
-								<Icon :icon="openActionGroups.management ? 'chevron-up' : 'chevron-down'" />
+								<Icon
+									icon="chevron-down"
+									class="action-group-chevron"
+									:class="{'is-open': openActionGroups.management}"
+								/>
+								<span class="action-heading">{{ $t('task.detail.management') }}</span>
 							</BaseButton>
-						</span>
 
-						<div
-							v-show="openActionGroups.management"
-							class="action-group-body"
-						>
-							<XButton
-								v-shortcut="SHORTCUTS.taskDetail.assignees"
-								v-cy="'taskDetail.assign'"
-								variant="secondary"
-								icon="users"
-								@click="setFieldActive('assignees')"
+							<div
+								v-show="openActionGroups.management"
+								class="action-group-body"
 							>
-								{{ $t('task.detail.actions.assign') }}
-							</XButton>
-							<XButton
-								v-shortcut="SHORTCUTS.taskDetail.attachments"
-								variant="secondary"
-								icon="paperclip"
-								@click="openAttachments()"
-							>
-								{{ $t('task.detail.actions.attachments') }}
-							</XButton>
-							<XButton
-								v-shortcut="SHORTCUTS.taskDetail.relatedTasks"
-								variant="secondary"
-								icon="sitemap"
-								@click="setRelatedTasksActive()"
-							>
-								{{ $t('task.detail.actions.relatedTasks') }}
-							</XButton>
-							<XButton
-								v-shortcut="SHORTCUTS.taskDetail.moveProject"
-								variant="secondary"
-								icon="list"
-								@click="setFieldActive('moveProject')"
-							>
-								{{ $t('task.detail.actions.moveProject') }}
-							</XButton>
-							<XButton
-								variant="secondary"
-								icon="copy"
-								@click="duplicateCurrentTask"
-							>
-								{{ $t('task.detail.actions.duplicate') }}
-							</XButton>
-						</div>
+								<XButton
+									v-shortcut="SHORTCUTS.taskDetail.assignees"
+									v-cy="'taskDetail.assign'"
+									variant="secondary"
+									icon="users"
+									@click="setFieldActive('assignees')"
+								>
+									{{ $t('task.detail.actions.assign') }}
+								</XButton>
+								<XButton
+									v-shortcut="SHORTCUTS.taskDetail.attachments"
+									variant="secondary"
+									icon="paperclip"
+									@click="openAttachments()"
+								>
+									{{ $t('task.detail.actions.attachments') }}
+								</XButton>
+								<XButton
+									v-shortcut="SHORTCUTS.taskDetail.relatedTasks"
+									variant="secondary"
+									icon="sitemap"
+									@click="setRelatedTasksActive()"
+								>
+									{{ $t('task.detail.actions.relatedTasks') }}
+								</XButton>
+								<XButton
+									v-shortcut="SHORTCUTS.taskDetail.moveProject"
+									variant="secondary"
+									icon="list"
+									@click="setFieldActive('moveProject')"
+								>
+									{{ $t('task.detail.actions.moveProject') }}
+								</XButton>
+								<XButton
+									variant="secondary"
+									icon="copy"
+									@click="duplicateCurrentTask"
+								>
+									{{ $t('task.detail.actions.duplicate') }}
+								</XButton>
+							</div>
 
-						<span class="action-heading-row">
-							<span class="action-heading">{{ $t('task.detail.dateAndTime') }}</span>
 							<BaseButton
-								class="action-group-toggle"
+								class="action-heading-row"
 								:aria-expanded="openActionGroups.dateAndTime"
-								:aria-label="$t('task.detail.dateAndTime')"
 								@click="toggleActionGroup('dateAndTime')"
 							>
-								<Icon :icon="openActionGroups.dateAndTime ? 'chevron-up' : 'chevron-down'" />
+								<Icon
+									icon="chevron-down"
+									class="action-group-chevron"
+									:class="{'is-open': openActionGroups.dateAndTime}"
+								/>
+								<span class="action-heading">{{ $t('task.detail.dateAndTime') }}</span>
 							</BaseButton>
-						</span>
 
-						<div
-							v-show="openActionGroups.dateAndTime"
-							class="action-group-body"
-						>
-							<XButton
-								v-if="timeTrackingEnabled"
-								v-cy="'taskTrackTimeAction'"
-								variant="secondary"
-								:icon="['far', 'clock']"
-								@click="setFieldActive('timeTracking')"
+							<div
+								v-show="openActionGroups.dateAndTime"
+								class="action-group-body"
 							>
-								{{ $t('task.detail.actions.timeTracking') }}
-							</XButton>
+								<XButton
+									v-if="timeTrackingEnabled"
+									v-cy="'taskTrackTimeAction'"
+									variant="secondary"
+									:icon="['far', 'clock']"
+									@click="setFieldActive('timeTracking')"
+								>
+									{{ $t('task.detail.actions.timeTracking') }}
+								</XButton>
 
-							<XButton
-								v-shortcut="SHORTCUTS.taskDetail.dueDate"
-								variant="secondary"
-								icon="calendar"
-								@click="setFieldActive('dueDate')"
-							>
-								{{ $t('task.detail.actions.dueDate') }}
-							</XButton>
-							<XButton
-								variant="secondary"
-								icon="play"
-								@click="setFieldActive('startDate')"
-							>
-								{{ $t('task.detail.actions.startDate') }}
-							</XButton>
-							<XButton
-								variant="secondary"
-								icon="stop"
-								@click="setFieldActive('endDate')"
-							>
-								{{ $t('task.detail.actions.endDate') }}
-							</XButton>
-							<XButton
-								v-shortcut="SHORTCUTS.taskDetail.reminder"
-								variant="secondary"
-								:icon="['far', 'clock']"
-								@click="setFieldActive('reminders')"
-							>
-								{{ $t('task.detail.actions.reminders') }}
-							</XButton>
-							<XButton
-								variant="secondary"
-								icon="history"
-								@click="setFieldActive('repeatAfter')"
-							>
-								{{ $t('task.detail.actions.repeatAfter') }}
-							</XButton>
-						</div>
-						<XButton
-							v-shortcut="SHORTCUTS.taskDetail.delete"
-							icon="trash-alt"
-							:shadow="false"
-							class="is-danger is-outlined has-no-border"
-							@click="showDeleteModal = true"
-						>
-							{{ $t('task.detail.actions.delete') }}
-						</XButton>
-					</template>
-
-					<!-- Created / Updated [by] -->
-					<CreatedUpdated :task="task" />
+								<XButton
+									v-shortcut="SHORTCUTS.taskDetail.dueDate"
+									variant="secondary"
+									icon="calendar"
+									@click="setFieldActive('dueDate')"
+								>
+									{{ $t('task.detail.actions.dueDate') }}
+								</XButton>
+								<XButton
+									variant="secondary"
+									icon="play"
+									@click="setFieldActive('startDate')"
+								>
+									{{ $t('task.detail.actions.startDate') }}
+								</XButton>
+								<XButton
+									variant="secondary"
+									icon="stop"
+									@click="setFieldActive('endDate')"
+								>
+									{{ $t('task.detail.actions.endDate') }}
+								</XButton>
+								<XButton
+									v-shortcut="SHORTCUTS.taskDetail.reminder"
+									variant="secondary"
+									:icon="['far', 'clock']"
+									@click="setFieldActive('reminders')"
+								>
+									{{ $t('task.detail.actions.reminders') }}
+								</XButton>
+								<XButton
+									variant="secondary"
+									icon="history"
+									@click="setFieldActive('repeatAfter')"
+								>
+									{{ $t('task.detail.actions.repeatAfter') }}
+								</XButton>
+							</div>
+						</template>
+					</div>
 				</div>
 			</div>
-			<!-- Created / Updated [by] -->
-			<CreatedUpdated
-				v-if="!canWrite && !isModal"
-				:task="task"
-			/>
+			<footer
+				class="inspector-footer d-print-none"
+			>
+				<XButton
+					v-if="canWrite"
+					v-shortcut="SHORTCUTS.taskDetail.delete"
+					icon="trash-alt"
+					:shadow="false"
+					class="is-danger is-outlined has-no-border"
+					@click="showDeleteModal = true"
+				>
+					{{ $t('task.detail.actions.delete') }}
+				</XButton>
+				<CreatedUpdated
+					inline
+					:task="task"
+				/>
+			</footer>
 		</div>
 
 		<Modal
@@ -721,7 +700,6 @@ import Attachments from '@/components/tasks/partials/Attachments.vue'
 import TaskTimeTracking from '@/components/time-tracking/TaskTimeTracking.vue'
 import ChecklistSummary from '@/components/tasks/partials/ChecklistSummary.vue'
 import FancyCheckbox from '@/components/input/FancyCheckbox.vue'
-import ColorPicker from '@/components/input/ColorPicker.vue'
 import CreatedUpdated from '@/components/tasks/partials/CreatedUpdated.vue'
 import Datepicker from '@/components/input/Datepicker.vue'
 import Description from '@/components/tasks/partials/Description.vue'
@@ -738,7 +716,6 @@ import TaskSubscription from '@/components/misc/Subscription.vue'
 import CustomTransition from '@/components/misc/CustomTransition.vue'
 import AssigneeList from '@/components/tasks/partials/AssigneeList.vue'
 import BucketSelect from '@/components/tasks/partials/BucketSelect.vue'
-import Reactions from '@/components/input/Reactions.vue'
 
 import {uploadFile} from '@/helpers/attachments'
 import {getProjectTitle} from '@/helpers/getProjectTitle'
@@ -782,7 +759,6 @@ const authStore = useAuthStore()
 const baseStore = useBaseStore()
 
 const task = ref<ITask>(new TaskModel())
-const hasAttachments = computed(() => (task.value.attachments?.length ?? 0) > 0)
 const remindersDefaultRelativeTo = computed(() => {
 	if (task.value.dueDate) {
 		return REMINDER_PERIOD_RELATIVE_TO_TYPES.DUEDATE
@@ -867,14 +843,6 @@ const canWrite = computed(() => (
 	task.value.maxPermission !== null &&
 	task.value.maxPermission > PERMISSIONS.READ
 ))
-
-const color = computed(() => {
-	const color = task.value.getHexColor
-		? task.value.getHexColor()
-		: undefined
-
-	return color
-})
 
 const isModal = computed(() => Boolean(props.backdropView))
 const isSubtask = computed(() => (task.value.relatedTasks?.parenttask?.length ?? 0) > 0)
@@ -1069,16 +1037,21 @@ const openActionGroups = reactive<Record<ActionGroup, boolean>>({
 	dateAndTime: false,
 })
 
+function openOnlyActionGroup(group: ActionGroup | undefined) {
+	openActionGroups.organization = group === 'organization'
+	openActionGroups.management = group === 'management'
+	openActionGroups.dateAndTime = group === 'dateAndTime'
+}
+
 function toggleActionGroup(group: ActionGroup) {
-	openActionGroups[group] = !openActionGroups[group]
+	openOnlyActionGroup(openActionGroups[group] ? undefined : group)
 }
 
 function setActiveFields() {
-	// FIXME: are these lines necessary?
-	// task.startDate = task.startDate || null
-	// task.endDate = task.endDate || null
+	for (const key of Object.keys(activeFields) as FieldType[]) {
+		activeFields[key] = false
+	}
 
-	// Set all active fields based on values in the model
 	activeFields.assignees = task.value.assignees.length > 0
 	activeFields.attachments = task.value.attachments.length > 0
 	activeFields.timeTracking = (task.value.timeEntriesCount ?? 0) > 0
@@ -1114,11 +1087,10 @@ function setFieldRef(name, e) {
 }
 
 function setFieldActive(fieldName: keyof typeof activeFields) {
-	const group = FIELD_GROUPS[fieldName]
-	if (group) {
-		openActionGroups[group] = true
+	for (const key of Object.keys(activeFields) as FieldType[]) {
+		activeFields[key] = key === fieldName
 	}
-	activeFields[fieldName] = true
+	openOnlyActionGroup(FIELD_GROUPS[fieldName])
 	nextTick(() => {
 		const el = activeFieldElements[fieldName]
 
@@ -1134,13 +1106,8 @@ function setFieldActive(fieldName: keyof typeof activeFields) {
 }
 
 function openAttachments() {
-	openActionGroups.management = true
-	activeFields.attachments = true
+	setFieldActive('attachments')
 	nextTick(() => {
-		const el = activeFieldElements.attachments
-		if (el) {
-			scrollIntoView(el)
-		}
 		attachmentsRef.value?.openFilePicker()
 	})
 }
@@ -1172,7 +1139,6 @@ async function saveTask(
 
 	const updatedTask = await taskStore.update(currentTask) // TODO: markraw ?
 	Object.assign(task.value, updatedTask)
-	setActiveFields()
 
 	let actions: MessageAction[] = []
 	if (undoCallback) {
@@ -1328,13 +1294,38 @@ function setRelatedTasksActive() {
 }
 
 
-.subtitle {
-	color: var(--grey-500);
-	margin-block-end: 1rem;
+.inspector-crumb {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	min-inline-size: 0;
+	margin: 0;
+	font-size: 0.82rem;
+	font-weight: 620;
+	line-height: 1.2;
+	color: var(--text-muted);
 
-	a {
-		color: var(--grey-800);
+	a,
+	:deep(.bucket-name) {
+		color: var(--text-muted);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		max-inline-size: 11rem;
+		font-size: inherit;
+		font-weight: inherit;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--primary);
+		}
 	}
+}
+
+.inspector-crumb__sep {
+	color: var(--grey-400);
+	flex-shrink: 0;
 }
 
 h2 .button {
@@ -1477,45 +1468,116 @@ h2 .button {
 		&.has-light-text {
 			color: var(--white);
 		}
+	}
+}
 
-		&.button--mark-done {
-			background-color: transparent;
-			box-shadow: none;
+.heading-icon-btn {
+	inline-size: 2rem;
+	min-inline-size: 2rem;
+	min-block-size: 2rem;
+	padding-inline: 0;
+	justify-content: center;
+	flex-shrink: 0;
 
-			&.is-ready {
-				background-color: var(--primary);
-				color: var(--button-text);
+	:deep(span:empty) {
+		display: none;
+	}
+}
 
-				&:hover,
-				&:focus {
-					background-color: var(--primary-dark);
-					color: var(--button-text);
-				}
-			}
+.button--mark-done {
+	background-color: transparent;
+	box-shadow: none;
 
-			&.is-done {
-				background-color: var(--success);
-				color: var(--button-text);
+	&.is-ready {
+		background-color: var(--primary);
+		color: var(--button-text);
+		border-color: var(--primary);
 
-				&:hover,
-				&:focus {
-					background-color: var(--success-text);
-					color: var(--button-text);
-				}
-			}
+		&:hover,
+		&:focus {
+			background-color: var(--primary-dark);
+			color: var(--button-text);
+			border-color: var(--primary-dark);
+		}
+	}
+
+	&.is-done {
+		background-color: var(--success);
+		color: var(--button-text);
+		border-color: var(--success);
+
+		&:hover,
+		&:focus {
+			background-color: var(--success-text);
+			color: var(--button-text);
+			border-color: var(--success-text);
 		}
 	}
 }
 
-.is-modal .action-buttons {
-	// we need same top margin for the modal close button 
-	@media screen and (min-width: $tablet) {
-		inset-block-start: 6.5rem;
+.is-modal {
+	.action-buttons {
+		position: static;
+		inset-block-start: auto;
+		margin-block-start: 0.75rem;
+		padding-block-start: 0.75rem;
+		border-block-start: 1px solid var(--card-border-color);
 	}
-	// this is the moment when the fixed close button is outside the modal
-	// => we can fill up the space again
-	@media screen and (width >= calc(#{$desktop} + 84px)) {
-		inset-block-start: 0;
+
+	.description {
+		margin-block-end: 0.75rem;
+	}
+
+	.inspector-crumb {
+		margin: 0;
+	}
+}
+
+.inspector-body {
+	flex: 1 1 auto;
+	min-block-size: 0;
+	overflow-y: auto;
+}
+
+.inspector-footer {
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding-block: 0.65rem 0.9rem;
+	background: var(--inspector-bg);
+	border-block-start: 1px solid var(--card-border-color);
+
+	.button {
+		inline-size: auto;
+		flex-shrink: 0;
+		justify-content: flex-start;
+		margin-block-end: 0;
+	}
+
+	:deep(.created) {
+		flex: 1 1 auto;
+		min-inline-size: 0;
+		text-align: end;
+		margin-inline-start: auto;
+	}
+}
+
+.task-view-container.is-modal {
+	display: flex;
+	flex-direction: column;
+	block-size: 100%;
+	min-block-size: 0;
+
+	.task-view {
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-block-size: 0;
+		overflow: hidden;
 	}
 }
 
@@ -1532,34 +1594,34 @@ h2 .button {
 .action-heading-row {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: flex-start;
 	gap: 0.5rem;
+	inline-size: 100%;
 	margin: 0.5rem 0;
+	color: var(--grey-700);
 }
 
 .action-heading {
-	color: var(--grey-700);
+	color: inherit;
 	font-size: 0.82rem;
 	font-weight: 620;
 	margin: 0;
 	display: inline-block;
 }
 
-.action-group-toggle {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	inline-size: 1.5rem;
-	block-size: 1.5rem;
-	border-radius: $radius;
-	color: var(--grey-700);
+.action-group-chevron {
 	flex-shrink: 0;
+	inline-size: 0.75rem;
+	transition: transform $transition;
 
-	&:hover,
-	&:focus-visible {
-		background: var(--grey-100);
-		color: var(--grey-900);
+	&.is-open {
+		transform: rotate(-180deg);
 	}
+}
+
+.action-heading-row:hover,
+.action-heading-row:focus-visible {
+	color: var(--grey-900);
 }
 
 .action-group-body {

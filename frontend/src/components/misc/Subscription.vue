@@ -5,9 +5,13 @@
 		variant="secondary"
 		:icon="iconName"
 		:disabled="disabled"
+		:aria-label="iconOnly ? buttonText : undefined"
+		:class="{'is-icon-only': iconOnly}"
 		@click="changeSubscription"
 	>
-		{{ buttonText }}
+		<template v-if="!iconOnly">
+			{{ buttonText }}
+		</template>
 	</XButton>
 	<DropdownItem
 		v-else-if="type === 'dropdown'"
@@ -52,9 +56,11 @@ const props = withDefaults(defineProps<{
 	entityId: number,
 	isButton?: boolean,
 	type?: 'button' | 'dropdown',
+	iconOnly?: boolean,
 }>(), {
 	isButton: true,
 	type: 'button',
+	iconOnly: false,
 })
 
 const emit = defineEmits<{
@@ -146,3 +152,17 @@ async function unsubscribe() {
 	success({message})
 }
 </script>
+
+<style lang="scss" scoped>
+.button.is-icon-only {
+	inline-size: 2rem;
+	min-inline-size: 2rem;
+	min-block-size: 2rem;
+	padding-inline: 0;
+	justify-content: center;
+
+	:deep(span:empty) {
+		display: none;
+	}
+}
+</style>

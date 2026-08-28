@@ -34,12 +34,6 @@
 						:is-done="task.done"
 						variant="small"
 					/>
-					<template v-if="task.identifier === ''">
-						#{{ task.index }}
-					</template>
-					<template v-else>
-						{{ task.identifier }}
-					</template>
 					<span
 						v-if="showTaskPosition"
 						class="tw:text-red-600 tw:ps-2"
@@ -66,11 +60,12 @@
 					:to="{ name: 'task.detail', params: {id: task.id} }"
 					class="kanban-card__title-link"
 					draggable="false"
+					:title="task.title"
 					@click.exact.prevent.stop="openTaskDetail()"
 					@click.ctrl.stop
 					@click.meta.stop
 				>
-					{{ task.title }}
+					{{ displayTaskTitle(task.title) }}
 				</RouterLink>
 			</h3>
 			
@@ -85,7 +80,6 @@
 				v-if="task.percentDone > 0"
 				class="task-progress"
 				:value="task.percentDone * 100"
-				is-small
 			/>
 			<div class="footer">
 				<div class="footer-start">
@@ -164,6 +158,7 @@ import {playPopSound} from '@/helpers/playPop'
 import {isEditorContentEmpty} from '@/helpers/editorContentEmpty'
 import {useProjectStore} from '@/stores/projects'
 import {TASK_REPEAT_MODES} from '@/types/IRepeatMode'
+import {displayTaskTitle} from '@/helpers/displayTaskTitle'
 
 const props = withDefaults(defineProps<{
 	task: ITask,
@@ -268,7 +263,7 @@ $task-background: var(--white);
 	display: block;
 
 	font-size: 1rem;
-	border-radius: $radius;
+	border-radius: $radius-large;
 	background: $task-background;
 	overflow: hidden;
 	transition: box-shadow $transition, border-color $transition, opacity $transition;
@@ -307,10 +302,17 @@ $task-background: var(--white);
 		font-family: $family-sans-serif;
 		font-size: 1rem;
 		font-weight: 500;
-		word-break: break-word;
+		min-inline-size: 0;
+		overflow: hidden;
+		color: var(--primary);
 	}
 
 	.kanban-card__title-link {
+		display: block;
+		min-inline-size: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 		color: inherit;
 		text-decoration: none;
 	}
@@ -418,6 +420,10 @@ $task-background: var(--white);
 
 	&.has-custom-background-color {
 		color: #000000; // pure black, not grey-800: guarantees 4.5:1 at the luminance flip point
+
+		h3 {
+			color: inherit;
+		}
 
 		.footer .icon,
 		.due-date,

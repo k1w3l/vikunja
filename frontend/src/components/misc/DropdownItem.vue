@@ -46,12 +46,18 @@ defineProps<DropDownItemProps>()
 	justify-content: left !important;
 
 	&.is-active {
-		background-color: var(--link);
-		color: var(--link-invert);
+		background-color: var(--primary);
+		color: var(--button-text);
 	}
 
 	&:hover:not(.is-disabled) {
-		background-color: var(--grey-100);
+		background-color: hsla(var(--primary-hsl), 0.16);
+		color: var(--text);
+	}
+
+	&.is-active:hover:not(.is-disabled) {
+		background-color: var(--primary-dark);
+		color: var(--button-text);
 	}
 
 	&.is-disabled {

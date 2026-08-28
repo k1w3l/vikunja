@@ -635,7 +635,7 @@ async function setReplyContent(value: string) {
 	editor.value.commands.focus('end')
 }
 
-defineExpose({setReplyContent})
+defineExpose({setReplyContent, setEdit})
 
 
 // See https://github.com/github/hotkey/discussions/85#discussioncomment-5214660

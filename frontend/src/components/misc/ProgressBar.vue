@@ -14,7 +14,7 @@
 	>
 		<span
 			class="progress-bar__fill"
-			:style="{ transform: `scaleX(${clamped / 100})` }"
+			:style="{ '--progress': progress }"
 		/>
 	</div>
 </template>
@@ -36,6 +36,7 @@ const props = withDefaults(defineProps<{
 
 const {t} = useI18n({useScope: 'global'})
 const clamped = computed(() => Math.round(Math.min(100, Math.max(0, props.value))))
+const progress = computed(() => clamped.value / 100)
 const progressLabel = computed(() => props.ariaLabel ?? t('task.attributes.percentDone'))
 </script>
 
@@ -45,7 +46,7 @@ const progressLabel = computed(() => props.ariaLabel ?? t('task.attributes.perce
 	display: block;
 	inline-size: 100%;
 	min-inline-size: 0;
-	block-size: 4px;
+	block-size: 6px;
 	margin: 0;
 	overflow: hidden;
 	border-radius: $radius;
@@ -53,12 +54,34 @@ const progressLabel = computed(() => props.ariaLabel ?? t('task.attributes.perce
 }
 
 .progress-bar__fill {
+	--progress: 0;
 	display: block;
+	position: relative;
 	block-size: 100%;
 	inline-size: 100%;
 	transform-origin: 0 50%;
-	background: var(--success);
-	transition: transform $transition-layout;
+	transform: scaleX(var(--progress));
+	background: linear-gradient(
+		90deg,
+		var(--primary-dark) 0%,
+		var(--primary) 55%,
+		hsla(var(--primary-h), var(--primary-s), 62%, 1) 100%
+	);
+	animation: progress-grow 420ms $ease-out-expo both;
+	transition: transform $transition-layout $ease-out-expo;
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			hsla(0, 0%, 100%, 0.28),
+			transparent
+		);
+		animation: progress-shimmer 900ms $ease-out-expo 280ms 1 both;
+	}
 }
 
 .progress-bar:dir(rtl) .progress-bar__fill {
@@ -66,16 +89,47 @@ const progressLabel = computed(() => props.ariaLabel ?? t('task.attributes.perce
 }
 
 .progress-bar.is-small {
-	block-size: 3px;
+	block-size: 4px;
 }
 
 .progress-bar.is-primary .progress-bar__fill {
-	background: var(--primary);
+	background: linear-gradient(
+		90deg,
+		var(--primary-dark) 0%,
+		var(--primary) 55%,
+		hsla(var(--primary-h), var(--primary-s), 62%, 1) 100%
+	);
+}
+
+@keyframes progress-grow {
+	from {
+		transform: scaleX(0);
+	}
+
+	to {
+		transform: scaleX(var(--progress));
+	}
+}
+
+@keyframes progress-shimmer {
+	from {
+		translate: -100% 0;
+	}
+
+	to {
+		translate: 100% 0;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.progress-bar__fill {
+		animation: none;
 		transition: none;
+	}
+
+	.progress-bar__fill::after {
+		content: none;
+		animation: none;
 	}
 }
 </style>

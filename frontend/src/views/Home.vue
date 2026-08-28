@@ -4,7 +4,18 @@
 			v-if="salutation"
 			class="home-salutation"
 		>
-			{{ salutation }}
+			<template
+				v-for="(part, i) in salutationParts"
+				:key="i"
+			>
+				<span
+					v-if="part.isName"
+					class="home-salutation__name"
+				>{{ part.text }}</span>
+				<template v-else>
+					{{ part.text }}
+				</template>
+			</template>
 		</h1>
 
 		<Message
@@ -63,6 +74,23 @@ const projectStore = useProjectStore()
 const route = useRoute()
 const router = useRouter()
 
+const salutationParts = computed(() => {
+	const text = salutation.value
+	const name = authStore.userDisplayName
+	if (!text || !name) {
+		return []
+	}
+	const idx = text.indexOf(name)
+	if (idx < 0) {
+		return [{text, isName: false}]
+	}
+	return [
+		{text: text.slice(0, idx), isName: false},
+		{text: name, isName: true},
+		{text: text.slice(idx + name.length), isName: false},
+	]
+})
+
 const tasksLoaded = ref(false)
 
 const deletionScheduledAt = computed(() => parseDateOrNull(authStore.info?.deletionScheduledAt))
@@ -108,6 +136,10 @@ function handleClearLabelFilter() {
 	font-size: 1.5rem;
 	font-weight: 650;
 	letter-spacing: -0.02em;
+}
+
+.home-salutation__name {
+	color: #e24e1b;
 }
 
 .home-add-task {

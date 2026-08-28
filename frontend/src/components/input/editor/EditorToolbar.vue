@@ -498,55 +498,75 @@ function setLink(event: MouseEvent) {
 	background: var(--white);
 	border: 1px solid var(--grey-200);
 	user-select: none;
-	padding: .5rem;
+	padding: 0.2rem;
 	border-radius: $radius;
 	display: flex;
 	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.125rem;
+}
 
-	> * + * {
+.editor-toolbar__segment {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.05rem;
+
+	&:not(:first-child) {
 		border-inline-start: 1px solid var(--grey-200);
-		margin-inline-start: 6px;
-		padding-inline-start: 6px;
+		padding-inline-start: 0.25rem;
+		margin-inline-start: 0.05rem;
 	}
 }
 
 .editor-toolbar__button {
-	min-inline-size: 2rem;
-	block-size: 2rem;
+	min-inline-size: 1.75rem;
+	inline-size: 1.75rem;
+	block-size: 1.75rem;
+	padding: 0;
 	border-radius: $radius;
 	border: 1px solid transparent;
 	color: var(--grey-700);
-	transition: all $transition;
+	transition: background-color $transition, border-color $transition, color $transition;
 	background: transparent;
-	margin-inline-end: .25rem;
 
 	&:hover {
 		background: var(--grey-100);
 		border-color: var(--grey-200);
 	}
 
+	&.is-active {
+		background: hsla(var(--primary-hsl), 0.16);
+		color: var(--primary);
+		border-color: transparent;
+	}
+
 	.icon {
 		position: relative;
 
 		.icon__lower-text {
-			font-size: .75rem;
+			font-size: 0.82rem;
 			position: absolute;
-			inset-block-end: -3px;
-			inset-inline-end: -2px;
+			inset-block-end: -2px;
+			inset-inline-end: -1px;
 			font-weight: bold;
 		}
 	}
 }
 
 .editor-toolbar__table-buttons {
-	margin-block-start: .5rem;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	flex-basis: 100%;
+	margin-block-start: 0.2rem;
 
 	> .editor-toolbar__button {
-		margin-inline-end: .5rem;
-		margin-block-end: .5rem;
+		inline-size: auto;
+		min-inline-size: 0;
 		padding: 0 .25rem;
 		border: 1px solid var(--grey-400);
-		font-size: .75rem;
+		font-size: 0.82rem;
 		block-size: 1.5rem;
 	}
 }

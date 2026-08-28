@@ -58,9 +58,15 @@ const filteredProjects = computed(() => {
 	gap: var(--project-grid-gap);
 
 	&.is-compact {
-		--project-grid-item-height: 5.5rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		grid-template-columns: none;
+		grid-auto-rows: auto;
+
+		--project-grid-item-height: auto;
 		--project-grid-gap: 0.5rem;
-		--project-grid-min: 8rem;
+		--project-grid-min: unset;
 	}
 }
 
@@ -68,5 +74,10 @@ const filteredProjects = computed(() => {
 	display: grid;
 	min-inline-size: 0;
 	margin-block-start: 0; // remove padding coming form .content li + li
+}
+
+.is-compact .project-grid-item {
+	display: inline-flex;
+	inline-size: auto;
 }
 </style>

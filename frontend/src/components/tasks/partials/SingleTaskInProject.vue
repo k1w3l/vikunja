@@ -58,8 +58,9 @@
 							ref="taskLinkRef"
 							:to="taskDetailRoute"
 							class="task-link"
+							:title="task.title"
 						>
-							{{ task.title }}
+							{{ displayTaskTitle(task.title) }}
 						</RouterLink>
 					</TaskGlanceTooltip>
 				</span>
@@ -176,7 +177,6 @@
 				v-if="task.percentDone > 0"
 				class="task-progress"
 				:value="task.percentDone * 100"
-				is-small
 			/>
 			<slot />
 		</div>
@@ -233,17 +233,20 @@ import {isEditorContentEmpty} from '@/helpers/editorContentEmpty'
 import {TASK_REPEAT_MODES} from '@/types/IRepeatMode'
 import {useGlobalNow} from '@/composables/useGlobalNow'
 import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
+import {displayTaskTitle} from '@/helpers/displayTaskTitle'
 
 const props = withDefaults(defineProps<{
 	theTask: ITask,
 	isArchived?: boolean,
 	showProject?: boolean,
+	showForeignProject?: boolean,
 	disabled?: boolean,
 	canMarkAsDone?: boolean,
 	allTasks?: ITask[],
 }>(), {
 	isArchived: false,
 	showProject: false,
+	showForeignProject: true,
 	disabled: false,
 	canMarkAsDone: true,
 	allTasks: () => [],
@@ -289,7 +292,7 @@ const router = useRouter()
 const project = computed(() => projectStore.projects[task.value.projectId])
 const projectColor = computed(() => project.value ? project.value?.hexColor : '')
 
-const showProjectSeparately = computed(() => !props.showProject && currentProject.value?.id !== task.value.projectId && project.value)
+const showProjectSeparately = computed(() => props.showForeignProject && !props.showProject && currentProject.value?.id !== task.value.projectId && project.value)
 const showProjectInMeta = computed(() => Boolean((props.showProject && project.value) || showProjectSeparately.value))
 
 const currentProject = computed(() => {
@@ -438,7 +441,7 @@ defineExpose({
 	transition: background-color $transition;
 	align-items: center;
 	cursor: pointer;
-	border-radius: $radius;
+	border-radius: $radius-large;
 	border: 1px solid transparent;
 
 	&:hover {
@@ -464,17 +467,32 @@ defineExpose({
 	}
 
 	.task-main {
-		text-overflow: ellipsis;
-		word-wrap: break-word;
-		word-break: break-word;
 		min-inline-size: 0;
-		flex: 1 1 auto;
+		flex: 1 1 0;
 		overflow: hidden;
 	}
 
 	.task-title-row {
+		display: inline-flex;
 		min-inline-size: 0;
 		max-inline-size: 100%;
+		overflow: hidden;
+	}
+
+	:deep(.task-glance-trigger) {
+		display: block;
+		min-inline-size: 0;
+		flex: 1 1 auto;
+		max-inline-size: 100%;
+		overflow: hidden;
+	}
+
+	.task-link {
+		display: block;
+		min-inline-size: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
 	.task-meta {
@@ -501,9 +519,10 @@ defineExpose({
 
 	.tasktext,
 	&.tasktext {
+		min-inline-size: 0;
+		overflow: hidden;
+		white-space: nowrap;
 		text-overflow: ellipsis;
-		word-wrap: break-word;
-		word-break: break-word;
 	}
 
 	.dueDate {

@@ -56,15 +56,6 @@
 						</Transition>
 					</keep-alive>
 				</RouterView>
-
-				<BaseButton
-					v-shortcut="SHORTCUTS.showKeyboardShortcuts"
-					class="keyboard-shortcuts-button d-print-none"
-					@click="showKeyboardShortcuts()"
-				>
-					<span class="is-sr-only">{{ $t('keyboardShortcuts.title') }}</span>
-					<Icon icon="keyboard" />
-				</BaseButton>
 			</main>
 			<aside
 				v-if="inspectorOpen"
@@ -91,7 +82,6 @@
 import {watch, computed, onBeforeUnmount, defineAsyncComponent, type Component} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 
-import {SHORTCUTS} from '@/constants/shortcuts'
 import Navigation from '@/components/home/Navigation.vue'
 import QuickActions from '@/components/quick-actions/QuickActions.vue'
 import BaseButton from '@/components/base/BaseButton.vue'
@@ -148,10 +138,6 @@ const baseStore = useBaseStore()
 const background = computed(() => baseStore.background)
 const blurHash = computed(() => baseStore.blurHash)
 const menuActive = computed(() => baseStore.menuActive)
-
-function showKeyboardShortcuts() {
-	baseStore.setKeyboardShortcutsActive(true)
-}
 
 const route = useRoute()
 const router = useRouter()
@@ -290,13 +276,31 @@ onBeforeUnmount(() => {
 	inset-block-end: 0;
 	inset-inline-end: 0;
 	inline-size: var(--inspector-width);
+	display: flex;
+	flex-direction: column;
 	overflow-x: visible;
-	overflow-y: auto;
+	overflow-y: hidden;
 	background: var(--inspector-bg);
-	padding: 1.25rem 1.2rem 2rem;
+	padding: 1rem 1.2rem 0;
 	z-index: 15;
 	border-inline-start: 1px solid var(--card-border-color);
 	box-shadow: -10px 0 24px hsla(20, 14%, 10%, 0.06);
+
+	:deep(.task-view-container) {
+		flex: 1 1 auto;
+		min-block-size: 0;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+
+	:deep(.task-view) {
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-block-size: 0;
+		overflow: hidden;
+	}
 
 	:deep(.columns) {
 		display: flex;
@@ -368,19 +372,6 @@ onBeforeUnmount(() => {
 	@media screen and (max-width: $tablet) {
 		display: block;
 		opacity: 1;
-	}
-}
-
-.keyboard-shortcuts-button {
-	position: absolute;
-	inset-block-end: 1rem;
-	inset-inline-end: 1rem;
-	z-index: 20;
-	color: var(--grey-500);
-	transition: color $transition;
-
-	@media screen and (max-width: $tablet) {
-		display: none;
 	}
 }
 

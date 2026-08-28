@@ -27,9 +27,14 @@
       display: flex;
       align-items: center;
       min-inline-size: 0;
+      inline-size: 100%;
       border-radius: $radius;
 
       &:hover {
+        background: var(--rail-active);
+      }
+
+      &:has(.router-link-exact-active) {
         background: var(--rail-active);
       }
     }
@@ -61,7 +66,7 @@
 
     .menu-list-dropdown-trigger {
       display: flex;
-      padding: 0.5rem;
+      padding: 0.35rem;
       color: var(--rail-muted);
     }
 
@@ -95,8 +100,9 @@
       }
 
       .collapse-project-button-placeholder {
-        width: 1.25rem;
-        flex-shrink: 0;
+        width: 0;
+        flex: none;
+        display: none;
       }
 
       > a {
@@ -118,7 +124,7 @@
 
         &.router-link-exact-active {
           color: var(--rail-hover);
-          background: var(--rail-active);
+          background: transparent;
         }
 
         .icon {

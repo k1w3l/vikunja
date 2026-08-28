@@ -683,7 +683,7 @@ function focus() {
 
 	&:focus,
 	&:hover {
-		background: var(--grey-100);
+		background: hsla(var(--primary-hsl), 0.16);
 		box-shadow: none !important;
 
 		.hint-text {
