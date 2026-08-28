@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Três caminhos · Vikunja</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600&family=Atkinson+Hyperlegible:wght@400;700&family=Besley:wght@700&family=Karla:wght@400;600&family=Recursive:wght@450;700&display=swap" rel="stylesheet">
+	<style>
+		*, *::before, *::after { box-sizing: border-box; }
+		html, body { margin: 0; min-height: 100%; }
+		body { color: #1c1917; }
+		::selection { background: #c4a35a; color: #141811; }
+		.intro {
+			padding: 1.5rem 1.5rem 1rem;
+			max-width: 48rem;
+		}
+		.intro h1 {
+			font-family: Recursive, sans-serif;
+			font-size: 1.75rem;
+			margin: 0 0 0.4rem;
+			letter-spacing: -0.03em;
+		}
+		.intro p {
+			margin: 0;
+			max-width: 62ch;
+			color: #44403c;
+			font-family: Atkinson Hyperlegible, sans-serif;
+		}
+		.paths {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			min-height: calc(100vh - 7.5rem);
+		}
+		.path {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			padding: 2rem 1.5rem 1.5rem;
+			text-decoration: none;
+			color: inherit;
+			min-height: 28rem;
+		}
+		.path h2 { margin: 0 0 0.6rem; letter-spacing: -0.02em; }
+		.path p { margin: 0; max-width: 36ch; }
+		.path .go {
+			margin-block-start: 2rem;
+			font-weight: 700;
+		}
+		.a {
+			background: #141811;
+			color: #e6e1d4;
+			font-family: Atkinson Hyperlegible, sans-serif;
+		}
+		.a h2 { font-family: Archivo Narrow, sans-serif; font-size: 2rem; color: #c4a35a; }
+		.a .go { color: #c4a35a; }
+		.b {
+			background: #4d5d68;
+			color: #eef1f4;
+			font-family: Karla, sans-serif;
+		}
+		.b h2 { font-family: Besley, serif; font-size: 2rem; }
+		.b .sheet {
+			background: #eef1f4;
+			color: #1c2429;
+			padding: 1.25rem 1.1rem 1.4rem;
+			margin-block-start: 1.5rem;
+			box-shadow: 0 10px 22px rgba(20, 28, 32, 0.28);
+		}
+		.c {
+			background: #f4f1ea;
+			color: #1c1917;
+			font-family: Recursive, sans-serif;
+			border-inline-start: 1px solid #d6d0c6;
+		}
+		.c h2 { font-size: 1.7rem; }
+		.c .go { color: #e24e1b; }
+		.note {
+			padding: 0.75rem 1.5rem 1.25rem;
+			font-size: 0.85rem;
+			color: #57534e;
+			font-family: Atkinson Hyperlegible, sans-serif;
+		}
+		@media (max-width: 900px) {
+			.paths { grid-template-columns: 1fr; }
+			.path { min-height: 18rem; }
+		}
+	</style>
+</head>
+<body>
+	<div class="intro">
+		<h1>Três caminhos para o Vikunja</h1>
+		<p>O mesmo loop diário (visão geral, lista, kanban, detalhe) e a mesma regra de subtarefas. Chrome, botões e menus diferentes. Conteúdo sintético. Escolha um para desenvolver de verdade.</p>
+	</div>
+	<div class="paths">
+		<a class="path a" href="a-rail/overview.html">
+			<div>
+				<h2>Icon Rail</h2>
+				<p>Barra estreita de ferramentas. Ícones em tudo, inclusive nos projetos. Expande no hover ou no pino. Captura discreta, botões de latão.</p>
+			</div>
+			<span class="go">Entrar no rail →</span>
+		</a>
+		<a class="path b" href="b-blotter/overview.html">
+			<div>
+				<h2>Blotter</h2>
+				<p>Navegação no topo, projetos em pílulas. A lista vive numa folha sobre a mesa. Captura grande, como escrever no papel.</p>
+				<div class="sheet">Vikunja · uma coluna, sem sidebar permanente.</div>
+			</div>
+			<span class="go">Abrir o blotter →</span>
+		</a>
+		<a class="path c" href="c-split/overview.html">
+			<div>
+				<h2>Split Inspector</h2>
+				<p>Três colunas: projetos, trabalho, detalhe sempre aberto. “Mostrar na lista” no inspector, sem ir a outra página.</p>
+			</div>
+			<span class="go">Abrir o split →</span>
+		</a>
+	</div>
+	<p class="note">Protótipos estáticos. A flag “Mostrar na lista” grava neste browser (localStorage) e vale nas três versões.</p>
+</body>
+</html>

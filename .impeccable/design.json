@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-26T18:30:00-03:00",
+  "title": "Design System: Vikunja",
+  "extensions": {
+    "colorMeta": {
+      "owned-blue": {
+        "role": "primary",
+        "displayName": "Owned Blue",
+        "canonical": "hsla(217deg, 98%, 53%, 1)",
+        "tonalRamp": ["#011e4c", "#01317e", "#0245b1", "#0259e3", "#1c72fd", "#68a1fd", "#b3d0fe", "#e6efff"]
+      },
+      "owned-blue-deep": {
+        "role": "primary",
+        "displayName": "Owned Blue Deep",
+        "canonical": "hsla(217deg, 98%, 29%, 1)",
+        "tonalRamp": ["#011e4c", "#01317e", "#013992", "#0245b1", "#0259e3", "#1c72fd", "#68a1fd", "#b3d0fe"]
+      },
+      "success": {
+        "role": "secondary",
+        "displayName": "Success Green",
+        "canonical": "hsla(146.3deg, 100%, 42.9%, 1)",
+        "tonalRamp": ["#002e14", "#005c28", "#008a3c", "#00b850", "#00db60", "#47f08d", "#8ff6b8", "#d4fbe6"]
+      },
+      "danger": {
+        "role": "secondary",
+        "displayName": "Danger Red",
+        "canonical": "hsla(3.3deg, 100%, 60.6%, 1)",
+        "tonalRamp": ["#4d0300", "#800500", "#b30700", "#e60900", "#ff4136", "#ff7a72", "#ffb3ae", "#ffe6e4"]
+      },
+      "danger-text": {
+        "role": "secondary",
+        "displayName": "Danger Text",
+        "canonical": "hsla(3.3deg, 100%, 40%, 1)",
+        "tonalRamp": ["#4d0300", "#800500", "#cc0b00", "#e60900", "#ff4136", "#ff7a72", "#ffb3ae", "#ffe6e4"]
+      },
+      "warning": {
+        "role": "secondary",
+        "displayName": "Warning Orange",
+        "canonical": "hsla(27.9deg, 100%, 55.3%, 1)",
+        "tonalRamp": ["#4d2200", "#804000", "#b35a00", "#e67400", "#ff851b", "#ffa85c", "#ffcb9e", "#ffeede"]
+      },
+      "paper-white": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#111827", "#1f2937", "#374151", "#4b5563", "#6b7280", "#d1d5db", "#f3f4f6", "#ffffff"]
+      },
+      "cool-paper": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "hsl(220, 14.3%, 95.9%)",
+        "tonalRamp": ["#111827", "#1f2937", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#e5e7eb", "#f3f4f6"]
+      },
+      "paper-50": {
+        "role": "neutral",
+        "displayName": "Paper 50",
+        "canonical": "hsl(210, 20%, 98%)",
+        "tonalRamp": ["#111827", "#1f2937", "#374151", "#4b5563", "#6b7280", "#d1d5db", "#f3f4f6", "#f9fafb"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Border",
+        "canonical": "hsl(220, 13%, 91%)",
+        "tonalRamp": ["#111827", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#d1d5db", "#e5e7eb", "#f9fafb"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#4a4a4a",
+        "tonalRamp": ["#111827", "#1f2937", "#363636", "#4a4a4a", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb"]
+      },
+      "ink-strong": {
+        "role": "neutral",
+        "displayName": "Ink Strong",
+        "canonical": "#363636",
+        "tonalRamp": ["#111827", "#1f2937", "#363636", "#4a4a4a", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb"]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "hsl(220, 8.9%, 42%)",
+        "tonalRamp": ["#111827", "#1f2937", "#374151", "#626875", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb"]
+      },
+      "ink-900": {
+        "role": "neutral",
+        "displayName": "Ink 900",
+        "canonical": "hsl(220.9, 39.3%, 11%)",
+        "tonalRamp": ["#111827", "#1f2937", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb"]
+      },
+      "logo-ink": {
+        "role": "neutral",
+        "displayName": "Logo Ink",
+        "canonical": "hsl(180, 1%, 15%)",
+        "tonalRamp": ["#111827", "#262727", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb"]
+      },
+      "button-text": {
+        "role": "neutral",
+        "displayName": "Button Text",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#111827", "#1f2937", "#4b5563", "#9ca3af", "#d1d5db", "#f3f4f6", "#f9fafb", "#ffffff"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page-level h1 in Quicksand 500 / 1.75rem." },
+      "headline": { "displayName": "Headline", "purpose": "Inline-editable project and task titles (1.5rem)." },
+      "title": { "displayName": "Title", "purpose": "Section titles (h2 / 1.25rem)." },
+      "body": { "displayName": "Body", "purpose": "Default UI and reading in Open Sans." },
+      "label": { "displayName": "Label", "purpose": "Button chrome: 0.85rem bold uppercase. Not for task titles." }
+    },
+    "shadows": [
+      { "name": "xs", "value": "0 1px 3px hsla(var(--grey-500-hsl), .12), 0 1px 2px hsla(var(--grey-500-hsl), .24)", "purpose": "Pressed/active; kanban cards at rest." },
+      { "name": "sm", "value": "0 3px 6px hsla(var(--grey-500-hsl), .12), 0 2px 4px hsla(var(--grey-500-hsl), .10)", "purpose": "Default cards, buttons, boxes." },
+      { "name": "md", "value": "0 10px 20px hsla(var(--grey-500-hsl), .12), 0 3px 6px hsla(var(--grey-500-hsl), .08)", "purpose": "Hover lift; dropdowns and overlays." },
+      { "name": "lg", "value": "0 15px 25px hsla(var(--grey-500-hsl), .12), 0 5px 10px hsla(var(--grey-500-hsl), .05)", "purpose": "Rare overlays only (tooltips, emphasized rows)." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "150ms ease", "purpose": "Default state transition ($transition)." },
+      { "name": "focus-ring", "value": "0 0 0 2px hsla(var(--primary-hsl), 0.5)", "purpose": "Keyboard focus halo on controls." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "320px" },
+      { "name": "tablet", "value": "769px" },
+      { "name": "desktop", "value": "1024px" },
+      { "name": "navbar-width", "value": "300px" },
+      { "name": "navbar-height", "value": "4rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Uppercase Owned Blue tool; white label is hardcoded, not --white.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Save</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; min-height: 34px; padding: 0 0.5rem; border: 0; border-radius: 4px; background: var(--primary, #1973ff); color: #ffffff; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1; box-shadow: 0 3px 6px hsla(220, 8.9%, 46.1%, 0.12), 0 2px 4px hsla(220, 8.9%, 46.1%, 0.10); cursor: pointer; transition: all 150ms ease; } .ds-btn-primary:hover { background: var(--primary-dark, #013992); box-shadow: 0 10px 20px hsla(220, 8.9%, 46.1%, 0.12), 0 3px 6px hsla(220, 8.9%, 46.1%, 0.08); } .ds-btn-primary:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: 2px; } .ds-btn-primary:active { box-shadow: 0 1px 3px hsla(220, 8.9%, 46.1%, 0.12), 0 1px 2px hsla(220, 8.9%, 46.1%, 0.24); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined-looking fill on Paper White; same uppercase tool language.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">Cancel</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; min-height: 34px; padding: 0 0.5rem; border: 0; border-radius: 4px; background: var(--scheme-main, #ffffff); color: var(--grey-900, #111827); font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1; box-shadow: 0 3px 6px hsla(220, 8.9%, 46.1%, 0.12), 0 2px 4px hsla(220, 8.9%, 46.1%, 0.10); cursor: pointer; transition: all 150ms ease; } .ds-btn-secondary:hover { color: var(--grey-600, #4b5563); box-shadow: 0 10px 20px hsla(220, 8.9%, 46.1%, 0.12), 0 3px 6px hsla(220, 8.9%, 46.1%, 0.08); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: 2px; } .ds-btn-secondary:active { box-shadow: 0 1px 3px hsla(220, 8.9%, 46.1%, 0.12), 0 1px 2px hsla(220, 8.9%, 46.1%, 0.24); }"
+    },
+    {
+      "name": "Tertiary Button",
+      "kind": "button",
+      "refersTo": "button-tertiary",
+      "description": "Text tool: no fill, no shadow, Cool Paper wash on hover.",
+      "html": "<button class=\"ds-btn-tertiary\" type=\"button\">More</button>",
+      "css": ".ds-btn-tertiary { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 0.5rem; border: 0; border-radius: 4px; background: transparent; color: var(--text, #4a4a4a); font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1; box-shadow: none; cursor: pointer; transition: all 150ms ease; } .ds-btn-tertiary:hover { background: var(--grey-100, #f3f4f6); box-shadow: none; } .ds-btn-tertiary:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Hairline field; mouse focus has no halo, keyboard focus does.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Task title\" />",
+      "css": ".ds-input { display: block; width: 100%; height: 2.5rem; padding: 0.5rem 0.75rem; border: 1px solid var(--grey-200, #e5e7eb); border-radius: 4px; background: var(--scheme-main, #ffffff); color: var(--text-strong, #363636); font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.5; box-shadow: none; transition: all 150ms ease; } .ds-input::placeholder { color: #6e6e6e; } .ds-input:hover { border-color: var(--border-hover, #b5b5b5); } .ds-input:focus { outline: none; border-color: var(--primary, #1973ff); box-shadow: none; } .ds-input:focus-visible { box-shadow: 0 0 0 2px hsla(217deg, 98%, 53%, 0.5); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Border-plus-lift surface: 1px hairline and shadow-sm.",
+      "html": "<article class=\"ds-card\"><header class=\"ds-card-header\">Project</header><div class=\"ds-card-body\">Next actions stay on the bench.</div></article>",
+      "css": ".ds-card { background: var(--white, #ffffff); color: var(--text, #4a4a4a); border: 1px solid var(--card-border-color, #e5e7eb); border-radius: 4px; box-shadow: 0 3px 6px hsla(220, 8.9%, 46.1%, 0.12), 0 2px 4px hsla(220, 8.9%, 46.1%, 0.10); max-width: 100%; overflow: hidden; } .ds-card-header { padding: 0.75rem 1rem; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-weight: 700; color: var(--text-strong, #363636); border-bottom: 1px solid var(--card-border-color, #e5e7eb); } .ds-card-body { padding: 1.5rem; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.5; }"
+    },
+    {
+      "name": "Sidebar Nav Item",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Square tool-rack row; exact-active turns Owned Blue.",
+      "html": "<a class=\"ds-nav-item ds-nav-item-active\" href=\"#\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M2 3h12v2H2zm0 4h12v2H2zm0 4h8v2H2z\"/></svg>Inbox</a>",
+      "css": ".ds-nav-item { display: flex; align-items: center; height: 44px; padding: 0.75rem 0.5rem 0.75rem 0.25rem; border-radius: 0; color: var(--grey-700, #374151); font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 1rem; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.2s ease; } .ds-nav-item:hover { background: var(--white, #ffffff); } .ds-nav-item:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: -2px; } .ds-nav-icon { width: 1rem; height: 1rem; margin-inline-end: 0.5rem; color: var(--grey-400, #9ca3af); flex-shrink: 0; } .ds-nav-item-active { color: var(--primary, #1973ff); } .ds-nav-item-active .ds-nav-icon { color: var(--primary, #1973ff); }"
+    },
+    {
+      "name": "Label Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Task label; color is the label hex, not Owned Blue.",
+      "html": "<span class=\"ds-chip\">home</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; padding: 0.25rem 0.5rem; border-radius: 4px; background: var(--grey-200, #e5e7eb); color: var(--grey-800, #1f2937); font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; line-height: 1.25; } .ds-chip:hover { filter: brightness(0.96); } .ds-chip:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: 2px; }"
+    },
+    {
+      "name": "Kanban Card",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Signature ticket: xs shadow, Open Sans title, not a marketing tile.",
+      "html": "<article class=\"ds-kanban\"><h3 class=\"ds-kanban-title\">Buy grout</h3><div class=\"ds-kanban-meta\">Today</div></article>",
+      "css": ".ds-kanban { display: block; background: var(--white, #ffffff); border-radius: 4px; box-shadow: 0 1px 3px hsla(220, 8.9%, 46.1%, 0.12), 0 1px 2px hsla(220, 8.9%, 46.1%, 0.24); padding: 0.75rem; font-size: 0.9rem; cursor: pointer; overflow: hidden; } .ds-kanban:hover { box-shadow: 0 3px 6px hsla(220, 8.9%, 46.1%, 0.12), 0 2px 4px hsla(220, 8.9%, 46.1%, 0.10); } .ds-kanban:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: 2px; } .ds-kanban-title { margin: 0; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; font-weight: 400; color: var(--text-strong, #363636); } .ds-kanban-meta { margin-top: 0.25rem; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; color: var(--text-muted, #626875); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Pocket Workshop",
+    "overview": "This is a task surface, not a brand film. The room is a quiet operator’s bench: dense, scan-first, almost no personality except the Vikunja mark. Tools sit where the hand expects them. Owned Blue is the wrench — the one loud object on the bench — not a wash of chrome.\n\nPersonality lives in precise details, not decoration. Headings wear Quicksand at regular weight. Body copy is Open Sans. Primary actions are tactile and confident: short, uppercase, slightly lifted. Everything else recedes into Cool Paper greys so lists, boards, and the next task stay readable. Light and dark are the same workshop with the lights flipped; tokens invert, identity does not.\n\nConfirmed visual rejections: no second display face, no rebrand of the logo or name, no marketing-airy “soft SaaS” padding that fights the density of list and kanban, no replacing the 4px radius language with pills-on-everything.",
+    "keyCharacteristics": [
+      "Quiet bench, tactile tools",
+      "One accent (Owned Blue) for action and “you are here”",
+      "Cool Paper neutrals; dark mode inverts the same grey ramp",
+      "Quicksand for headings, Open Sans for work",
+      "4px corners, 1px borders, shadows that mark lift not luxury"
+    ],
+    "rules": [
+      { "name": "The One Tool Rule", "body": "Owned Blue is for actions, links, and “you are here.” It is not a background wash, not a hero gradient, and not a second palette. If a screen is mostly blue, the bench is gone.", "section": "colors" },
+      { "name": "The Button-White Rule", "body": "Primary (and solid danger) label color is button-text (#ffffff), never --white. --white follows the grey ramp in dark mode and would disappear on Owned Blue.", "section": "colors" },
+      { "name": "The Quicksand Door Rule", "body": "Quicksand is for headings, the wordmark-adjacent chrome, and editable titles. Do not set body copy, table cells, or kanban card titles in Quicksand.", "section": "typography" },
+      { "name": "The Uppercase Tool Rule", "body": "Uppercase is for buttons (and similarly tool-like chrome). Do not uppercase task titles, project names, or running text.", "section": "typography" },
+      { "name": "The Border-Plus-Lift Rule", "body": "Every resting card gets the hairline. Shadows step up on hover or overlay and step down on press (xs). Do not remove the border and “float” the card on shadow alone. Do not stack lg on ordinary list chrome.", "section": "elevation" },
+      { "name": "The Four-Pixel Rule", "body": "4px for controls, cards, inputs, tags. Full circles for people and color dots. No 16px “modern app” rounding on the bench.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do keep the Vikunja wordmark and Owned Blue as the only brand signals.",
+      "Do invert --grey-50…900 in dark mode rather than inventing a second palette.",
+      "Do put new reusable color on :root HSL components (-h/-s/-l) so dark mode can change one dimension.",
+      "Do use logical properties for spacing (margin-inline, padding-block).",
+      "Do honor prefers-reduced-motion wherever motion is added (150ms ease is the incumbent duration).",
+      "Do prefix any Tailwind utility with tw-."
+    ],
+    "donts": [
+      "Don't rebrand, replace Quicksand/Open Sans, or introduce a display serif.",
+      "Don't paint large surfaces with Owned Blue (The One Tool Rule).",
+      "Don't use --white for text on primary buttons.",
+      "Don't uppercase task or project titles.",
+      "Don't drop the 1px card border in favor of shadow-only lift.",
+      "Don't round past 4px except for avatars, bubbles, and spinners.",
+      "Don't author a new locale palette or “premium dark” that ignores the inverted grey ramp."
+    ]
+  }
+}

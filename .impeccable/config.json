@@ -1,0 +1,209 @@
+{
+  "buildPath": "comp",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "layout-transition",
+        "value": "margin-inline-start",
+        "createdAt": "2026-08-26T21:07:50.971Z",
+        "reason": "Sidebar is position:fixed; main content must reserve flow with margin-inline-start. Transform would overlay the nav instead of sitting beside it. Incumbent ContentAuth pattern; user asked for fluid sidebar motion."
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": ".9rem",
+        "createdAt": "2026-08-26T21:09:26.128Z",
+        "reason": "Pre-existing kanban/list metadata size; not part of this token pass."
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": ".75rem",
+        "createdAt": "2026-08-26T21:09:26.149Z",
+        "reason": "Pre-existing compact chrome (view switch, kanban meta)."
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": ".8rem",
+        "createdAt": "2026-08-26T21:09:26.170Z",
+        "reason": "Pre-existing kanban meta size."
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#000000",
+        "createdAt": "2026-08-26T21:09:26.190Z",
+        "reason": "Kanban custom cover text on light task colors; contrast, not a brand token."
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "3px",
+        "createdAt": "2026-08-26T21:09:26.210Z",
+        "reason": "Pre-existing due-date focus ring radius on list rows."
+      },
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          ".impeccable/prototypes/**"
+        ],
+        "createdAt": "2026-08-27T01:46:54.097Z",
+        "reason": "User-approved layout prototypes: DESIGN.md Pocket Workshop is anti-reference; three replacement worlds own their palettes"
+      },
+      {
+        "rule": "overused-font",
+        "value": "*",
+        "files": [
+          ".impeccable/prototypes/**"
+        ],
+        "createdAt": "2026-08-27T01:46:54.123Z",
+        "reason": "Prototype worlds pick their own faces; not the shipping Vue app"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          ".impeccable/prototypes/**"
+        ],
+        "createdAt": "2026-08-27T01:46:54.150Z",
+        "reason": "Prototype type ramps are independent of DESIGN.md"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          ".impeccable/prototypes/**"
+        ],
+        "createdAt": "2026-08-27T01:46:54.172Z",
+        "reason": "Prototype corner language is independent of DESIGN.md"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/prototypes/**"
+        ],
+        "createdAt": "2026-08-27T01:49:14.289Z",
+        "reason": "Three replacement prototype worlds; DESIGN.md type is anti-reference until a path is chosen"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(0, 0, 0, .8)",
+        "files": [
+          "frontend/src/components/misc/Modal.vue"
+        ],
+        "createdAt": "2026-08-27T17:39:50.658Z",
+        "reason": "Agent: pre-existing modal scrim; copy-only edit to submit label"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "2rem",
+        "files": [
+          "frontend/src/components/misc/Modal.vue"
+        ],
+        "createdAt": "2026-08-27T17:39:50.683Z",
+        "reason": "Agent: pre-existing close-button hit target; copy-only edit to submit label"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "frontend/src/components/input/editor/CommandsList.vue"
+        ],
+        "createdAt": "2026-08-27T22:54:13.299Z",
+        "reason": "Pre-existing slash-command list chrome; this change only swaps selected fill to cadmium wash."
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          "frontend/src/components/input/editor/CommandsList.vue"
+        ],
+        "createdAt": "2026-08-27T22:54:13.320Z",
+        "reason": "Pre-existing slash-command list radius; selected-fill swap only."
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "frontend/src/components/input/editor/mention/MentionList.vue"
+        ],
+        "createdAt": "2026-08-27T22:54:13.342Z",
+        "reason": "Pre-existing mention list chrome; selected-fill swap only."
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          "frontend/src/components/input/editor/mention/MentionList.vue"
+        ],
+        "createdAt": "2026-08-27T22:54:13.363Z",
+        "reason": "Pre-existing mention list radius; selected-fill swap only."
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "frontend/src/components/input/editor/emoji/EmojiList.vue"
+        ],
+        "createdAt": "2026-08-27T22:54:13.383Z",
+        "reason": "Pre-existing emoji list chrome; selected-fill swap only."
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          "frontend/src/components/input/editor/emoji/EmojiList.vue"
+        ],
+        "createdAt": "2026-08-27T22:54:13.405Z",
+        "reason": "Pre-existing emoji list radius; selected-fill swap only."
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "frontend/src/components/input/filter/FilterCommandsList.vue"
+        ],
+        "createdAt": "2026-08-27T22:54:13.426Z",
+        "reason": "Pre-existing filter autocomplete chrome; selected-fill swap only."
+      },
+      {
+        "rule": "design-system-font",
+        "value": "jetbrainsmono",
+        "files": [
+          "frontend/src/components/input/editor/TipTap.vue"
+        ],
+        "createdAt": "2026-08-28T00:55:11.780Z"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(200, 200, 255, 0.4)",
+        "files": [
+          "frontend/src/components/input/editor/TipTap.vue"
+        ],
+        "createdAt": "2026-08-28T00:55:11.802Z"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#aaddff",
+        "files": [
+          "frontend/src/components/input/editor/TipTap.vue"
+        ],
+        "createdAt": "2026-08-28T00:55:11.825Z"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "2rem",
+        "files": [
+          "frontend/src/components/tasks/partials/Heading.vue"
+        ],
+        "createdAt": "2026-08-28T00:56:12.431Z"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "0.82rem",
+        "createdAt": "2026-08-28T02:19:12.276Z",
+        "reason": "DESIGN.md label step (typography.label.fontSize); sidecar stale"
+      }
+    ]
+  }
+}

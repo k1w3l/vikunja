@@ -1,0 +1,37 @@
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+img { display: block; max-width: 100%; }
+button, input { font: inherit; }
+a { color: inherit; }
+.ico { display: block; flex-shrink: 0; }
+.color-slate { --pc: #64748b; }
+.color-teal { --pc: #0f766e; }
+.color-blue { --pc: #1d4ed8; }
+.color-amber { --pc: #b45309; }
+.color-rose { --pc: #be123c; }
+.color-green { --pc: #047857; }
+.color-plum { --pc: #6d28d9; }
+.color-sky { --pc: #0369a1; }
+.color-orange { --pc: #c2410c; }
+.color-stone { --pc: #57534e; }
+.pdot, .picon {
+	background: var(--pc);
+	color: #fff;
+}
+.pdot {
+	display: inline-block;
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: 999px;
+	vertical-align: middle;
+	margin-inline-end: 0.35rem;
+}
+.picon {
+	width: 1.5rem;
+	height: 1.5rem;
+	border-radius: 4px;
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+}
+.picon .ico { width: 14px; height: 14px; }
