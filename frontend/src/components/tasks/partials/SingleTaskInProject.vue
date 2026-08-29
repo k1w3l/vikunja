@@ -13,6 +13,7 @@
 			@keyup.enter="openTaskDetail"
 		>
 			<div class="task-lead">
+				<slot />
 				<BaseButton
 					v-if="hasSubtasks"
 					class="subtask-toggle"
@@ -64,115 +65,117 @@
 				</span>
 			</div>
 
-			<div class="task-meta-labels">
-				<Labels
-					v-if="task.labels.length > 0"
-					class="labels"
-					:labels="task.labels"
-				/>
-			</div>
-
-			<div class="task-meta-priority">
-				<PriorityLabel
-					:priority="task.priority"
-					:done="task.done"
-				/>
-			</div>
-
-			<span class="task-meta-icons">
-				<span
-					class="project-task-icon"
-					:class="{ 'is-placeholder': task.attachments.length === 0 }"
-					role="img"
-					:aria-hidden="task.attachments.length === 0 ? 'true' : undefined"
-					:aria-label="task.attachments.length > 0 ? $t('task.attributes.attachment', task.attachments.length) : undefined"
-				>
-					<Icon
-						v-if="task.attachments.length > 0"
-						icon="paperclip"
+			<div class="task-meta">
+				<div class="task-meta-labels">
+					<Labels
+						v-if="task.labels.length > 0"
+						class="labels"
+						:labels="task.labels"
 					/>
-				</span>
-				<span
-					class="project-task-icon is-mirrored-rtl"
-					:class="{ 'is-placeholder': isEditorContentEmpty(task.description) }"
-					aria-hidden="true"
-				>
-					<Icon
-						v-if="!isEditorContentEmpty(task.description)"
-						icon="align-left"
-					/>
-				</span>
-				<span
-					class="project-task-icon"
-					:class="{ 'is-placeholder': !isRepeating }"
-					aria-hidden="true"
-				>
-					<Icon
-						v-if="isRepeating"
-						icon="history"
-					/>
-				</span>
-				<span
-					class="project-task-icon"
-					:class="{ 'is-placeholder': !task.commentCount }"
-				>
-					<CommentCount :task="task" />
-				</span>
-			</span>
+				</div>
 
-			<div class="task-meta-due">
-				<Popup
-					v-if="+new Date(task.dueDate) > 0"
-				>
-					<template #trigger="{toggle, isOpen}">
-						<BaseButton
-							v-tooltip="formatDateLong(task.dueDate)"
-							class="dueDate"
-							@click.prevent.stop="toggle()"
-						>
-							<time
-								:datetime="formatISO(task.dueDate)"
-								class="is-italic"
-								:aria-expanded="isOpen ? 'true' : 'false'"
-							>
-								{{ $t('task.detail.due', {at: dueDateFormatted}) }}
-							</time>
-						</BaseButton>
-					</template>
-					<template #content="{isOpen}">
-						<DeferTask
-							v-if="isOpen"
-							v-model="task"
-							@update:modelValue="deferTaskUpdate"
+				<div class="task-meta-priority">
+					<PriorityLabel
+						:priority="task.priority"
+						:done="task.done"
+					/>
+				</div>
+
+				<span class="task-meta-icons">
+					<span
+						class="project-task-icon"
+						:class="{ 'is-placeholder': task.attachments.length === 0 }"
+						role="img"
+						:aria-hidden="task.attachments.length === 0 ? 'true' : undefined"
+						:aria-label="task.attachments.length > 0 ? $t('task.attributes.attachment', task.attachments.length) : undefined"
+					>
+						<Icon
+							v-if="task.attachments.length > 0"
+							icon="paperclip"
 						/>
-					</template>
-				</Popup>
-			</div>
+					</span>
+					<span
+						class="project-task-icon is-mirrored-rtl"
+						:class="{ 'is-placeholder': isEditorContentEmpty(task.description) }"
+						aria-hidden="true"
+					>
+						<Icon
+							v-if="!isEditorContentEmpty(task.description)"
+							icon="align-left"
+						/>
+					</span>
+					<span
+						class="project-task-icon"
+						:class="{ 'is-placeholder': !isRepeating }"
+						aria-hidden="true"
+					>
+						<Icon
+							v-if="isRepeating"
+							icon="history"
+						/>
+					</span>
+					<span
+						class="project-task-icon"
+						:class="{ 'is-placeholder': !task.commentCount }"
+					>
+						<CommentCount :task="task" />
+					</span>
+				</span>
 
-			<div class="task-meta-extra">
-				<AssigneeList
-					v-if="task.assignees.length > 0"
-					:assignees="task.assignees"
-					:avatar-size="25"
-					:inline="true"
-				/>
+				<div class="task-meta-due">
+					<Popup
+						v-if="+new Date(task.dueDate) > 0"
+					>
+						<template #trigger="{toggle, isOpen}">
+							<BaseButton
+								v-tooltip="formatDateLong(task.dueDate)"
+								class="dueDate"
+								@click.prevent.stop="toggle()"
+							>
+								<time
+									:datetime="formatISO(task.dueDate)"
+									class="is-italic"
+									:aria-expanded="isOpen ? 'true' : 'false'"
+								>
+									{{ $t('task.detail.due', {at: dueDateFormatted}) }}
+								</time>
+							</BaseButton>
+						</template>
+						<template #content="{isOpen}">
+							<DeferTask
+								v-if="isOpen"
+								v-model="task"
+								@update:modelValue="deferTaskUpdate"
+							/>
+						</template>
+					</Popup>
+				</div>
 
-				<ChecklistSummary :task="task" />
+				<div class="task-meta-extra">
+					<AssigneeList
+						v-if="task.assignees.length > 0"
+						:assignees="task.assignees"
+						:avatar-size="25"
+						:inline="true"
+					/>
 
-				<ColorBubble
-					v-if="showProjectInMeta && projectColor !== ''"
-					:color="projectColor"
-				/>
+					<ChecklistSummary :task="task" />
 
-				<RouterLink
-					v-if="showProjectInMeta"
-					v-tooltip="$t('task.detail.belongsToProject', {project: project.title})"
-					:to="{ name: 'project.index', params: { projectId: task.projectId } }"
-					class="task-project"
-					@click.stop
-				>
-					{{ project.title }}
-				</RouterLink>
+					<ColorBubble
+						v-if="showProjectInMeta && projectColor !== ''"
+						:color="projectColor"
+					/>
+
+					<RouterLink
+						v-if="showProjectInMeta"
+						v-tooltip="$t('task.detail.belongsToProject', {project: project.title})"
+						:to="{ name: 'project.index', params: { projectId: task.projectId } }"
+						class="task-project"
+						@click.stop
+					>
+						{{ project.title }}
+					</RouterLink>
+				</div>
 			</div>
 
 			<BaseButton
@@ -196,7 +199,6 @@
 				class="task-progress"
 				:value="task.percentDone * 100"
 			/>
-			<slot />
 		</div>
 		<template v-if="hasSubtasks && subtasksOpen">
 			<template v-for="subtask in task.relatedTasks.subtask">
@@ -506,6 +508,10 @@ defineExpose({
 		overflow: hidden;
 	}
 
+	.task-meta {
+		display: contents;
+	}
+
 	.task-title-row {
 		display: inline-flex;
 		min-inline-size: 0;
@@ -792,6 +798,102 @@ defineExpose({
 			animation: none;
 			text-decoration-color: var(--success-text);
 			background-image: none;
+		}
+	}
+
+	@media screen and (max-width: $tablet) {
+		content-visibility: visible;
+		contain: style;
+		grid-template-columns: auto minmax(0, 1fr) 2.75rem;
+		grid-template-areas:
+			'lead title fav'
+			'lead meta meta';
+		align-items: start;
+		column-gap: 0.35rem;
+		row-gap: 0.15rem;
+		padding: 0.55rem 0.45rem 0.55rem 0.3rem;
+
+		.task-lead {
+			grid-area: lead;
+			align-self: start;
+			padding-block-start: 0.2rem;
+		}
+
+		.task-main {
+			grid-area: title;
+			align-self: center;
+			overflow: visible;
+		}
+
+		.task-title-row {
+			overflow: visible;
+		}
+
+		:deep(.task-glance-trigger) {
+			overflow: visible;
+		}
+
+		.task-link {
+			white-space: normal;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			line-clamp: 2;
+			-webkit-line-clamp: 2;
+		}
+
+		.task-meta {
+			display: none;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 0.2rem 0.45rem;
+			grid-area: meta;
+			min-inline-size: 0;
+
+			&:has(.labels),
+			&:has(.priority-label),
+			&:has(.dueDate),
+			&:has(.task-project),
+			&:has(.project-task-icon:not(.is-placeholder)) {
+				display: flex;
+			}
+		}
+
+		.task-meta-labels:empty,
+		.task-meta-due:empty,
+		.task-meta-extra:empty {
+			display: none;
+		}
+
+		.task-meta-priority:not(:has(.priority-label)) {
+			display: none;
+		}
+
+		.task-meta-icons:not(:has(.project-task-icon:not(.is-placeholder))) {
+			display: none;
+		}
+
+		.project-task-icon.is-placeholder {
+			display: none;
+		}
+
+		.favorite {
+			grid-area: fav;
+			align-self: start;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-block-size: 44px;
+			min-inline-size: 44px;
+			inline-size: 44px;
+			opacity: 1;
+		}
+
+		:deep(.handle) {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-block-size: 44px;
+			min-inline-size: 1.25rem;
 		}
 	}
 }

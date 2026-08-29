@@ -1,129 +1,184 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-26T18:30:00-03:00",
+  "generatedAt": "2026-08-29T18:20:00-03:00",
   "title": "Design System: Vikunja",
   "extensions": {
     "colorMeta": {
-      "owned-blue": {
+      "cadmium": {
         "role": "primary",
-        "displayName": "Owned Blue",
-        "canonical": "hsla(217deg, 98%, 53%, 1)",
-        "tonalRamp": ["#011e4c", "#01317e", "#0245b1", "#0259e3", "#1c72fd", "#68a1fd", "#b3d0fe", "#e6efff"]
+        "displayName": "Cadmium",
+        "canonical": "#e24e1b",
+        "tonalRamp": ["#441808", "#76290e", "#ad3c15", "#e44f1b", "#ea7952", "#f1a389", "#f7cebf", "#fcede8"]
       },
-      "owned-blue-deep": {
+      "cadmium-deep": {
         "role": "primary",
-        "displayName": "Owned Blue Deep",
-        "canonical": "hsla(217deg, 98%, 29%, 1)",
-        "tonalRamp": ["#011e4c", "#01317e", "#013992", "#0245b1", "#0259e3", "#1c72fd", "#68a1fd", "#b3d0fe"]
+        "displayName": "Cadmium Deep",
+        "canonical": "#b33a12",
+        "tonalRamp": ["#451708", "#77280d", "#ae3a13", "#e64c19", "#ec7751", "#f2a288", "#f8cdbf", "#fcede8"]
       },
-      "success": {
+      "sage": {
         "role": "secondary",
-        "displayName": "Success Green",
-        "canonical": "hsla(146.3deg, 100%, 42.9%, 1)",
-        "tonalRamp": ["#002e14", "#005c28", "#008a3c", "#00b850", "#00db60", "#47f08d", "#8ff6b8", "#d4fbe6"]
+        "displayName": "Sage",
+        "canonical": "#2a7954",
+        "tonalRamp": ["#143927", "#226244", "#329064", "#42bd83", "#6fcda1", "#9dddbf", "#caeddc", "#ecf8f3"]
       },
-      "danger": {
+      "sage-text": {
         "role": "secondary",
-        "displayName": "Danger Red",
-        "canonical": "hsla(3.3deg, 100%, 60.6%, 1)",
-        "tonalRamp": ["#4d0300", "#800500", "#b30700", "#e60900", "#ff4136", "#ff7a72", "#ffb3ae", "#ffe6e4"]
+        "displayName": "Sage Text",
+        "canonical": "#256a4a",
+        "tonalRamp": ["#143928", "#226245", "#329064", "#42bd84", "#6fcda1", "#9dddbf", "#caeddd", "#ecf8f3"]
       },
-      "danger-text": {
+      "brick": {
         "role": "secondary",
-        "displayName": "Danger Text",
-        "canonical": "hsla(3.3deg, 100%, 40%, 1)",
-        "tonalRamp": ["#4d0300", "#800500", "#cc0b00", "#e60900", "#ff4136", "#ff7a72", "#ffb3ae", "#ffe6e4"]
+        "displayName": "Brick",
+        "canonical": "#ce341c",
+        "tonalRamp": ["#431109", "#751d10", "#ab2b17", "#e0391f", "#e86854", "#ef988a", "#f6c7c0", "#fcebe9"]
       },
-      "warning": {
+      "brick-text": {
         "role": "secondary",
-        "displayName": "Warning Orange",
-        "canonical": "hsla(27.9deg, 100%, 55.3%, 1)",
-        "tonalRamp": ["#4d2200", "#804000", "#b35a00", "#e67400", "#ff851b", "#ffa85c", "#ffcb9e", "#ffeede"]
+        "displayName": "Brick Text",
+        "canonical": "#ac2915",
+        "tonalRamp": ["#441008", "#761c0e", "#ad2915", "#e3361c", "#ea6652", "#f19789", "#f7c7bf", "#fcebe8"]
       },
-      "paper-white": {
+      "ochre": {
+        "role": "secondary",
+        "displayName": "Ochre",
+        "canonical": "#cc8914",
+        "tonalRamp": ["#452f08", "#77510d", "#ae7613", "#e69b19", "#ecb351", "#f2cb88", "#f8e3bf", "#fcf5e8"]
+      },
+      "ochre-text": {
+        "role": "secondary",
+        "displayName": "Ochre Text",
+        "canonical": "#916312",
+        "tonalRamp": ["#442e08", "#76510f", "#ac7615", "#e39b1c", "#eab353", "#f0cb89", "#f7e3bf", "#fcf5e8"]
+      },
+      "info": {
+        "role": "secondary",
+        "displayName": "Info",
+        "canonical": "#4b646c",
+        "tonalRamp": ["#1f2a2d", "#36484e", "#4f6a72", "#698b96", "#8da7b0", "#b1c3c9", "#d5dfe2", "#f0f3f5"]
+      },
+      "panel": {
         "role": "neutral",
-        "displayName": "Paper White",
-        "canonical": "#ffffff",
-        "tonalRamp": ["#111827", "#1f2937", "#374151", "#4b5563", "#6b7280", "#d1d5db", "#f3f4f6", "#ffffff"]
+        "displayName": "Panel",
+        "canonical": "#fffcf7",
+        "tonalRamp": ["#1d1816", "#332c28", "#5a524e", "#5a5049", "#8e857b", "#bcb4a9", "#d6d1c7", "#fffcf7"]
       },
-      "cool-paper": {
+      "ground": {
         "role": "neutral",
-        "displayName": "Cool Paper",
-        "canonical": "hsl(220, 14.3%, 95.9%)",
-        "tonalRamp": ["#111827", "#1f2937", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#e5e7eb", "#f3f4f6"]
+        "displayName": "Ground",
+        "canonical": "#f4f1ea",
+        "tonalRamp": ["#1d1816", "#332c28", "#5a524e", "#5a5049", "#8e857b", "#bcb4a9", "#d6d1c7", "#f4f1ea"]
       },
       "paper-50": {
         "role": "neutral",
         "displayName": "Paper 50",
-        "canonical": "hsl(210, 20%, 98%)",
-        "tonalRamp": ["#111827", "#1f2937", "#374151", "#4b5563", "#6b7280", "#d1d5db", "#f3f4f6", "#f9fafb"]
+        "canonical": "#f7f3eb",
+        "tonalRamp": ["#1d1816", "#332c28", "#5a524e", "#5a5049", "#8e857b", "#bcb4a9", "#d6d1c7", "#f7f3eb"]
       },
       "border": {
         "role": "neutral",
         "displayName": "Border",
-        "canonical": "hsl(220, 13%, 91%)",
-        "tonalRamp": ["#111827", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#d1d5db", "#e5e7eb", "#f9fafb"]
+        "canonical": "#d6d0c6",
+        "tonalRamp": ["#1d1816", "#332c28", "#5a524e", "#6e655e", "#8e857b", "#bcb4a9", "#d6d0c6", "#f9f6f0"]
       },
       "ink": {
         "role": "neutral",
         "displayName": "Ink",
-        "canonical": "#4a4a4a",
-        "tonalRamp": ["#111827", "#1f2937", "#363636", "#4a4a4a", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb"]
+        "canonical": "#1c1917",
+        "tonalRamp": ["#1c1917", "#332c28", "#5a524e", "#5a5049", "#8e857b", "#bcb4a9", "#d6d1c7", "#f9f6f0"]
       },
       "ink-strong": {
         "role": "neutral",
         "displayName": "Ink Strong",
-        "canonical": "#363636",
-        "tonalRamp": ["#111827", "#1f2937", "#363636", "#4a4a4a", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb"]
+        "canonical": "#1c1917",
+        "tonalRamp": ["#1c1917", "#332c28", "#5a524e", "#5a5049", "#8e857b", "#bcb4a9", "#d6d1c7", "#f9f6f0"]
       },
       "ink-muted": {
         "role": "neutral",
         "displayName": "Ink Muted",
-        "canonical": "hsl(220, 8.9%, 42%)",
-        "tonalRamp": ["#111827", "#1f2937", "#374151", "#626875", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb"]
+        "canonical": "#57534e",
+        "tonalRamp": ["#1c1917", "#332c28", "#57534e", "#6e655e", "#8e857b", "#bcb4a9", "#d6d1c7", "#f9f6f0"]
       },
       "ink-900": {
         "role": "neutral",
         "displayName": "Ink 900",
-        "canonical": "hsl(220.9, 39.3%, 11%)",
-        "tonalRamp": ["#111827", "#1f2937", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb"]
+        "canonical": "#1c1917",
+        "tonalRamp": ["#1c1917", "#332c28", "#5a524e", "#5a5049", "#8e857b", "#bcb4a9", "#d6d1c7", "#f9f6f0"]
       },
       "logo-ink": {
         "role": "neutral",
         "displayName": "Logo Ink",
-        "canonical": "hsl(180, 1%, 15%)",
-        "tonalRamp": ["#111827", "#262727", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb"]
+        "canonical": "#1c1917",
+        "tonalRamp": ["#1c1917", "#332c28", "#5a524e", "#5a5049", "#8e857b", "#bcb4a9", "#d6d1c7", "#f9f6f0"]
+      },
+      "rail-bg": {
+        "role": "neutral",
+        "displayName": "Rail BG",
+        "canonical": "#1c1917",
+        "tonalRamp": ["#1c1917", "#2a2522", "#3f3a36", "#5a524e", "#8e857b", "#c4bdb4", "#f5f0e8", "#f9f6f0"]
+      },
+      "rail-ink": {
+        "role": "neutral",
+        "displayName": "Rail Ink",
+        "canonical": "#f5f0e8",
+        "tonalRamp": ["#1c1917", "#2a2522", "#3f3a36", "#5a524e", "#8e857b", "#c4bdb4", "#f5f0e8", "#fffcf7"]
+      },
+      "rail-muted": {
+        "role": "neutral",
+        "displayName": "Rail Muted",
+        "canonical": "#c4bdb4",
+        "tonalRamp": ["#1c1917", "#2a2522", "#3f3a36", "#5a524e", "#8e857b", "#c4bdb4", "#f5f0e8", "#fffcf7"]
+      },
+      "rail-active": {
+        "role": "neutral",
+        "displayName": "Rail Active",
+        "canonical": "#2a2522",
+        "tonalRamp": ["#1c1917", "#2a2522", "#3f3a36", "#5a524e", "#8e857b", "#c4bdb4", "#f5f0e8", "#fffcf7"]
+      },
+      "rail-line": {
+        "role": "neutral",
+        "displayName": "Rail Line",
+        "canonical": "#3f3a36",
+        "tonalRamp": ["#1c1917", "#2a2522", "#3f3a36", "#5a524e", "#8e857b", "#c4bdb4", "#f5f0e8", "#fffcf7"]
       },
       "button-text": {
         "role": "neutral",
         "displayName": "Button Text",
         "canonical": "#ffffff",
-        "tonalRamp": ["#111827", "#1f2937", "#4b5563", "#9ca3af", "#d1d5db", "#f3f4f6", "#f9fafb", "#ffffff"]
+        "tonalRamp": ["#1c1917", "#332c28", "#5a524e", "#8e857b", "#bcb4a9", "#d6d1c7", "#f4f1ea", "#ffffff"]
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Page-level h1 in Quicksand 500 / 1.75rem." },
+      "display": { "displayName": "Display", "purpose": "Page-level h1 in Recursive 650 / 1.75rem." },
       "headline": { "displayName": "Headline", "purpose": "Inline-editable project and task titles (1.5rem)." },
       "title": { "displayName": "Title", "purpose": "Section titles (h2 / 1.25rem)." },
-      "body": { "displayName": "Body", "purpose": "Default UI and reading in Open Sans." },
-      "label": { "displayName": "Label", "purpose": "Button chrome: 0.85rem bold uppercase. Not for task titles." }
+      "body": { "displayName": "Body", "purpose": "Default UI, lists, and kanban titles in Recursive 450 / 0.95rem." },
+      "ui": { "displayName": "UI", "purpose": "Chrome at 1rem when body 0.95rem is too small." },
+      "label": { "displayName": "Label", "purpose": "Button chrome: Recursive 620 / 0.82rem, sentence case. Not for task titles." }
     },
     "shadows": [
-      { "name": "xs", "value": "0 1px 3px hsla(var(--grey-500-hsl), .12), 0 1px 2px hsla(var(--grey-500-hsl), .24)", "purpose": "Pressed/active; kanban cards at rest." },
-      { "name": "sm", "value": "0 3px 6px hsla(var(--grey-500-hsl), .12), 0 2px 4px hsla(var(--grey-500-hsl), .10)", "purpose": "Default cards, buttons, boxes." },
-      { "name": "md", "value": "0 10px 20px hsla(var(--grey-500-hsl), .12), 0 3px 6px hsla(var(--grey-500-hsl), .08)", "purpose": "Hover lift; dropdowns and overlays." },
-      { "name": "lg", "value": "0 15px 25px hsla(var(--grey-500-hsl), .12), 0 5px 10px hsla(var(--grey-500-hsl), .05)", "purpose": "Rare overlays only (tooltips, emphasized rows)." }
+      { "name": "xs", "value": "0 1px 2px hsla(20, 14%, 10%, 0.08)", "purpose": "Pressed / active; resting buttons." },
+      { "name": "sm", "value": "0 1px 2px hsla(20, 14%, 10%, 0.06), 0 4px 12px hsla(20, 14%, 10%, 0.06)", "purpose": "Hover on cards and buttons." },
+      { "name": "md", "value": "0 4px 8px hsla(20, 14%, 10%, 0.08), 0 12px 24px hsla(20, 14%, 10%, 0.08)", "purpose": "Menus." },
+      { "name": "lg", "value": "0 8px 16px hsla(20, 14%, 10%, 0.10), 0 20px 40px hsla(20, 14%, 10%, 0.08)", "purpose": "Rare overlays." },
+      { "name": "inspector", "value": "-10px 0 24px hsla(20, 14%, 10%, 0.06)", "purpose": "Soft left shade on the open inspector pane." }
     ],
     "motion": [
-      { "name": "ease-standard", "value": "150ms ease", "purpose": "Default state transition ($transition)." },
-      { "name": "focus-ring", "value": "0 0 0 2px hsla(var(--primary-hsl), 0.5)", "purpose": "Keyboard focus halo on controls." }
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default easing for state and layout." },
+      { "name": "duration", "value": "180ms", "purpose": "Control and color transitions ($transition)." },
+      { "name": "layout", "value": "280ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Inspector/rail transform and blotter tile lay." },
+      { "name": "lay-stagger", "value": "24ms", "purpose": "Blotter tile entrance stagger; cap eight." },
+      { "name": "focus-ring", "value": "0 0 0 2px hsla(15.4deg, 78.6%, 49.6%, 0.5)", "purpose": "Keyboard focus halo on controls." }
     ],
     "breakpoints": [
       { "name": "mobile", "value": "320px" },
       { "name": "tablet", "value": "769px" },
       { "name": "desktop", "value": "1024px" },
-      { "name": "navbar-width", "value": "300px" },
-      { "name": "navbar-height", "value": "4rem" }
+      { "name": "split-inspector", "value": "1100px" },
+      { "name": "navbar-width", "value": "15rem" },
+      { "name": "navbar-height", "value": "3.25rem" },
+      { "name": "inspector-width", "value": "30rem" }
     ]
   },
   "components": [
@@ -131,101 +186,107 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Uppercase Owned Blue tool; white label is hardcoded, not --white.",
-      "html": "<button class=\"ds-btn-primary\" type=\"button\">Save</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; min-height: 34px; padding: 0 0.5rem; border: 0; border-radius: 4px; background: var(--primary, #1973ff); color: #ffffff; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1; box-shadow: 0 3px 6px hsla(220, 8.9%, 46.1%, 0.12), 0 2px 4px hsla(220, 8.9%, 46.1%, 0.10); cursor: pointer; transition: all 150ms ease; } .ds-btn-primary:hover { background: var(--primary-dark, #013992); box-shadow: 0 10px 20px hsla(220, 8.9%, 46.1%, 0.12), 0 3px 6px hsla(220, 8.9%, 46.1%, 0.08); } .ds-btn-primary:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: 2px; } .ds-btn-primary:active { box-shadow: 0 1px 3px hsla(220, 8.9%, 46.1%, 0.12), 0 1px 2px hsla(220, 8.9%, 46.1%, 0.24); }"
+      "description": "Sentence-case cadmium chip; label is button-text, never --white.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Add task</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; min-height: 2rem; padding: 0 0.7rem; border: 0; border-radius: 4px; background: var(--primary, #e24e1b); color: #ffffff; font-family: Recursive, sans-serif; font-size: 0.82rem; font-weight: 620; font-variation-settings: \"CASL\" 0, \"CRSV\" 0, \"MONO\" 0; letter-spacing: 0; text-transform: none; line-height: 1; box-shadow: 0 1px 2px hsla(20, 14%, 10%, 0.08); cursor: pointer; transition: background-color 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-primary:hover { background: var(--primary-dark, #b33a12); box-shadow: 0 1px 2px hsla(20, 14%, 10%, 0.06), 0 4px 12px hsla(20, 14%, 10%, 0.06); } .ds-btn-primary:focus-visible { outline: 2px solid var(--primary, #e24e1b); outline-offset: 2px; } .ds-btn-primary:active { box-shadow: 0 1px 2px hsla(20, 14%, 10%, 0.08); }"
     },
     {
       "name": "Secondary Button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Outlined-looking fill on Paper White; same uppercase tool language.",
+      "description": "Panel fill, ink label, sentence-case chip.",
       "html": "<button class=\"ds-btn-secondary\" type=\"button\">Cancel</button>",
-      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; min-height: 34px; padding: 0 0.5rem; border: 0; border-radius: 4px; background: var(--scheme-main, #ffffff); color: var(--grey-900, #111827); font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1; box-shadow: 0 3px 6px hsla(220, 8.9%, 46.1%, 0.12), 0 2px 4px hsla(220, 8.9%, 46.1%, 0.10); cursor: pointer; transition: all 150ms ease; } .ds-btn-secondary:hover { color: var(--grey-600, #4b5563); box-shadow: 0 10px 20px hsla(220, 8.9%, 46.1%, 0.12), 0 3px 6px hsla(220, 8.9%, 46.1%, 0.08); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: 2px; } .ds-btn-secondary:active { box-shadow: 0 1px 3px hsla(220, 8.9%, 46.1%, 0.12), 0 1px 2px hsla(220, 8.9%, 46.1%, 0.24); }"
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; min-height: 2rem; padding: 0 0.7rem; border: 1px solid var(--grey-200, #d6d0c6); border-radius: 4px; background: var(--white, #fffcf7); color: var(--grey-900, #1c1917); font-family: Recursive, sans-serif; font-size: 0.82rem; font-weight: 620; font-variation-settings: \"CASL\" 0; text-transform: none; line-height: 1; box-shadow: none; cursor: pointer; transition: background-color 180ms cubic-bezier(0.16, 1, 0.3, 1), color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-secondary:hover { color: var(--text-muted, #57534e); box-shadow: 0 1px 2px hsla(20, 14%, 10%, 0.06), 0 4px 12px hsla(20, 14%, 10%, 0.06); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--primary, #e24e1b); outline-offset: 2px; }"
     },
     {
       "name": "Tertiary Button",
       "kind": "button",
       "refersTo": "button-tertiary",
-      "description": "Text tool: no fill, no shadow, Cool Paper wash on hover.",
+      "description": "No fill; linen wash on hover.",
       "html": "<button class=\"ds-btn-tertiary\" type=\"button\">More</button>",
-      "css": ".ds-btn-tertiary { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 0.5rem; border: 0; border-radius: 4px; background: transparent; color: var(--text, #4a4a4a); font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1; box-shadow: none; cursor: pointer; transition: all 150ms ease; } .ds-btn-tertiary:hover { background: var(--grey-100, #f3f4f6); box-shadow: none; } .ds-btn-tertiary:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: 2px; }"
+      "css": ".ds-btn-tertiary { display: inline-flex; align-items: center; justify-content: center; min-height: 2rem; padding: 0 0.7rem; border: 0; border-radius: 4px; background: transparent; color: var(--text, #1c1917); font-family: Recursive, sans-serif; font-size: 0.82rem; font-weight: 620; font-variation-settings: \"CASL\" 0; text-transform: none; line-height: 1; box-shadow: none; cursor: pointer; transition: background-color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-tertiary:hover { background: var(--grey-100, #f4f1ea); box-shadow: none; } .ds-btn-tertiary:focus-visible { outline: 2px solid var(--primary, #e24e1b); outline-offset: 2px; }"
     },
     {
       "name": "Text Field",
       "kind": "input",
       "refersTo": "input",
-      "description": "Hairline field; mouse focus has no halo, keyboard focus does.",
+      "description": "Cream field, 1px stone hairline; cadmium border on focus.",
       "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Task title\" />",
-      "css": ".ds-input { display: block; width: 100%; height: 2.5rem; padding: 0.5rem 0.75rem; border: 1px solid var(--grey-200, #e5e7eb); border-radius: 4px; background: var(--scheme-main, #ffffff); color: var(--text-strong, #363636); font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.5; box-shadow: none; transition: all 150ms ease; } .ds-input::placeholder { color: #6e6e6e; } .ds-input:hover { border-color: var(--border-hover, #b5b5b5); } .ds-input:focus { outline: none; border-color: var(--primary, #1973ff); box-shadow: none; } .ds-input:focus-visible { box-shadow: 0 0 0 2px hsla(217deg, 98%, 53%, 0.5); }"
+      "css": ".ds-input { display: block; width: 100%; height: 2.5rem; padding: 0.5rem 0.75rem; border: 1px solid var(--grey-200, #d6d0c6); border-radius: 4px; background: var(--white, #fffcf7); color: var(--text-strong, #1c1917); font-family: Recursive, Helvetica, Arial, sans-serif; font-size: 0.95rem; font-variation-settings: \"CASL\" 0; line-height: 1.45; box-shadow: none; transition: border-color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-input::placeholder { color: var(--text-muted, #57534e); } .ds-input:hover { border-color: var(--grey-300, #bcb4a9); } .ds-input:focus { outline: none; border-color: var(--primary, #e24e1b); box-shadow: none; } .ds-input:focus-visible { box-shadow: 0 0 0 2px hsla(15.4deg, 78.6%, 49.6%, 0.5); }"
     },
     {
       "name": "Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "Border-plus-lift surface: 1px hairline and shadow-sm.",
-      "html": "<article class=\"ds-card\"><header class=\"ds-card-header\">Project</header><div class=\"ds-card-body\">Next actions stay on the bench.</div></article>",
-      "css": ".ds-card { background: var(--white, #ffffff); color: var(--text, #4a4a4a); border: 1px solid var(--card-border-color, #e5e7eb); border-radius: 4px; box-shadow: 0 3px 6px hsla(220, 8.9%, 46.1%, 0.12), 0 2px 4px hsla(220, 8.9%, 46.1%, 0.10); max-width: 100%; overflow: hidden; } .ds-card-header { padding: 0.75rem 1rem; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-weight: 700; color: var(--text-strong, #363636); border-bottom: 1px solid var(--card-border-color, #e5e7eb); } .ds-card-body { padding: 1.5rem; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.5; }"
+      "description": "Border-plus-lift: 1px hairline, no shadow at rest.",
+      "html": "<article class=\"ds-card\"><header class=\"ds-card-header\">Project</header><div class=\"ds-card-body\">Next actions stay on the linen.</div></article>",
+      "css": ".ds-card { background: var(--white, #fffcf7); color: var(--text, #1c1917); border: 1px solid var(--card-border-color, #d6d0c6); border-radius: 4px; box-shadow: none; max-width: 100%; overflow: hidden; } .ds-card:hover { box-shadow: 0 1px 2px hsla(20, 14%, 10%, 0.06), 0 4px 12px hsla(20, 14%, 10%, 0.06); } .ds-card-header { padding: 0.75rem 1rem; font-family: Recursive, sans-serif; font-weight: 650; letter-spacing: -0.02em; color: var(--text-strong, #1c1917); border-bottom: 1px solid var(--card-border-color, #d6d0c6); } .ds-card-body { padding: 1.5rem; font-family: Recursive, Helvetica, Arial, sans-serif; font-size: 0.95rem; line-height: 1.45; }"
     },
     {
       "name": "Sidebar Nav Item",
       "kind": "nav",
       "refersTo": "nav-item",
-      "description": "Square tool-rack row; exact-active turns Owned Blue.",
-      "html": "<a class=\"ds-nav-item ds-nav-item-active\" href=\"#\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M2 3h12v2H2zm0 4h12v2H2zm0 4h8v2H2z\"/></svg>Inbox</a>",
-      "css": ".ds-nav-item { display: flex; align-items: center; height: 44px; padding: 0.75rem 0.5rem 0.75rem 0.25rem; border-radius: 0; color: var(--grey-700, #374151); font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 1rem; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.2s ease; } .ds-nav-item:hover { background: var(--white, #ffffff); } .ds-nav-item:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: -2px; } .ds-nav-icon { width: 1rem; height: 1rem; margin-inline-end: 0.5rem; color: var(--grey-400, #9ca3af); flex-shrink: 0; } .ds-nav-item-active { color: var(--primary, #1973ff); } .ds-nav-item-active .ds-nav-icon { color: var(--primary, #1973ff); }"
+      "description": "Dark-rail row; idle cream-muted, active fills #2a2522.",
+      "html": "<a class=\"ds-nav-item ds-nav-item-active\" href=\"#\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M2 3h12v2H2zm0 4h12v2H2zm0 4h8v2H2z\"/></svg>Overview</a>",
+      "css": ".ds-nav-item { display: flex; align-items: center; height: 44px; padding: 0.38rem 0.45rem; border-radius: 4px; color: var(--rail-muted, #c4bdb4); font-family: Recursive, sans-serif; font-size: 0.95rem; font-variation-settings: \"CASL\" 0; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background-color 180ms cubic-bezier(0.16, 1, 0.3, 1), color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-nav-item:hover { background: #2a2522; color: var(--rail-ink, #f5f0e8); } .ds-nav-item:focus-visible { outline: 2px solid var(--primary, #e24e1b); outline-offset: 2px; } .ds-nav-icon { width: 1rem; height: 1rem; margin-inline-end: 0.5rem; flex-shrink: 0; } .ds-nav-item-active { background: #2a2522; color: var(--rail-ink, #f5f0e8); } .ds-nav-item-active .ds-nav-icon { color: var(--primary, #e24e1b); }"
     },
     {
       "name": "Label Chip",
       "kind": "chip",
       "refersTo": "chip",
-      "description": "Task label; color is the label hex, not Owned Blue.",
+      "description": "Task label; color is the label hex, not cadmium.",
       "html": "<span class=\"ds-chip\">home</span>",
-      "css": ".ds-chip { display: inline-flex; align-items: center; padding: 0.25rem 0.5rem; border-radius: 4px; background: var(--grey-200, #e5e7eb); color: var(--grey-800, #1f2937); font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; line-height: 1.25; } .ds-chip:hover { filter: brightness(0.96); } .ds-chip:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: 2px; }"
+      "css": ".ds-chip { display: inline-flex; align-items: center; padding: 0.25rem 0.5rem; border-radius: 4px; background: var(--grey-200, #d6d0c6); color: var(--grey-900, #1c1917); font-family: Recursive, sans-serif; font-size: 0.82rem; font-weight: 450; font-variation-settings: \"CASL\" 0; line-height: 1.25; } .ds-chip:hover { filter: brightness(0.96); } .ds-chip:focus-visible { outline: 2px solid var(--primary, #e24e1b); outline-offset: 2px; }"
     },
     {
       "name": "Kanban Card",
       "kind": "custom",
       "refersTo": "card",
-      "description": "Signature ticket: xs shadow, Open Sans title, not a marketing tile.",
+      "description": "Hairline ticket; cadmium title; sage strike when done.",
       "html": "<article class=\"ds-kanban\"><h3 class=\"ds-kanban-title\">Buy grout</h3><div class=\"ds-kanban-meta\">Today</div></article>",
-      "css": ".ds-kanban { display: block; background: var(--white, #ffffff); border-radius: 4px; box-shadow: 0 1px 3px hsla(220, 8.9%, 46.1%, 0.12), 0 1px 2px hsla(220, 8.9%, 46.1%, 0.24); padding: 0.75rem; font-size: 0.9rem; cursor: pointer; overflow: hidden; } .ds-kanban:hover { box-shadow: 0 3px 6px hsla(220, 8.9%, 46.1%, 0.12), 0 2px 4px hsla(220, 8.9%, 46.1%, 0.10); } .ds-kanban:focus-visible { outline: 2px solid var(--primary, #1973ff); outline-offset: 2px; } .ds-kanban-title { margin: 0; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; font-weight: 400; color: var(--text-strong, #363636); } .ds-kanban-meta { margin-top: 0.25rem; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-size: 0.85rem; color: var(--text-muted, #626875); }"
+      "css": ".ds-kanban { display: block; background: var(--white, #fffcf7); border: 1px solid var(--card-border-color, #d6d0c6); border-radius: 6px; box-shadow: none; padding: 0.75rem; font-size: 0.95rem; cursor: pointer; overflow: hidden; transition: box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-kanban:hover { box-shadow: 0 1px 2px hsla(20, 14%, 10%, 0.06), 0 4px 12px hsla(20, 14%, 10%, 0.06); border-color: var(--grey-300, #bcb4a9); } .ds-kanban:focus-visible { outline: 2px solid var(--primary, #e24e1b); outline-offset: 2px; } .ds-kanban-title { margin: 0; font-family: Recursive, sans-serif; font-size: 1rem; font-weight: 500; color: var(--primary, #e24e1b); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; } .ds-kanban-meta { margin-top: 0.25rem; font-family: Recursive, sans-serif; font-size: 0.82rem; color: var(--text-muted, #57534e); }"
     }
   ],
   "narrative": {
-    "northStar": "The Pocket Workshop",
-    "overview": "This is a task surface, not a brand film. The room is a quiet operator’s bench: dense, scan-first, almost no personality except the Vikunja mark. Tools sit where the hand expects them. Owned Blue is the wrench — the one loud object on the bench — not a wash of chrome.\n\nPersonality lives in precise details, not decoration. Headings wear Quicksand at regular weight. Body copy is Open Sans. Primary actions are tactile and confident: short, uppercase, slightly lifted. Everything else recedes into Cool Paper greys so lists, boards, and the next task stay readable. Light and dark are the same workshop with the lights flipped; tokens invert, identity does not.\n\nConfirmed visual rejections: no second display face, no rebrand of the logo or name, no marketing-airy “soft SaaS” padding that fights the density of list and kanban, no replacing the 4px radius language with pills-on-everything.",
+    "northStar": "The Split Inspector",
+    "overview": "A three-column operator: dark project rail, linen work surface, cream task inspector that appears only while a task is open. Cadmium is the one hot tool — primary actions, focus, “you are here,” and the **X** in VikunjaX. Recursive (CASL 0) is the single face for headings and work. The mark is `vikunjax.svg` (cadmium disc, llama with shades); the wordmark is Vikunja + cadmium X.\n\nPocket Workshop (Owned Blue, Quicksand, Open Sans, 8px, modal task detail) is the discarded incumbent. Do not split the difference.",
     "keyCharacteristics": [
-      "Quiet bench, tactile tools",
-      "One accent (Owned Blue) for action and “you are here”",
-      "Cool Paper neutrals; dark mode inverts the same grey ramp",
-      "Quicksand for headings, Open Sans for work",
-      "4px corners, 1px borders, shadows that mark lift not luxury"
+      "Three columns: 15rem rail | work | 30rem inspector",
+      "One accent (Cadmium `#e24e1b`)",
+      "Linen ground `#f4f1ea`, cream panel `#fffcf7`, stone ink `#1c1917`",
+      "Recursive for everything; CASL 0",
+      "4px corners",
+      "Inspector is a pane, not a modal. Hidden until a task is selected. Drawer below 1100px. Rail overlay below 720px.",
+      "Top bar is ground; inspector is panel; rail is dark; work canvas is ground."
     ],
     "rules": [
-      { "name": "The One Tool Rule", "body": "Owned Blue is for actions, links, and “you are here.” It is not a background wash, not a hero gradient, and not a second palette. If a screen is mostly blue, the bench is gone.", "section": "colors" },
-      { "name": "The Button-White Rule", "body": "Primary (and solid danger) label color is button-text (#ffffff), never --white. --white follows the grey ramp in dark mode and would disappear on Owned Blue.", "section": "colors" },
-      { "name": "The Quicksand Door Rule", "body": "Quicksand is for headings, the wordmark-adjacent chrome, and editable titles. Do not set body copy, table cells, or kanban card titles in Quicksand.", "section": "typography" },
-      { "name": "The Uppercase Tool Rule", "body": "Uppercase is for buttons (and similarly tool-like chrome). Do not uppercase task titles, project names, or running text.", "section": "typography" },
-      { "name": "The Border-Plus-Lift Rule", "body": "Every resting card gets the hairline. Shadows step up on hover or overlay and step down on press (xs). Do not remove the border and “float” the card on shadow alone. Do not stack lg on ordinary list chrome.", "section": "elevation" },
-      { "name": "The Four-Pixel Rule", "body": "4px for controls, cards, inputs, tags. Full circles for people and color dots. No 16px “modern app” rounding on the bench.", "section": "shapes" }
+      { "name": "The Cadmium Tool Rule", "body": "Cadmium is for actions, links, and “you are here.” Not a background wash.", "section": "colors" },
+      { "name": "The Set-Down Rule", "body": "Completing a task is quiet and certain. No confetti, no extra delay, no “successfully marked as.” Undo stays on the toast.", "section": "colors" },
+      { "name": "The Button-White Rule", "body": "Primary labels are `button-text` (`#ffffff`), never `--white`.", "section": "colors" },
+      { "name": "The Earth Status Rule", "body": "Success, warning, and danger sit on the linen desk (sage, ochre, brick). Neon greens, candy oranges, and Bulma blue are anti-references.", "section": "colors" },
+      { "name": "The One Face Rule", "body": "Recursive for headings, chrome, and work. Do not bring back Quicksand or Open Sans.", "section": "typography" },
+      { "name": "The Sentence-Case Tool Rule", "body": "Buttons are sentence case. Do not uppercase task titles, project names, or running text.", "section": "typography" },
+      { "name": "The Blotter Rule", "body": "Page-load tiles are placed down, once per view. Do not restagger on filter, drag, or scroll-load.", "section": "layout" },
+      { "name": "The Border-Plus-Lift Rule", "body": "Resting cards are hairline-only. Shadows appear on hover or overlay.", "section": "elevation" },
+      { "name": "The Four-Pixel Rule", "body": "4px for controls, cards, inputs, tags. Full circles for people. No 8px+ “app rounding.”", "section": "shapes" }
     ],
     "dos": [
-      "Do keep the Vikunja wordmark and Owned Blue as the only brand signals.",
-      "Do invert --grey-50…900 in dark mode rather than inventing a second palette.",
-      "Do put new reusable color on :root HSL components (-h/-s/-l) so dark mode can change one dimension.",
-      "Do use logical properties for spacing (margin-inline, padding-block).",
-      "Do honor prefers-reduced-motion wherever motion is added (150ms ease is the incumbent duration).",
-      "Do prefix any Tailwind utility with tw-."
+      "Do keep the VikunjaX wordmark (cadmium X). Cadmium is the only brand accent.",
+      "Do keep the inspector as a pane, never a modal overlay, on desktop.",
+      "Do hide subtasks as loose rows unless “Show in list” is on.",
+      "Do use logical properties for spacing.",
+      "Do honor `prefers-reduced-motion`.",
+      "Do prefix any Tailwind utility with `tw-`."
     ],
     "donts": [
-      "Don't rebrand, replace Quicksand/Open Sans, or introduce a display serif.",
-      "Don't paint large surfaces with Owned Blue (The One Tool Rule).",
-      "Don't use --white for text on primary buttons.",
-      "Don't uppercase task or project titles.",
+      "Don't bring back Owned Blue, Quicksand, Open Sans, or 8px rounding.",
+      "Don't paint large surfaces with Cadmium (The Cadmium Tool Rule).",
+      "Don't use `--white` for text on primary buttons.",
+      "Don't invert dark mode to cool 210° greys, or restore neon success / candy orange warning.",
+      "Don't uppercase task, project, or button labels.",
       "Don't drop the 1px card border in favor of shadow-only lift.",
-      "Don't round past 4px except for avatars, bubbles, and spinners.",
-      "Don't author a new locale palette or “premium dark” that ignores the inverted grey ramp."
+      "Don't round past 4px except for avatars and spinners.",
+      "Don't animate inspector/rail width — `transform` only."
     ]
   }
 }

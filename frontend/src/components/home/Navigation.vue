@@ -154,7 +154,7 @@ const savedFilterProjects = computed(() => projectStore.savedFilterProjects as I
 	padding: 0.85rem 0.65rem 0.75rem;
 	transition: transform $transition-duration $ease-out-expo;
 	position: fixed;
-	inset-block-start: $navbar-height;
+	inset-block-start: $chrome-top;
 	inset-block-end: 0;
 	inset-inline-start: 0;
 	inline-size: var(--sidebar-width);
@@ -164,6 +164,8 @@ const savedFilterProjects = computed(() => projectStore.savedFilterProjects as I
 	@media screen and (max-width: $tablet) {
 		inset-block-start: 0;
 		inline-size: 16rem;
+		padding-block-start: max(0.85rem, env(safe-area-inset-top, 0));
+		padding-block-end: max(0.75rem, env(safe-area-inset-bottom, 0));
 		transform: translateX(-100%);
 
 		[dir="rtl"] & {

@@ -60,8 +60,9 @@ button.dropdown-item:hover:not(.is-disabled):not(.is-active) {
 
 body {
   background: var(--site-background);
-  min-height: 100vh;
-  caret-color: var(--caret-color, var(--primary));
+	min-block-size: 100vh;
+	min-block-size: 100dvh;
+	caret-color: var(--caret-color, var(--primary));
   accent-color: var(--primary);
   font-family: $family-sans-serif;
   font-variation-settings: "CASL" 0, "CRSV" 0, "MONO" 0;

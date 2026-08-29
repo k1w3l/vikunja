@@ -38,6 +38,7 @@ $button-height: 2rem;
 $switch-view-height: 2.69rem;
 
 $navbar-height: 3.25rem;
+$chrome-top: calc(#{$navbar-height} + env(safe-area-inset-top, 0));
 $navbar-width: 15rem;
 $navbar-padding: 2rem;
 $inspector-width: 30rem;

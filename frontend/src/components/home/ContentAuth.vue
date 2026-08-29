@@ -189,8 +189,8 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 .menu-hide-button {
 	position: fixed;
-	inset-block-start: 0.5rem;
-	inset-inline-end: 0.5rem;
+	inset-block-start: max(0.5rem, env(safe-area-inset-top, 0));
+	inset-inline-end: max(0.5rem, env(safe-area-inset-right, 0));
 	z-index: 31;
 	inline-size: 3rem;
 	block-size: 3rem;
@@ -216,8 +216,8 @@ onBeforeUnmount(() => {
 	--sidebar-width: #{$navbar-width};
 	--inspector-width: #{$inspector-width};
 
-	min-block-size: 100vh;
-	padding-block-start: $navbar-height;
+	min-block-size: 100dvh;
+	padding-block-start: $chrome-top;
 	padding-inline-start: var(--sidebar-width);
 	padding-inline-end: 0;
 
@@ -251,13 +251,15 @@ onBeforeUnmount(() => {
 	@media screen and (max-width: $tablet) {
 		margin-inline-start: 0;
 		margin-inline-end: 0;
-		min-block-size: calc(100vh - #{$navbar-height});
-		padding: 1rem 0.9rem 2rem;
+		min-block-size: calc(100dvh - #{$chrome-top});
+		padding-block-start: 1rem;
+		padding-block-end: max(2rem, env(safe-area-inset-bottom, 0));
+		padding-inline: max(0.9rem, env(safe-area-inset-left, 0)) max(0.9rem, env(safe-area-inset-right, 0));
 		border-inline-end: 0;
 	}
 
 	> .loader-container {
-		min-block-size: calc(100vh - #{$navbar-height + 1.5rem + 1rem});
+		min-block-size: calc(100dvh - #{$chrome-top} - 2.5rem);
 	}
 
 	.card {
@@ -267,7 +269,7 @@ onBeforeUnmount(() => {
 
 .task-inspector {
 	position: fixed;
-	inset-block-start: $navbar-height;
+	inset-block-start: $chrome-top;
 	inset-block-end: 0;
 	inset-inline-end: 0;
 	inline-size: var(--inspector-width);
@@ -334,6 +336,14 @@ onBeforeUnmount(() => {
 			box-shadow: -10px 0 24px hsla(20, 14%, 10%, 0.12);
 		}
 	}
+
+	@media screen and (max-width: $tablet) {
+		inset-inline: 0;
+		inset-block-end: 0;
+		inline-size: auto;
+		padding-inline: max(1.2rem, env(safe-area-inset-left, 0)) max(1.2rem, env(safe-area-inset-right, 0));
+		padding-block-end: env(safe-area-inset-bottom, 0);
+	}
 }
 
 .inspector-overlay {
@@ -344,7 +354,7 @@ onBeforeUnmount(() => {
 	.inspector-overlay {
 		display: block;
 		position: fixed;
-		inset: $navbar-height 0 0 0;
+		inset: $chrome-top 0 0 0;
 		background: hsla(20, 14%, 10%, 0.35);
 		z-index: 24;
 	}

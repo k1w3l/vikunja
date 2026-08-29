@@ -154,7 +154,8 @@ $user-dropdown-width-mobile: 5rem;
 	display: flex;
 	justify-content: space-between;
 	gap: var(--navbar-gap-width);
-	min-block-size: $navbar-height;
+	min-block-size: $chrome-top;
+	padding-block-start: env(safe-area-inset-top, 0);
 
 	background: var(--surface-elevated);
 	border-block-end: 1px solid var(--card-border-color);

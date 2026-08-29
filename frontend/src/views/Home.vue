@@ -136,6 +136,12 @@ function handleClearLabelFilter() {
 	font-size: 1.5rem;
 	font-weight: 650;
 	letter-spacing: -0.02em;
+
+	@media screen and (max-width: $tablet) {
+		font-size: 1.25rem;
+		margin-block-end: 1rem;
+		padding-block-end: 0.75rem;
+	}
 }
 
 .home-salutation__name {

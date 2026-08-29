@@ -73,6 +73,10 @@
 			@media screen and (max-width: calc(#{$desktop} + #{$navbar-width})) {
 				max-width: calc(100vw - 27px - 2rem - 1.5rem - 3rem - #{$navbar-width}); // 1.5rem is the padding of the tasks container, 3rem is the padding of .app-container
 			}
+
+			@media screen and (max-width: $tablet) {
+				max-width: none;
+			}
 		}
 	}
 }

@@ -291,6 +291,10 @@ function getViewRoute(view: IProjectView) {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+
+	@media screen and (max-width: $tablet) {
+		font-size: 1.25rem;
+	}
 }
 
 .project-chrome-icon {

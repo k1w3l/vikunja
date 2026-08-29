@@ -1476,6 +1476,12 @@ h2 .button {
 	justify-content: center;
 	flex-shrink: 0;
 
+	@media screen and (max-width: $tablet) {
+		inline-size: 44px;
+		min-inline-size: 44px;
+		min-block-size: 44px;
+	}
+
 	:deep(span:empty) {
 		display: none;
 	}

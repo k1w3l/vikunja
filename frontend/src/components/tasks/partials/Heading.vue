@@ -177,6 +177,10 @@ async function cancel(element: HTMLInputElement) {
 	gap: 0.5rem;
 	min-inline-size: 0;
 	min-block-size: 2rem;
+
+	@media screen and (max-width: $tablet) {
+		flex-wrap: wrap;
+	}
 }
 
 .heading-meta {
@@ -220,6 +224,9 @@ async function cancel(element: HTMLInputElement) {
 	}
 
 	@media screen and (max-width: $tablet) {
+		white-space: normal;
+		overflow: visible;
+		text-overflow: unset;
 		margin: 0.35rem -.3rem .5rem;
 	}
 }
@@ -228,12 +235,13 @@ async function cancel(element: HTMLInputElement) {
 	font-size: 2rem;
 	margin-inline-start: 0.25rem;
 	line-height: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-block-size: 44px;
+	min-inline-size: 44px;
 
-	@media screen and (max-width: $tablet) {
-		display: none;
-	}
-
-	@media screen and (min-width: #{$desktop + 1px}) {
+	@media screen and (min-width: #{$split-inspector-bp + 1px}) {
 		display: none;
 	}
 }
