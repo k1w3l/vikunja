@@ -1539,9 +1539,10 @@ h2 .button {
 .inspector-footer {
 	flex-shrink: 0;
 	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 0.45rem;
+	flex-direction: row;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 0.75rem;
 	padding-block: 0.65rem 0.9rem;
 	background: var(--inspector-bg);
 	border-block-start: 1px solid var(--card-border-color);
@@ -1555,7 +1556,8 @@ h2 .button {
 
 	:deep(.created) {
 		margin: 0;
-		text-align: start;
+		margin-inline-start: auto;
+		text-align: end;
 	}
 }
 

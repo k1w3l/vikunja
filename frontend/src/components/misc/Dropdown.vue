@@ -2,6 +2,7 @@
 	<div
 		ref="dropdown"
 		class="dropdown"
+		:class="{ 'matches-trigger': matchTrigger }"
 		@pointerenter="initialMount = true"
 		@keydown="onKeydown"
 	>
@@ -169,6 +170,11 @@ onClickOutside(dropdown, (e) => {
 .dropdown {
 	display: inline-flex;
 	position: relative;
+
+	&.matches-trigger {
+		display: block;
+		inline-size: 100%;
+	}
 }
 
 .dropdown-menu::before {

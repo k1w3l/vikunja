@@ -32,68 +32,62 @@
 				:class="{ 'is-loading': loading }"
 				class="loader-container is-max-width-desktop list-view"
 			>
-				<Card
-					:padding="false"
-					:has-content="false"
-					class="has-overflow"
-				>
-					<Nothing v-if="ctaVisible && tasks.length === 0 && !loading">
-						{{ $t('project.list.empty') }}
-						<ButtonLink
-							v-if="project?.id > 0 && canWrite"
-							@click="focusNewTaskInput()"
-						>
-							{{ $t('project.list.newTaskCta') }}
-						</ButtonLink>
-					</Nothing>
-
-					<draggable
-						v-if="tasks && tasks.length > 0"
-						v-model="tasks"
-						:group="{name: 'tasks', put: false}"
-						:disabled="!canDragTasks || !isPositionSorting"
-						item-key="id"
-						tag="ul"
-						:component-data="{
-							class: {
-								tasks: true,
-								'dragging-disabled': !canDragTasks || !isPositionSorting,
-								'is-laying': isLaying,
-							},
-							type: 'transition-group'
-						}"
-						:animation="100"
-						:handle="dragHandle"
-						:delay-on-touch-only="!isTouchDevice"
-						:delay="isTouchDevice ? 0 : 1000"
-						ghost-class="task-ghost"
-						@start="handleDragStart"
-						@end="saveTaskPosition"
+				<Nothing v-if="ctaVisible && tasks.length === 0 && !loading">
+					{{ $t('project.list.empty') }}
+					<ButtonLink
+						v-if="project?.id > 0 && canWrite"
+						@click="focusNewTaskInput()"
 					>
-						<template #item="{element: t, index}">
-							<SingleTaskInProject
-								:ref="(el) => setTaskRef(el, index)"
-								:show-list-color="false"
-								:can-mark-as-done="canWrite || isPseudoProject"
-								:the-task="t"
-								:all-tasks="allTasks"
-								@taskUpdated="updateTasks"
-							>
-								<span
-									v-if="canDragTasks && isPositionSorting"
-									class="icon handle"
-								>
-									<Icon icon="grip-lines" />
-								</span>
-							</SingleTaskInProject>
-						</template>
-					</draggable>
+						{{ $t('project.list.newTaskCta') }}
+					</ButtonLink>
+				</Nothing>
 
-					<Pagination
-						:total-pages="totalPages"
-						:current-page="currentPage"
-					/>
-				</Card>
+				<draggable
+					v-if="tasks && tasks.length > 0"
+					v-model="tasks"
+					:group="{name: 'tasks', put: false}"
+					:disabled="!canDragTasks || !isPositionSorting"
+					item-key="id"
+					tag="ul"
+					:component-data="{
+						class: {
+							tasks: true,
+							'dragging-disabled': !canDragTasks || !isPositionSorting,
+							'is-laying': isLaying,
+						},
+						type: 'transition-group'
+					}"
+					:animation="100"
+					:handle="dragHandle"
+					:delay-on-touch-only="!isTouchDevice"
+					:delay="isTouchDevice ? 0 : 1000"
+					ghost-class="task-ghost"
+					@start="handleDragStart"
+					@end="saveTaskPosition"
+				>
+					<template #item="{element: t, index}">
+						<SingleTaskInProject
+							:ref="(el) => setTaskRef(el, index)"
+							:show-list-color="false"
+							:can-mark-as-done="canWrite || isPseudoProject"
+							:the-task="t"
+							:all-tasks="allTasks"
+							@taskUpdated="updateTasks"
+						>
+							<span
+								v-if="canDragTasks && isPositionSorting"
+								class="icon handle"
+							>
+								<Icon icon="grip-lines" />
+							</span>
+						</SingleTaskInProject>
+					</template>
+				</draggable>
+
+				<Pagination
+					:total-pages="totalPages"
+					:current-page="currentPage"
+				/>
 			</div>
 		</template>
 	</ProjectWrapper>
@@ -382,17 +376,17 @@ onBeforeUnmount(() => {
 	gap: 1rem;
 	margin-inline: auto;
 	padding-block-end: 1rem;
-
-	:deep(.card) {
-		margin-block-end: 0;
-	}
 }
 
 .tasks {
 	display: flex;
 	flex-direction: column;
 	gap: 0.4rem;
-	padding: 0.75rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	border: 0;
 }
 
 :deep(.single-task) {

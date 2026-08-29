@@ -480,7 +480,7 @@ watchEffect(() => {
 	border: 0;
 
 	:deep(.single-task) {
-		padding: 0.55rem 0.75rem;
+		padding: 0.5rem 0.55rem 0.5rem 0.4rem;
 		background: var(--white);
 		border: 1px solid var(--card-border-color);
 		border-radius: $radius-large;

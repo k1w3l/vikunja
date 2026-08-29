@@ -37,34 +37,42 @@
 				</FormField>
 
 				<FormField
-					v-slot="{ id, describedBy }"
 					:label="$t('task.attributes.project')"
 					:error="projectError"
 				>
-					<div class="select is-fullwidth">
-						<select
-							:id="id"
-							v-model.number="selectedProjectId"
-							required
-							:aria-invalid="projectError ? true : undefined"
-							:aria-describedby="describedBy"
-							@change="projectError = null"
-						>
-							<option
-								disabled
-								:value="0"
+					<Dropdown
+						match-trigger
+						class="select-dropdown"
+					>
+						<template #trigger="{toggleOpen, open: menuOpen}">
+							<BaseButton
+								class="select-dropdown-trigger"
+								:aria-expanded="menuOpen"
+								:aria-invalid="projectError ? true : undefined"
+								:aria-label="$t('task.attributes.project')"
+								@click="toggleOpen"
 							>
-								{{ $t('task.createModal.chooseProject') }}
-							</option>
-							<option
+								<span :class="{'is-placeholder': selectedProjectId === 0}">
+									{{ selectedProjectTitle }}
+								</span>
+								<Icon
+									icon="chevron-down"
+									class="select-dropdown-chevron"
+									:class="{'is-open': menuOpen}"
+								/>
+							</BaseButton>
+						</template>
+						<template #default="{close: closeMenu}">
+							<DropdownItem
 								v-for="project in selectableProjects"
 								:key="project.id"
-								:value="project.id"
+								:class="{'is-active': selectedProjectId === project.id}"
+								@click="selectProject(project.id, closeMenu)"
 							>
 								{{ project.title }}
-							</option>
-						</select>
-					</div>
+							</DropdownItem>
+						</template>
+					</Dropdown>
 				</FormField>
 
 				<FormField :label="$t('task.attributes.labels')">
@@ -151,6 +159,9 @@ import {useRouter} from 'vue-router'
 import Modal from '@/components/misc/Modal.vue'
 import FormField from '@/components/input/FormField.vue'
 import Datepicker from '@/components/input/Datepicker.vue'
+import BaseButton from '@/components/base/BaseButton.vue'
+import Dropdown from '@/components/misc/Dropdown.vue'
+import DropdownItem from '@/components/misc/DropdownItem.vue'
 import PrioritySelect from '@/components/tasks/partials/PrioritySelect.vue'
 import PercentDoneSelect from '@/components/tasks/partials/PercentDoneSelect.vue'
 import EditLabels from '@/components/tasks/partials/EditLabels.vue'
@@ -204,6 +215,20 @@ const selectedProjectId = ref(0)
 const selectedLabels = ref<ILabel[]>([])
 
 const loading = computed(() => taskStore.isLoading)
+
+const selectedProjectTitle = computed(() => {
+	if (selectedProjectId.value === 0) {
+		return t('task.createModal.chooseProject')
+	}
+	return selectableProjects.value.find(project => project.id === selectedProjectId.value)?.title
+		?? t('task.createModal.chooseProject')
+})
+
+function selectProject(id: number, close: () => void) {
+	selectedProjectId.value = id
+	projectError.value = null
+	close()
+}
 
 const selectableProjects = computed(() => {
 	const result: {id: number, title: string}[] = []
@@ -339,11 +364,7 @@ async function submit() {
 	text-align: start;
 }
 
-.select {
-	inline-size: 100%;
-
-	select {
-		inline-size: 100%;
-	}
+.is-placeholder {
+	color: var(--text-muted);
 }
 </style>

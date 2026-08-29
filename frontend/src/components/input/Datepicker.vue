@@ -151,22 +151,38 @@ function closeViaEsc() {
 
 <style lang="scss" scoped>
 .datepicker {
+	position: relative;
+	inline-size: 100%;
+
 	input.input {
 		display: none;
 	}
 }
 
+:deep(.simple-button.show) {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	min-block-size: 2.25rem;
+	padding-inline: 0.75rem;
+	margin: 0;
+	border: 1px solid var(--border);
+	border-radius: $radius;
+	background: var(--white);
+	color: var(--text);
+	text-align: start;
+}
+
 .datepicker-popup {
 	position: absolute;
 	z-index: 99;
-	inline-size: 320px;
+	inset-inline-start: 0;
+	inline-size: 100%;
+	box-sizing: border-box;
 	background: var(--white);
 	border-radius: $radius;
 	box-shadow: $shadow;
-
-	@media screen and (max-width: ($tablet)) {
-		inline-size: calc(100vw - 5rem);
-	}
+	border: 1px solid var(--border);
 }
 
 .datepicker__close-button {

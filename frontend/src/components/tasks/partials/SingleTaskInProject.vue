@@ -12,35 +12,33 @@
 			@click="openTaskDetail"
 			@keyup.enter="openTaskDetail"
 		>
-			<BaseButton
-				v-if="hasSubtasks"
-				class="subtask-toggle"
-				:aria-label="$t('task.toggleSubtasks')"
-				:aria-expanded="subtasksOpen"
-				@click.stop="subtasksOpen = !subtasksOpen"
-			>
-				<Icon
-					icon="chevron-down"
-					:class="{'is-collapsed': !subtasksOpen}"
-				/>
-			</BaseButton>
-			<span
-				v-else
-				class="subtask-toggle-placeholder"
-			/>
-			<span
-				v-tooltip="!canMarkAsDone ? $t('task.readOnlyCheckbox') : ''"
-				class="is-inline-flex is-align-items-center"
-			>
-				<FancyCheckbox
-					v-model="task.done"
-					tone="complete"
-					:disabled="isArchived || disabled || !canMarkAsDone"
-					:aria-label="$t('task.detail.markAsDone', {task: task.title})"
-					@update:modelValue="markAsDone"
-					@click.stop
-				/>
-			</span>
+			<div class="task-lead">
+				<BaseButton
+					v-if="hasSubtasks"
+					class="subtask-toggle"
+					:aria-label="$t('task.toggleSubtasks')"
+					:aria-expanded="subtasksOpen"
+					@click.stop="subtasksOpen = !subtasksOpen"
+				>
+					<Icon
+						icon="chevron-down"
+						:class="{'is-collapsed': !subtasksOpen}"
+					/>
+				</BaseButton>
+				<span
+					v-tooltip="!canMarkAsDone ? $t('task.readOnlyCheckbox') : ''"
+					class="is-inline-flex is-align-items-center"
+				>
+					<FancyCheckbox
+						v-model="task.done"
+						tone="complete"
+						:disabled="isArchived || disabled || !canMarkAsDone"
+						:aria-label="$t('task.detail.markAsDone', {task: task.title})"
+						@update:modelValue="markAsDone"
+						@click.stop
+					/>
+				</span>
+			</div>
 
 			<div
 				:class="{ 'done': task.done }"
@@ -66,25 +64,63 @@
 				</span>
 			</div>
 
-			<div class="task-meta">
+			<div class="task-meta-labels">
 				<Labels
 					v-if="task.labels.length > 0"
 					class="labels"
 					:labels="task.labels"
 				/>
+			</div>
 
+			<div class="task-meta-priority">
 				<PriorityLabel
 					:priority="task.priority"
 					:done="task.done"
 				/>
+			</div>
 
-				<AssigneeList
-					v-if="task.assignees.length > 0"
-					:assignees="task.assignees"
-					:avatar-size="25"
-					:inline="true"
-				/>
+			<span class="task-meta-icons">
+				<span
+					class="project-task-icon"
+					:class="{ 'is-placeholder': task.attachments.length === 0 }"
+					role="img"
+					:aria-hidden="task.attachments.length === 0 ? 'true' : undefined"
+					:aria-label="task.attachments.length > 0 ? $t('task.attributes.attachment', task.attachments.length) : undefined"
+				>
+					<Icon
+						v-if="task.attachments.length > 0"
+						icon="paperclip"
+					/>
+				</span>
+				<span
+					class="project-task-icon is-mirrored-rtl"
+					:class="{ 'is-placeholder': isEditorContentEmpty(task.description) }"
+					aria-hidden="true"
+				>
+					<Icon
+						v-if="!isEditorContentEmpty(task.description)"
+						icon="align-left"
+					/>
+				</span>
+				<span
+					class="project-task-icon"
+					:class="{ 'is-placeholder': !isRepeating }"
+					aria-hidden="true"
+				>
+					<Icon
+						v-if="isRepeating"
+						icon="history"
+					/>
+				</span>
+				<span
+					class="project-task-icon"
+					:class="{ 'is-placeholder': !task.commentCount }"
+				>
+					<CommentCount :task="task" />
+				</span>
+			</span>
 
+			<div class="task-meta-due">
 				<Popup
 					v-if="+new Date(task.dueDate) > 0"
 				>
@@ -111,33 +147,15 @@
 						/>
 					</template>
 				</Popup>
+			</div>
 
-				<span class="task-meta-icons">
-					<span
-						v-if="task.attachments.length > 0"
-						class="project-task-icon"
-						role="img"
-						:aria-label="$t('task.attributes.attachment', task.attachments.length)"
-					>
-						<Icon icon="paperclip" />
-					</span>
-					<span
-						v-if="!isEditorContentEmpty(task.description)"
-						class="project-task-icon is-mirrored-rtl"
-					>
-						<Icon icon="align-left" />
-					</span>
-					<span
-						v-if="isRepeating"
-						class="project-task-icon"
-					>
-						<Icon icon="history" />
-					</span>
-					<CommentCount
-						:task="task"
-						class="project-task-icon"
-					/>
-				</span>
+			<div class="task-meta-extra">
+				<AssigneeList
+					v-if="task.assignees.length > 0"
+					:assignees="task.assignees"
+					:avatar-size="25"
+					:inline="true"
+				/>
 
 				<ChecklistSummary :task="task" />
 
@@ -155,23 +173,23 @@
 				>
 					{{ project.title }}
 				</RouterLink>
-
-				<BaseButton
-					:class="{'is-favorite': task.isFavorite}"
-					class="favorite"
-					@click.stop="toggleFavorite"
-				>
-					<span class="is-sr-only">{{ task.isFavorite ? $t('task.detail.actions.unfavorite') : $t('task.detail.actions.favorite') }}</span>
-					<Icon
-						v-if="task.isFavorite"
-						icon="star"
-					/>
-					<Icon
-						v-else
-						:icon="['far', 'star']"
-					/>
-				</BaseButton>
 			</div>
+
+			<BaseButton
+				:class="{'is-favorite': task.isFavorite}"
+				class="favorite"
+				@click.stop="toggleFavorite"
+			>
+				<span class="is-sr-only">{{ task.isFavorite ? $t('task.detail.actions.unfavorite') : $t('task.detail.actions.favorite') }}</span>
+				<Icon
+					v-if="task.isFavorite"
+					icon="star"
+				/>
+				<Icon
+					v-else
+					:icon="['far', 'star']"
+				/>
+			</BaseButton>
 
 			<ProgressBar
 				v-if="task.percentDone > 0"
@@ -435,11 +453,21 @@ defineExpose({
 	contain: layout style;
 	content-visibility: auto;
 	contain-intrinsic-block-size: auto 3rem;
-	display: flex;
-	flex-wrap: wrap;
-	padding: .5rem .75rem;
-	transition: background-color $transition;
+	display: grid;
+	inline-size: 100%;
+	grid-template-columns:
+		auto
+		minmax(0, 1fr)
+		4.5rem
+		4.5rem
+		4.15rem
+		8rem
+		2.75rem
+		1.7rem;
+	column-gap: 0.2rem;
 	align-items: center;
+	padding: .45rem .55rem .45rem .4rem;
+	transition: background-color $transition;
 	cursor: pointer;
 	border-radius: $radius-large;
 	border: 1px solid transparent;
@@ -466,9 +494,15 @@ defineExpose({
 		}
 	}
 
+	.task-lead {
+		display: flex;
+		align-items: center;
+		gap: 0.1rem;
+		min-inline-size: 0;
+	}
+
 	.task-main {
 		min-inline-size: 0;
-		flex: 1 1 0;
 		overflow: hidden;
 	}
 
@@ -495,24 +529,61 @@ defineExpose({
 		text-overflow: ellipsis;
 	}
 
-	.task-meta {
+	.task-meta-labels,
+	.task-meta-priority,
+	.task-meta-due,
+	.task-meta-extra {
 		display: flex;
 		align-items: center;
-		flex-wrap: wrap;
-		justify-content: flex-end;
-		gap: 0.35rem;
-		flex: 0 1 auto;
-		margin-inline-start: auto;
+		gap: 0.2rem;
+		min-inline-size: 0;
+		overflow: hidden;
+	}
+
+	.task-meta-labels {
+		:deep(.label-wrapper) {
+			flex-wrap: nowrap;
+			max-inline-size: 100%;
+			overflow: hidden;
+		}
+
+		:deep(.tag) {
+			max-inline-size: 100%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+
+	.task-meta-priority {
+		:deep(.priority-label) {
+			display: flex;
+			align-items: center;
+			min-inline-size: 0;
+			max-inline-size: 100%;
+			overflow: hidden;
+			inline-size: 100% !important;
+			white-space: nowrap;
+		}
+
+		:deep(.priority-label > span:last-child) {
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		:deep(.icon) {
+			padding-inline-end: 0.2rem;
+		}
 	}
 
 	.task-meta-icons {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
+		justify-content: flex-start;
+		gap: 0.1rem;
 	}
 
 	.task-progress {
-		flex: 1 0 100%;
+		grid-column: 1 / -1;
 		inline-size: 100%;
 		margin-block-start: 0.35rem;
 	}
@@ -525,9 +596,29 @@ defineExpose({
 		text-overflow: ellipsis;
 	}
 
+	.task-meta-due {
+		white-space: nowrap;
+
+		:deep(.popup) {
+			display: none;
+		}
+
+		:deep(.popup.is-open) {
+			display: block;
+		}
+	}
+
 	.dueDate {
-		display: inline-block;
+		display: block;
+		max-inline-size: 100%;
 		margin-inline-start: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		time {
+			white-space: nowrap;
+		}
 
 		&:focus-visible {
 			box-shadow: none;
@@ -559,12 +650,22 @@ defineExpose({
 	}
 
 	.project-task-icon {
-		margin-inline-start: 6px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: 0.95rem;
+		min-block-size: 0.95rem;
+		margin-inline-start: 0;
+		flex-shrink: 0;
 
-		&:not(:first-of-type) {
-			margin-inline-start: 8px;
+		:deep(svg) {
+			inline-size: 0.8rem;
+			block-size: 0.8rem;
 		}
 
+		&.is-placeholder {
+			visibility: hidden;
+		}
 	}
 
 	a {
@@ -610,7 +711,7 @@ defineExpose({
 	:deep(.fancy-checkbox) {
 		block-size: 18px;
 		padding-block-start: 0;
-		padding-inline-end: .5rem;
+		padding-inline-end: .15rem;
 
 		span {
 			display: none;
@@ -709,7 +810,7 @@ defineExpose({
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	inline-size: 1.5rem;
+	inline-size: 1.15rem;
 	block-size: 1.5rem;
 	flex-shrink: 0;
 	color: var(--grey-600);
@@ -721,11 +822,6 @@ defineExpose({
 	.is-collapsed {
 		transform: rotate(-90deg);
 	}
-}
-
-.subtask-toggle-placeholder {
-	inline-size: 1.5rem;
-	flex-shrink: 0;
 }
 
 .subtask-nested {

@@ -126,7 +126,7 @@ test.describe('Project View List', () => {
 		await expect(page.locator('.tasks')).toContainText(tasks[20].title)
 		await expect(page.locator('.tasks')).not.toContainText(tasks[99].title)
 
-		await page.locator('.card-content .pagination .pagination-link').filter({hasText: '2'}).click()
+		await page.locator('.list-view .pagination .pagination-link').filter({hasText: '2'}).click()
 
 		await expect(page).toHaveURL(/\?page=2/)
 		await expect(page.locator('.tasks')).toContainText(tasks[99].title)
@@ -144,7 +144,7 @@ test.describe('Project View List', () => {
 
 		await expect(page.locator('.tasks')).toContainText(tasks[20].title)
 
-		const previous = page.locator('.card-content .pagination .pagination-previous')
+		const previous = page.locator('.list-view .pagination .pagination-previous')
 		await expect(previous).toHaveAttribute('aria-disabled', 'true')
 		await previous.click({force: true})
 
