@@ -207,9 +207,14 @@ Routine outcomes are one word: Created. Saved. Done. Deleted.
 
 ## Layout
 
-Ground fills the viewport. Below a slim 3.25rem ground top bar: dark rail `15rem` | work | inspector `30rem` when a task is open. The inspector is sticky panel cream, distinct from the top bar and the linen work surface. Below 1100px the inspector is a drawer (`transform`, not width). Below tablet the rail overlays.
+Ground fills the viewport. Below a slim 3.25rem ground top bar: dark rail `15rem` | work | inspector `30rem` when a task is open. The inspector is sticky panel cream, distinct from the top bar and the linen work surface. Below 1100px the inspector is a drawer (`transform`, not width). Below tablet the rail overlays as a bottom sheet; a glass tab bar occupies the footer — height calcs must include `$mobile-tabbar-height`.
 
 Density is operator-grade. Home is a work surface (start-aligned tasks). Mobile starts at 320px. Logical properties for spacing.
+
+**Kanban.** Desktop is a side-by-side board (`300px` columns, horizontal overflow). Phone (`max-width: 768px`) is a **one-column pager**: each bucket fills the board, scroll-snap plus previous/next arrows, current title in cadmium. Do not restack columns vertically. `prefers-reduced-motion` drops snap; arrows still work. Add-task on the phone targets the visible bucket. Reordering buckets by drag is desktop-only.
+
+### Named Rules
+**The One-Column Board Rule.** On the phone, kanban shows one named bucket at a time. Desktop keeps the multi-column board. Never a stacked list of columns.
 
 ## Motion
 
@@ -258,7 +263,7 @@ Hairline track (`3–4px`), sage fill, `scaleX` (composite, not width). Cadmium 
 - **Corner Style:** 4px
 - **Background:** Panel
 - **Shadow Strategy:** hairline only at rest
-- **Kanban card:** Same radius, hairline, body-size title; done cards recede
+- **Kanban card:** Same radius, hairline, body-size title; done cards recede. Desktop click opens the inspector. Phone: collapsed = title (2 lines) + pip; tap expands in-tile (notes, labels, column picker, action bar) like the list. Inspector on the phone is deep-link, Gantt, or table — not a kanban tap.
 
 ### Inputs / Fields
 - **Style:** Panel fill, 1px border, 4px radius
@@ -276,6 +281,8 @@ Slim ground top bar: project title and trailing tools on the inline-end. Logo + 
 - **Do** put the subtask chevron in a gutter left of the parent tile, not inside the card. Nested tiles share the parent’s left edge and the same `0.4rem` gap as the list.
 - **Do** use logical properties for spacing.
 - **Do** honor `prefers-reduced-motion`.
+- **Do** treat phone kanban as a one-column pager (named bucket, arrows + snap). Desktop stays a board.
+- **Do** expand a phone kanban card in place; do not open the inspector from that tap.
 - **Do** prefix any Tailwind utility with `tw-`.
 
 ### Don't:
@@ -287,3 +294,4 @@ Slim ground top bar: project title and trailing tools on the inline-end. Logo + 
 - **Don't** drop the 1px card border in favor of shadow-only lift.
 - **Don't** round past 4px except for avatars and spinners.
 - **Don't** animate inspector/rail width — `transform` only.
+- **Don't** restack kanban columns vertically on the phone.

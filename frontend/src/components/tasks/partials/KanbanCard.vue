@@ -7,12 +7,14 @@
 			'has-light-text': !colorIsDark(color),
 			'has-custom-background-color': color ?? undefined,
 			'is-done': task.done,
+			'is-expanded': isExpanded,
+			'is-phone': isPhone,
 		}"
 		:style="{'background-color': color ?? undefined}"
 		:data-task-id="task.id"
 		:data-project-id="task.projectId"
 		:data-is-overdue="isOverdue || undefined"
-		@click.exact="openTaskDetail()"
+		@click.exact="onCardClick"
 		@click.ctrl="() => toggleTaskDone(task)"
 		@click.meta="() => toggleTaskDone(task)"
 	>
@@ -42,7 +44,7 @@
 					</span>
 				</span>
 				<span
-					v-if="task.dueDate > 0"
+					v-if="!isPhone && task.dueDate > 0"
 					v-tooltip="formatDateLong(task.dueDate)"
 					class="due-date"
 				>
@@ -53,10 +55,17 @@
 						{{ formatDisplayDate(task.dueDate) }}
 					</time>
 				</span>
+				<span
+					v-if="isPhone && !isExpanded && tilePipColor"
+					class="task-pip"
+					:style="{backgroundColor: tilePipColor}"
+					aria-hidden="true"
+				/>
 			</div>
 			
 			<h3>
 				<RouterLink
+					v-if="!isPhone"
 					:to="{ name: 'task.detail', params: {id: task.id} }"
 					class="kanban-card__title-link"
 					draggable="false"
@@ -67,21 +76,76 @@
 				>
 					{{ displayTaskTitle(task.title) }}
 				</RouterLink>
+				<button
+					v-else
+					class="kanban-card__title-link"
+					type="button"
+					:title="task.title"
+					@click.stop="toggle(task.id)"
+				>
+					{{ displayTaskTitle(task.title) }}
+				</button>
 			</h3>
 			
 			<span
-				v-if="projectTitle"
+				v-if="projectTitle && !isPhone"
 				class="project-title"
 			>
 				{{ projectTitle }}
 			</span>
 
 			<ProgressBar
-				v-if="task.percentDone > 0"
+				v-if="task.percentDone > 0 && (!isPhone || isExpanded)"
 				class="task-progress"
 				:value="task.percentDone * 100"
 			/>
-			<div class="footer">
+			<template v-if="isExpanded">
+				<div
+					class="kanban-card__expand"
+					@click.stop
+				>
+					<button
+						v-if="!editingNotes"
+						class="task-notes"
+						:class="{'is-empty': notesPlain === ''}"
+						type="button"
+						@click.stop="startEditingNotes"
+					>
+						{{ notesPlain || $t('task.actionBar.notes') }}
+					</button>
+					<textarea
+						v-else
+						ref="notesField"
+						v-model="notesDraft"
+						class="task-notes-input"
+						rows="2"
+						:placeholder="$t('task.actionBar.notes')"
+						@click.stop
+						@blur="saveNotes"
+						@keydown.escape="cancelNotes"
+					/>
+					<Labels
+						v-if="(task.labels?.length ?? 0) > 0"
+						class="task-expanded-labels"
+						:labels="task.labels"
+					/>
+					<BucketSelect
+						class="kanban-card__bucket"
+						compact
+						:task="task"
+						:can-write="canWrite"
+					/>
+					<TaskActionBar
+						:task="task"
+						:can-write="canWrite"
+						@deleted="collapse"
+					/>
+				</div>
+			</template>
+			<div
+				v-else-if="!isPhone"
+				class="footer"
+			>
 				<div class="footer-start">
 					<Labels :labels="task.labels" />
 					<PriorityLabel
@@ -131,10 +195,12 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, watch} from 'vue'
+import {computed, nextTick, ref, watch} from 'vue'
 import {useRouter} from 'vue-router'
 
 import {useGlobalNow} from '@/composables/useGlobalNow'
+import {useIsPhone} from '@/composables/useIsPhone'
+import {useExpandedTask} from '@/composables/useExpandedTask'
 
 import PriorityLabel from '@/components/tasks/partials/PriorityLabel.vue'
 import ProgressBar from '@/components/misc/ProgressBar.vue'
@@ -142,6 +208,8 @@ import Done from '@/components/misc/Done.vue'
 import Labels from '@/components/tasks/partials/Labels.vue'
 import ChecklistSummary from './ChecklistSummary.vue'
 import CommentCount from './CommentCount.vue'
+import TaskActionBar from '@/components/tasks/partials/TaskActionBar.vue'
+import BucketSelect from '@/components/tasks/partials/BucketSelect.vue'
 
 import {getHexColor} from '@/models/task'
 import type {ITask} from '@/modelTypes/ITask'
@@ -155,10 +223,13 @@ import {useTaskStore} from '@/stores/tasks'
 import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
 import AssigneeList from '@/components/tasks/partials/AssigneeList.vue'
 import {playPopSound} from '@/helpers/playPop'
-import {isEditorContentEmpty} from '@/helpers/editorContentEmpty'
+import {editorHtmlFromPlainText, isEditorContentEmpty, plainTextFromEditor} from '@/helpers/editorContentEmpty'
 import {useProjectStore} from '@/stores/projects'
 import {TASK_REPEAT_MODES} from '@/types/IRepeatMode'
 import {displayTaskTitle} from '@/helpers/displayTaskTitle'
+import {error} from '@/message'
+import {PERMISSIONS} from '@/constants/permissions'
+import {useBaseStore} from '@/stores/base'
 
 const props = withDefaults(defineProps<{
 	task: ITask,
@@ -173,8 +244,16 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
+const isPhone = useIsPhone()
+const {toggle, collapse, expandedTaskId} = useExpandedTask()
+const isExpanded = computed(() => isPhone.value && expandedTaskId.value === props.task.id)
+const canWrite = computed(() => (useBaseStore().currentProject?.maxPermission ?? 0) > PERMISSIONS.READ)
 
 const loadingInternal = ref(false)
+const notesField = ref<HTMLTextAreaElement | null>(null)
+const editingNotes = ref(false)
+const notesDraft = ref('')
+const notesPlain = computed(() => plainTextFromEditor(props.task.description))
 
 const color = computed(() => getHexColor(props.task.hexColor))
 
@@ -187,6 +266,14 @@ const projectTitle = computed(() => {
 	
 	const project = projectStore.projects[props.task.projectId]
 	return project?.title
+})
+
+const tilePipColor = computed(() => {
+	const labeled = (props.task.labels ?? []).find(label => getHexColor(label.hexColor))
+	if (labeled) {
+		return getHexColor(labeled.hexColor)
+	}
+	return getHexColor(projectStore.projects[props.task.projectId]?.hexColor ?? '')
 })
 
 const showTaskPosition = computed(() => window.DEBUG_TASK_POSITION)
@@ -225,6 +312,49 @@ async function toggleTaskDone(task: ITask) {
 
 function openTaskDetail() {
 	router.push(taskDetailLocation(props.task.id, router.currentRoute.value.fullPath))
+}
+
+function onCardClick() {
+	if (isPhone.value) {
+		toggle(props.task.id)
+		return
+	}
+	openTaskDetail()
+}
+
+async function startEditingNotes() {
+	if (!canWrite.value) {
+		return
+	}
+	notesDraft.value = notesPlain.value
+	editingNotes.value = true
+	await nextTick()
+	notesField.value?.focus()
+}
+
+async function saveNotes() {
+	if (!editingNotes.value) {
+		return
+	}
+	editingNotes.value = false
+	const next = editorHtmlFromPlainText(notesDraft.value)
+	if (next === props.task.description || (next === '' && isEditorContentEmpty(props.task.description))) {
+		return
+	}
+	try {
+		await useTaskStore().update({
+			...props.task,
+			description: next,
+		})
+	} catch (e) {
+		notesDraft.value = notesPlain.value
+		error(e)
+	}
+}
+
+function cancelNotes() {
+	editingNotes.value = false
+	notesDraft.value = notesPlain.value
 }
 
 const coverImageBlobUrl = ref<string | null>(null)
@@ -271,6 +401,11 @@ $task-background: var(--white);
 	&:hover {
 		box-shadow: var(--shadow-sm);
 		border-color: var(--grey-300);
+	}
+
+	&.is-phone:hover {
+		box-shadow: none;
+		border-color: var(--card-border-color);
 	}
 
 	&.is-done {
@@ -495,5 +630,90 @@ $task-background: var(--white);
 	background: var(--grey-100);
 	border-radius: $radius;
 	padding: 0.25rem;
+}
+
+.task.is-phone {
+	.kanban-card__title-link {
+		white-space: normal;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		line-clamp: 2;
+		-webkit-line-clamp: 2;
+		text-overflow: unset;
+		overflow: hidden;
+		background: none;
+		border: 0;
+		padding: 0;
+		font: inherit;
+		color: inherit;
+		text-align: start;
+		cursor: pointer;
+		inline-size: 100%;
+	}
+
+	.task-pip {
+		inline-size: 0.55rem;
+		block-size: 0.55rem;
+		border-radius: 100%;
+		margin-inline-start: auto;
+		align-self: center;
+	}
+}
+
+.task.is-expanded {
+	overflow: visible;
+	z-index: 3;
+
+	.kanban-card__title-link {
+		-webkit-line-clamp: unset;
+		line-clamp: unset;
+		white-space: normal;
+		display: block;
+	}
+}
+
+.task-notes,
+.task-notes-input {
+	display: block;
+	inline-size: 100%;
+	margin-block-start: 0.25rem;
+	font-size: 0.82rem;
+	line-height: 1.45;
+	color: var(--text-muted);
+	text-align: start;
+}
+
+.task-notes {
+	background: none;
+	border: 0;
+	padding: 0;
+	font: inherit;
+	font-size: 0.82rem;
+
+	&.is-empty {
+		opacity: 0.7;
+	}
+}
+
+.task-notes-input {
+	background: var(--white);
+	border: 1px solid var(--grey-200);
+	border-radius: $radius;
+	padding: 0.35rem 0.45rem;
+	color: var(--text);
+	resize: vertical;
+}
+
+.task-expanded-labels,
+.kanban-card__bucket {
+	margin-block-start: 0.35rem;
+}
+
+.kanban-card__bucket {
+	display: block;
+}
+
+:deep(.task-action-bar) {
+	margin-block-start: 0.45rem;
 }
 </style>

@@ -33,7 +33,6 @@
 
 		<Teleport to="body">
 			<AddToHomeScreen v-if="!isQuickAddMode && authStore.authenticated" />
-			<UpdateNotification v-if="!isQuickAddMode" />
 			<Notification />
 			<DemoMode v-if="!isQuickAddMode" />
 		</Teleport>
@@ -47,7 +46,6 @@ import {useI18n} from 'vue-i18n'
 import isTouchDevice from 'is-touch-device'
 
 import Notification from '@/components/misc/Notification.vue'
-import UpdateNotification from '@/components/home/UpdateNotification.vue'
 import KeyboardShortcuts from '@/components/misc/keyboard-shortcuts/index.vue'
 
 import AppHeader from '@/components/home/AppHeader.vue'

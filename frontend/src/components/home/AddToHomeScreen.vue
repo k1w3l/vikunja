@@ -2,7 +2,6 @@
 	<div
 		v-if="shouldShowMessage"
 		class="add-to-home-screen"
-		:class="{'has-update-available': hasUpdateAvailable}"
 	>
 		<Icon
 			icon="arrow-up-from-bracket"
@@ -25,12 +24,8 @@
 import BaseButton from '@/components/base/BaseButton.vue'
 import {useLocalStorage} from '@vueuse/core'
 import {computed} from 'vue'
-import {useBaseStore} from '@/stores/base'
-
-const baseStore = useBaseStore()
 
 const hideMessage = useLocalStorage('hideAddToHomeScreenMessage', false)
-const hasUpdateAvailable = computed(() => baseStore.updateAvailable)
 
 const shouldShowMessage = computed(() => {
 	if (hideMessage.value) {
@@ -78,14 +73,6 @@ const shouldShowMessage = computed(() => {
 
 	@media print {
 		display: none;
-	}
-	
-	&.has-update-available {
-		inset-block-end: 5rem;
-
-		@media screen and (max-width: $tablet) {
-			inset-block-end: calc(#{$mobile-tabbar-height} + 4.5rem);
-		}
 	}
 }
 

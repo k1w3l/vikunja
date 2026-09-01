@@ -11,7 +11,7 @@
 					v-if="canAddTasks"
 					class="d-print-none"
 					:project-id="projectId"
-					:bucket-id="view?.defaultBucketId"
+					:bucket-id="addTaskBucketId"
 					@tasksAdded="onTasksAdded"
 				/>
 				<template v-if="canWrite && buckets.length > 0">
@@ -50,16 +50,42 @@
 		</template>
 
 		<template #default>
-			<div class="kanban-view">
+			<div
+				class="kanban-view"
+				:class="{'is-phone-pager': isPhone}"
+			>
 				<div
-					:class="{ 'is-loading': loading && !oneTaskUpdating}"
+					v-if="isPhone && drag"
+					class="pager-edges"
+					aria-hidden="true"
+				>
+					<div
+						class="pager-edge pager-edge--prev"
+						:class="{'is-ready': pagerIndex > 0}"
+					>
+						<Icon icon="angle-left" />
+					</div>
+					<div
+						class="pager-edge pager-edge--next"
+						:class="{'is-ready': pagerIndex < buckets.length - 1}"
+					>
+						<Icon icon="angle-right" />
+					</div>
+				</div>
+				<div
+					ref="kanbanScroller"
+					:class="{
+						'is-loading': loading && !oneTaskUpdating,
+						'is-phone-pager': isPhone,
+					}"
 					class="kanban kanban-bucket-container loader-container"
+					@scroll.passive="onPagerScroll"
 				>
 					<draggable
 						v-bind="DRAG_OPTIONS"
 						:model-value="buckets"
 						group="buckets"
-						:disabled="!canWrite"
+						:disabled="!canWrite || isPhone"
 						tag="ul"
 						:item-key="({id}: IBucket) => `bucket${id}`"
 						:component-data="bucketDraggableComponentData"
@@ -70,12 +96,22 @@
 						<template #item="{element: bucket, index: bucketIndex }">
 							<li
 								class="bucket"
-								:class="{'is-collapsed': collapsedBuckets[bucket.id]}"
+								:class="{'is-collapsed': !isPhone && collapsedBuckets[bucket.id]}"
+								:data-pager-index="bucketIndex"
 							>
 								<div
 									class="bucket-header"
 									@click="() => unCollapseBucket(bucket)"
 								>
+									<BaseButton
+										v-if="isPhone"
+										class="pager-nav"
+										:disabled="bucketIndex === 0"
+										:aria-label="$t('project.kanban.previousBucket')"
+										@click.stop="goPager(bucketIndex - 1)"
+									>
+										<Icon icon="angle-left" />
+									</BaseButton>
 									<span
 										v-if="bucket.id !== 0 && view?.doneBucketId === bucket.id"
 										v-tooltip="$t('project.kanban.doneBucketHint')"
@@ -86,8 +122,9 @@
 									</span>
 									<h2
 										class="title input"
-										:contenteditable="(bucketTitleEditable && canWrite && !collapsedBuckets[bucket.id]) ? true : undefined"
+										:contenteditable="(!isPhone && bucketTitleEditable && canWrite && !collapsedBuckets[bucket.id]) ? true : undefined"
 										:spellcheck="false"
+										:aria-current="isPhone && bucketIndex === pagerIndex ? 'true' : undefined"
 										@keydown.enter.prevent.stop="!$event.isComposing && ($event.target as HTMLElement).blur()"
 										@keydown.esc.prevent.stop="!$event.isComposing && ($event.target as HTMLElement).blur()"
 										@blur="saveBucketTitle(bucket.id, ($event.target as HTMLElement).textContent as string)"
@@ -162,6 +199,7 @@
 											{{ $t('project.kanban.defaultBucket') }}
 										</DropdownItem>
 										<DropdownItem
+											v-if="!isPhone"
 											icon="angles-up"
 											@click.stop="() => collapseBucket(bucket)"
 										>
@@ -178,7 +216,23 @@
 											{{ $t('misc.delete') }}
 										</DropdownItem>
 									</Dropdown>
+									<BaseButton
+										v-if="isPhone"
+										class="pager-nav"
+										:disabled="bucketIndex === buckets.length - 1"
+										:aria-label="$t('project.kanban.nextBucket')"
+										@click.stop="goPager(bucketIndex + 1)"
+									>
+										<Icon icon="angle-right" />
+									</BaseButton>
 								</div>
+								<p
+									v-if="isPhone && bucketIndex === pagerIndex"
+									class="is-sr-only"
+									aria-live="polite"
+								>
+									{{ $t('project.kanban.currentBucket', {title: bucket.title}) }}
+								</p>
 
 								<draggable
 									v-bind="DRAG_OPTIONS"
@@ -201,9 +255,9 @@
 											:data-task-id="task.id"
 										>
 											<span
-												v-if="canWrite && isTouchDevice"
+												v-if="canWrite && isTouchDevice && !(isPhone && expandedTaskId === task.id)"
 												class="handle"
-												@click="openTask(task)"
+												@click="onHandleClick(task)"
 												@touchstart.passive="onHandleTouchStart"
 												@touchmove.passive="onHandleTouchMove"
 											/>
@@ -267,6 +321,7 @@ import ProjectWrapper from '@/components/project/ProjectWrapper.vue'
 import FilterPopup from '@/components/project/partials/FilterPopup.vue'
 import AddTask from '@/components/tasks/AddTask.vue'
 import KanbanCard from '@/components/tasks/partials/KanbanCard.vue'
+import BaseButton from '@/components/base/BaseButton.vue'
 import Dropdown from '@/components/misc/Dropdown.vue'
 import DropdownItem from '@/components/misc/DropdownItem.vue'
 
@@ -280,6 +335,8 @@ import {calculateItemPosition} from '@/helpers/calculateItemPosition'
 import {isSavedFilter, useSavedFilter} from '@/services/savedFilter'
 import {useTaskDragToProject} from '@/composables/useTaskDragToProject'
 import {useTaskLay} from '@/composables/useTaskLay'
+import {useIsPhone} from '@/composables/useIsPhone'
+import {useExpandedTask} from '@/composables/useExpandedTask'
 import {success} from '@/message'
 import {useProjectStore} from '@/stores/projects'
 import {shouldShowTaskInListView} from '@/composables/useTaskListFiltering'
@@ -311,8 +368,11 @@ const DRAG_OPTIONS = {
 } as const
 
 const MIN_SCROLL_HEIGHT_PERCENT = 0.25
+const PAGER_EDGE_RATIO = 0.2
 
 const {t} = useI18n({useScope: 'global'})
+const isPhone = useIsPhone()
+const {expandedTaskId, toggle: toggleExpanded} = useExpandedTask()
 
 const baseStore = useBaseStore()
 const kanbanStore = useKanbanStore()
@@ -415,6 +475,14 @@ function openTask(task: ITask) {
 	router.push(taskDetailLocation(task.id, router.currentRoute.value.fullPath))
 }
 
+function onHandleClick(task: ITask) {
+	if (isPhone.value) {
+		toggleExpanded(task.id)
+		return
+	}
+	openTask(task)
+}
+
 function onHandleTouchStart(e: TouchEvent) {
 	touchStartY.value = e.touches[0].clientY
 }
@@ -434,6 +502,95 @@ function onHandleTouchMove(e: TouchEvent) {
 const buckets = computed(() => kanbanStore.buckets)
 const loading = computed(() => kanbanStore.isLoading)
 const projectIdWithFallback = computed<number>(() => project.value?.id || projectId.value)
+
+const kanbanScroller = ref<HTMLElement | null>(null)
+const pagerIndex = ref(0)
+const addTaskBucketId = computed(() => {
+	if (isPhone.value) {
+		return buckets.value[pagerIndex.value]?.id ?? view.value?.defaultBucketId
+	}
+	return view.value?.defaultBucketId
+})
+
+function prefersReducedMotion() {
+	return typeof window !== 'undefined'
+		&& window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+function goPager(index: number) {
+	const next = Math.max(0, Math.min(buckets.value.length - 1, index))
+	pagerIndex.value = next
+	const scroller = kanbanScroller.value
+	if (!scroller) {
+		return
+	}
+	const column = scroller.querySelector(`[data-pager-index="${next}"]`) as HTMLElement | null
+	column?.scrollIntoView({
+		inline: 'start',
+		block: 'nearest',
+		behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+	})
+}
+
+function onPagerScroll() {
+	if (!isPhone.value) {
+		return
+	}
+	const scroller = kanbanScroller.value
+	if (!scroller) {
+		return
+	}
+	const width = scroller.clientWidth
+	if (width <= 0) {
+		return
+	}
+	const next = Math.round(Math.abs(scroller.scrollLeft) / width)
+	if (next >= 0 && next < buckets.value.length) {
+		pagerIndex.value = next
+	}
+}
+
+watch(
+	() => buckets.value.length,
+	(length) => {
+		if (pagerIndex.value > length - 1) {
+			pagerIndex.value = Math.max(0, length - 1)
+		}
+	},
+)
+
+function clientXFromDragEnd(e: {originalEvent?: Event}): number | null {
+	const orig = e.originalEvent
+	if (!orig) {
+		return null
+	}
+	if ('changedTouches' in orig) {
+		const touch = (orig as TouchEvent).changedTouches[0]
+		return touch?.clientX ?? null
+	}
+	if ('clientX' in orig) {
+		return (orig as MouseEvent).clientX
+	}
+	return null
+}
+
+function pagerEdgeDelta(e: {originalEvent?: Event}): -1 | 1 | 0 {
+	if (!isPhone.value) {
+		return 0
+	}
+	const x = clientXFromDragEnd(e)
+	if (x === null) {
+		return 0
+	}
+	const width = window.innerWidth
+	if (x < width * PAGER_EDGE_RATIO && pagerIndex.value > 0) {
+		return -1
+	}
+	if (x > width * (1 - PAGER_EDGE_RATIO) && pagerIndex.value < buckets.value.length - 1) {
+		return 1
+	}
+	return 0
+}
 
 watch(
 	() => ({
@@ -501,6 +658,59 @@ function updateTasks(bucketId: IBucket['id'], tasks: IBucket['tasks']) {
 	})
 }
 
+async function persistTaskInBucket(task: ITask, destBucket: IBucket, destIndex: number) {
+	const oldBucket = buckets.value.find(b => b.id === sourceBucket.value)
+	taskUpdating.value[task.id] = true
+	oneTaskUpdating.value = true
+	try {
+		const destTasks = destBucket.tasks.filter(t => t.id !== task.id)
+		const clampedIndex = Math.max(0, Math.min(destIndex, destTasks.length))
+		const taskBefore = destTasks[clampedIndex - 1] ?? null
+		const taskAfter = destTasks[clampedIndex] ?? null
+		const position = calculateItemPosition(
+			taskBefore !== null ? taskBefore.position : null,
+			taskAfter !== null ? taskAfter.position : null,
+		)
+		const newTask = klona(task)
+		newTask.bucketId = destBucket.id
+		newTask.position = position
+
+		if (oldBucket && oldBucket.id !== destBucket.id) {
+			kanbanStore.setBucketById({
+				...oldBucket,
+				count: oldBucket.count - 1,
+			})
+			kanbanStore.setBucketById({
+				...destBucket,
+				count: destBucket.count + 1,
+			})
+		}
+
+		await taskPositionService.value.update(new TaskPositionModel({
+			position,
+			projectViewId: props.viewId,
+			taskId: newTask.id,
+		}))
+
+		const updatedTaskBucket = await taskBucketService.value.update(new TaskBucketModel({
+			taskId: newTask.id,
+			bucketId: destBucket.id,
+			projectViewId: props.viewId,
+			projectId: projectIdWithFallback.value,
+		}))
+		Object.assign(newTask, updatedTaskBucket.task)
+		newTask.bucketId = updatedTaskBucket.bucketId
+		kanbanStore.moveTaskToBucket(newTask, updatedTaskBucket.bucketId)
+		if (updatedTaskBucket.bucket) {
+			kanbanStore.setBucketById(updatedTaskBucket.bucket, false)
+		}
+		kanbanStore.setTaskInBucket(newTask)
+	} finally {
+		taskUpdating.value[task.id] = false
+		oneTaskUpdating.value = false
+	}
+}
+
 async function updateTaskPosition(e) {
 	drag.value = false
 
@@ -511,6 +721,22 @@ async function updateTaskPosition(e) {
 
 	if (moved) {
 		return
+	}
+
+	const edge = pagerEdgeDelta(e)
+	if (edge !== 0) {
+		const destIndex = pagerIndex.value + edge
+		const destBucket = buckets.value[destIndex]
+		const taskId = parseInt(e.item?.dataset?.taskId, 10)
+		const fromIndex = parseInt(e.from?.dataset?.bucketIndex, 10)
+		const origin = buckets.value[fromIndex]
+		const task = origin?.tasks.find(t => t.id === taskId)
+			?? destBucket?.tasks.find(t => t.id === taskId)
+		if (task && destBucket && destBucket.id !== origin?.id) {
+			await persistTaskInBucket(task, destBucket, destBucket.tasks.length)
+			goPager(destIndex)
+			return
+		}
 	}
 
 	// If dropped outside kanban
@@ -864,6 +1090,10 @@ $crazy-height-calculation: '100dvh - 4.5rem - 1.5rem - 1rem - 1.5rem - 11px';
 $crazy-height-calculation-tasks: '#{$crazy-height-calculation} - 1rem - 2.5rem - 2rem - #{$button-height} - 1rem';
 $filter-container-height: '1rem - #{$switch-view-height}';
 
+.kanban-view {
+	position: relative;
+}
+
 .kanban {
 	overflow-x: auto;
 	overflow-y: hidden;
@@ -879,6 +1109,36 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 		block-size: calc(#{$crazy-height-calculation} - #{$filter-container-height} + 9px);
 		scroll-snap-type: x mandatory;
 		margin: 0 -0.5rem;
+	}
+
+	&.is-phone-pager {
+		container-type: inline-size;
+		block-size: calc(100dvh - #{$chrome-top} - #{$mobile-tabbar-height} - 8.5rem);
+		min-block-size: 16rem;
+		margin: 0;
+		padding: 0;
+		overflow-x: auto;
+		overflow-y: hidden;
+		scroll-snap-type: x mandatory;
+		scroll-behavior: smooth;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			scroll-snap-type: none;
+			scroll-behavior: auto;
+		}
+
+		> .kanban-bucket-container {
+			justify-content: flex-start;
+			flex-wrap: nowrap;
+			inline-size: max-content;
+			min-inline-size: 100%;
+			block-size: 100%;
+		}
 	}
 
 	&-bucket-container {
@@ -924,6 +1184,18 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 		@media screen and (max-width: $tablet) {
 			scroll-snap-align: start;
 			inline-size: min(#{$bucket-width}, calc(100vw - 2.75rem));
+		}
+
+		.kanban.is-phone-pager & {
+			flex: 0 0 100cqw;
+			inline-size: 100cqw;
+			min-inline-size: 100cqw;
+			max-inline-size: 100cqw;
+			max-block-size: 100%;
+			margin: 0;
+			scroll-snap-align: start;
+			scroll-snap-stop: always;
+			border-radius: $radius;
 		}
 
 		.tasks {
@@ -1020,7 +1292,39 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 			padding: .4rem .5rem;
 			display: inline-block;
 			cursor: pointer;
+			min-inline-size: 0;
+			flex: 1 1 auto;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
+
+		.pager-nav {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			flex: 0 0 auto;
+			min-inline-size: 2.75rem;
+			min-block-size: 2.75rem;
+			color: var(--grey-500);
+
+			&:disabled {
+				opacity: 0.35;
+				color: var(--grey-400);
+			}
+
+			&:not(:disabled):hover,
+			&:not(:disabled):focus-visible {
+				color: var(--primary);
+			}
+		}
+	}
+
+	&.is-phone-pager .bucket-header .title.input {
+		color: var(--primary);
+		font-weight: 650;
+		text-align: center;
+		cursor: default;
 	}
 
 	:deep(.dropdown-trigger) {
@@ -1063,5 +1367,44 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 .move-card-leave-to,
 .move-card-leave-active {
 	display: none;
+}
+
+.pager-edges {
+	position: absolute;
+	inset: 0;
+	z-index: 4;
+	pointer-events: none;
+}
+
+.pager-edge {
+	position: absolute;
+	inset-block: 0;
+	inline-size: 20%;
+	display: flex;
+	align-items: center;
+	color: var(--grey-400);
+	font-size: 1.25rem;
+
+	&--prev {
+		inset-inline-start: 0;
+		justify-content: flex-start;
+		padding-inline-start: 0.75rem;
+		background: linear-gradient(to right, hsla(var(--primary-hsl), 0.18), transparent);
+	}
+
+	&--next {
+		inset-inline-end: 0;
+		justify-content: flex-end;
+		padding-inline-end: 0.75rem;
+		background: linear-gradient(to left, hsla(var(--primary-hsl), 0.18), transparent);
+	}
+
+	&.is-ready {
+		color: var(--primary);
+	}
+
+	&:not(.is-ready) {
+		opacity: 0.35;
+	}
 }
 </style>

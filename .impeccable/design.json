@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-29T18:20:00-03:00",
+  "generatedAt": "2026-08-31T22:30:00-03:00",
   "title": "Design System: Vikunja",
   "extensions": {
     "colorMeta": {
@@ -173,12 +173,14 @@
     ],
     "breakpoints": [
       { "name": "mobile", "value": "320px" },
+      { "name": "phone", "value": "768px" },
       { "name": "tablet", "value": "769px" },
       { "name": "desktop", "value": "1024px" },
       { "name": "split-inspector", "value": "1100px" },
       { "name": "navbar-width", "value": "15rem" },
       { "name": "navbar-height", "value": "3.25rem" },
-      { "name": "inspector-width", "value": "30rem" }
+      { "name": "inspector-width", "value": "30rem" },
+      { "name": "mobile-tabbar-content", "value": "3.75rem" }
     ]
   },
   "components": [
@@ -242,9 +244,17 @@
       "name": "Kanban Card",
       "kind": "custom",
       "refersTo": "card",
-      "description": "Hairline ticket; cadmium title; sage strike when done.",
-      "html": "<article class=\"ds-kanban\"><h3 class=\"ds-kanban-title\">Buy grout</h3><div class=\"ds-kanban-meta\">Today</div></article>",
-      "css": ".ds-kanban { display: block; background: var(--white, #fffcf7); border: 1px solid var(--card-border-color, #d6d0c6); border-radius: 6px; box-shadow: none; padding: 0.75rem; font-size: 0.95rem; cursor: pointer; overflow: hidden; transition: box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-kanban:hover { box-shadow: 0 1px 2px hsla(20, 14%, 10%, 0.06), 0 4px 12px hsla(20, 14%, 10%, 0.06); border-color: var(--grey-300, #bcb4a9); } .ds-kanban:focus-visible { outline: 2px solid var(--primary, #e24e1b); outline-offset: 2px; } .ds-kanban-title { margin: 0; font-family: Recursive, sans-serif; font-size: 1rem; font-weight: 500; color: var(--primary, #e24e1b); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; } .ds-kanban-meta { margin-top: 0.25rem; font-family: Recursive, sans-serif; font-size: 0.82rem; color: var(--text-muted, #57534e); }"
+      "description": "Hairline ticket; cadmium title; sage strike when done. Phone tap expands in place.",
+      "html": "<article class=\"ds-kanban\"><h3 class=\"ds-kanban-title\">Buy grout</h3><span class=\"ds-kanban-pip\" aria-hidden=\"true\"></span></article>",
+      "css": ".ds-kanban { display: block; background: var(--white, #fffcf7); border: 1px solid var(--card-border-color, #d6d0c6); border-radius: 6px; box-shadow: none; padding: 0.75rem; font-size: 0.95rem; cursor: pointer; overflow: hidden; transition: box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-kanban:hover { box-shadow: 0 1px 2px hsla(20, 14%, 10%, 0.06), 0 4px 12px hsla(20, 14%, 10%, 0.06); border-color: var(--grey-300, #bcb4a9); } .ds-kanban:focus-visible { outline: 2px solid var(--primary, #e24e1b); outline-offset: 2px; } .ds-kanban-title { margin: 0; font-family: Recursive, sans-serif; font-size: 1rem; font-weight: 500; color: var(--primary, #e24e1b); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; } .ds-kanban-pip { display: inline-block; width: 0.55rem; height: 0.55rem; border-radius: 100%; background: var(--primary, #e24e1b); }"
+    },
+    {
+      "name": "Kanban Phone Pager",
+      "kind": "custom",
+      "refersTo": "nav-item",
+      "description": "One named bucket at a time; cadmium title; 44px prev/next; snap off when reduced-motion.",
+      "html": "<nav class=\"ds-pager\" aria-label=\"Kanban column\"><button class=\"ds-pager-nav\" type=\"button\" aria-label=\"Previous column\" disabled><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M10.5 3.5 6 8l4.5 4.5\"/></svg></button><h2 class=\"ds-pager-title\" aria-current=\"true\">Doing</h2><button class=\"ds-pager-nav\" type=\"button\" aria-label=\"Next column\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M5.5 3.5 10 8 5.5 12.5\"/></svg></button></nav>",
+      "css": ".ds-pager { display: flex; align-items: center; gap: 0.25rem; min-height: 3.75rem; padding: 0.5rem; background: var(--grey-100, #f4f1ea); border: 1px solid var(--card-border-color, #d6d0c6); border-radius: 4px; } .ds-pager-title { flex: 1 1 auto; margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-family: Recursive, sans-serif; font-size: 1rem; font-weight: 650; color: var(--primary, #e24e1b); } .ds-pager-nav { display: inline-flex; align-items: center; justify-content: center; min-width: 2.75rem; min-height: 2.75rem; padding: 0; border: 0; background: transparent; color: var(--grey-500, #8e857b); cursor: pointer; } .ds-pager-nav svg { width: 1.25rem; height: 1.25rem; } .ds-pager-nav:hover:not(:disabled), .ds-pager-nav:focus-visible { color: var(--primary, #e24e1b); } .ds-pager-nav:focus-visible { outline: 2px solid var(--primary, #e24e1b); outline-offset: 2px; } .ds-pager-nav:disabled { opacity: 0.35; cursor: default; }"
     }
   ],
   "narrative": {
@@ -267,6 +277,7 @@
       { "name": "The One Face Rule", "body": "Recursive for headings, chrome, and work. Do not bring back Quicksand or Open Sans.", "section": "typography" },
       { "name": "The Sentence-Case Tool Rule", "body": "Buttons are sentence case. Do not uppercase task titles, project names, or running text.", "section": "typography" },
       { "name": "The Blotter Rule", "body": "Page-load tiles are placed down, once per view. Do not restagger on filter, drag, or scroll-load.", "section": "layout" },
+      { "name": "The One-Column Board Rule", "body": "On the phone, kanban shows one named bucket at a time. Desktop keeps the multi-column board. Never a stacked list of columns.", "section": "layout" },
       { "name": "The Border-Plus-Lift Rule", "body": "Resting cards are hairline-only. Shadows appear on hover or overlay.", "section": "elevation" },
       { "name": "The Four-Pixel Rule", "body": "4px for controls, cards, inputs, tags. Full circles for people. No 8px+ “app rounding.”", "section": "shapes" }
     ],
@@ -274,8 +285,11 @@
       "Do keep the VikunjaX wordmark (cadmium X). Cadmium is the only brand accent.",
       "Do keep the inspector as a pane, never a modal overlay, on desktop.",
       "Do hide subtasks as loose rows unless “Show in list” is on.",
+      "Do put the subtask chevron in a gutter left of the parent tile, not inside the card. Nested tiles share the parent’s left edge and the same `0.4rem` gap as the list.",
       "Do use logical properties for spacing.",
       "Do honor `prefers-reduced-motion`.",
+      "Do treat phone kanban as a one-column pager (named bucket, arrows + snap). Desktop stays a board.",
+      "Do expand a phone kanban card in place; do not open the inspector from that tap.",
       "Do prefix any Tailwind utility with `tw-`."
     ],
     "donts": [
@@ -286,7 +300,8 @@
       "Don't uppercase task, project, or button labels.",
       "Don't drop the 1px card border in favor of shadow-only lift.",
       "Don't round past 4px except for avatars and spinners.",
-      "Don't animate inspector/rail width — `transform` only."
+      "Don't animate inspector/rail width — `transform` only.",
+      "Don't restack kanban columns vertically on the phone."
     ]
   }
 }

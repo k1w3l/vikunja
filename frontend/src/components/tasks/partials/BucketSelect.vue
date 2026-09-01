@@ -1,6 +1,9 @@
 <template>
 	<template v-if="kanbanView">
-		<span class="inspector-crumb__sep">›</span>
+		<span
+			v-if="!compact"
+			class="inspector-crumb__sep"
+		>›</span>
 		<template v-if="canWrite">
 			<Dropdown>
 				<template #trigger="{toggleOpen, open}">
@@ -62,10 +65,13 @@ import TaskBucketModel from '@/models/taskBucket'
 
 import {success} from '@/message'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	task: ITask
 	canWrite: boolean
-}>()
+	compact?: boolean
+}>(), {
+	compact: false,
+})
 
 const emit = defineEmits<{
 	'update:task': [task: ITask]

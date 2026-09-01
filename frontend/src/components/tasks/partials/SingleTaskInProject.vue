@@ -675,12 +675,14 @@ defineExpose({
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
+		appearance: none;
 		background: none;
 		border: 0;
 		padding: 0;
 		font: inherit;
 		text-align: start;
 		cursor: pointer;
+		color: var(--text);
 	}
 
 	.task-meta-labels,
@@ -893,6 +895,7 @@ defineExpose({
 		color: var(--text-muted);
 
 		.task-link {
+			color: var(--text-muted);
 			text-decoration: line-through;
 			text-decoration-color: var(--success-text);
 			text-decoration-thickness: 1.5px;
