@@ -240,7 +240,7 @@
 									:delay="isTouchDevice ? 300 : 1000"
 									:model-value="visibleBucketTasks(bucket)"
 									:group="{name: 'tasks', put: shouldAcceptDrop(bucket) && !dragBucket}"
-									:disabled="!canWrite"
+									:disabled="!canWrite || isPhone"
 									:data-bucket-index="bucketIndex"
 									tag="ul"
 									:item-key="(task: ITask) => `bucket${bucket.id}-task${task.id}`"
@@ -255,7 +255,7 @@
 											:data-task-id="task.id"
 										>
 											<span
-												v-if="canWrite && isTouchDevice && !(isPhone && expandedTaskId === task.id)"
+												v-if="canWrite && isTouchDevice && !isPhone"
 												class="handle"
 												@click="onHandleClick(task)"
 												@touchstart.passive="onHandleTouchStart"
@@ -372,7 +372,7 @@ const PAGER_EDGE_RATIO = 0.2
 
 const {t} = useI18n({useScope: 'global'})
 const isPhone = useIsPhone()
-const {expandedTaskId, toggle: toggleExpanded} = useExpandedTask()
+const {toggle: toggleExpanded} = useExpandedTask()
 
 const baseStore = useBaseStore()
 const kanbanStore = useKanbanStore()
@@ -1122,6 +1122,7 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 		scroll-snap-type: x mandatory;
 		scroll-behavior: smooth;
 		scrollbar-width: none;
+		touch-action: pan-x;
 
 		&::-webkit-scrollbar {
 			display: none;
@@ -1135,9 +1136,25 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 		> .kanban-bucket-container {
 			justify-content: flex-start;
 			flex-wrap: nowrap;
+			flex-shrink: 0;
 			inline-size: max-content;
 			min-inline-size: 100%;
 			block-size: 100%;
+		}
+
+		.bucket {
+			flex: 0 0 100cqw;
+			inline-size: 100cqw;
+			min-inline-size: 100cqw;
+			max-inline-size: 100cqw;
+			max-block-size: 100%;
+			margin: 0;
+			scroll-snap-align: start;
+			scroll-snap-stop: always;
+		}
+
+		.tasks {
+			touch-action: pan-y;
 		}
 	}
 
@@ -1177,6 +1194,7 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 		max-block-size: calc(100% - 1rem); // 1rem spacing to the bottom
 		min-block-size: 20px;
 		inline-size: $bucket-width;
+		flex: 0 0 auto;
 		display: flex;
 		flex-direction: column;
 		overflow: hidden; // Make sure the edges are always rounded
@@ -1184,18 +1202,6 @@ $filter-container-height: '1rem - #{$switch-view-height}';
 		@media screen and (max-width: $tablet) {
 			scroll-snap-align: start;
 			inline-size: min(#{$bucket-width}, calc(100vw - 2.75rem));
-		}
-
-		.kanban.is-phone-pager & {
-			flex: 0 0 100cqw;
-			inline-size: 100cqw;
-			min-inline-size: 100cqw;
-			max-inline-size: 100cqw;
-			max-block-size: 100%;
-			margin: 0;
-			scroll-snap-align: start;
-			scroll-snap-stop: always;
-			border-radius: $radius;
 		}
 
 		.tasks {
