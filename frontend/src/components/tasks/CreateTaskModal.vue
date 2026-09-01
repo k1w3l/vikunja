@@ -1,135 +1,50 @@
 <template>
 	<Modal
 		:enabled="open"
-		wide
 		overflow
+		:aria-label="$t('task.createModal.title')"
 		@close="close"
 	>
-		<div class="modal-header">
-			<span>{{ $t('task.createModal.title') }}</span>
-		</div>
 		<div class="content">
 			<form
 				class="create-task-form"
 				@submit.prevent="submit"
 			>
-				<p class="help">
-					{{ $t('task.createModal.intro') }}
+				<input
+					v-model="title"
+					v-focus
+					class="input create-task-title"
+					type="text"
+					required
+					:placeholder="$t('task.createModal.titlePlaceholder')"
+					:aria-label="$t('task.attributes.title')"
+					:aria-invalid="titleError ? true : undefined"
+					@input="titleError = null"
+				>
+				<p
+					v-if="titleError || projectError"
+					class="help is-danger"
+				>
+					{{ titleError || projectError }}
 				</p>
-
-				<FormField
-					v-slot="{ id, describedBy }"
-					:label="$t('task.attributes.title')"
-					:error="titleError"
-				>
-					<input
-						:id="id"
-						v-model="title"
-						v-focus
-						class="input"
-						type="text"
-						required
-						:placeholder="$t('task.createModal.titlePlaceholder')"
-						:aria-invalid="titleError ? true : undefined"
-						:aria-describedby="describedBy"
-						@input="titleError = null"
-					>
-				</FormField>
-
-				<FormField
-					:label="$t('task.attributes.project')"
-					:error="projectError"
-				>
-					<Dropdown
-						match-trigger
-						class="select-dropdown"
-					>
-						<template #trigger="{toggleOpen, open: menuOpen}">
-							<BaseButton
-								class="select-dropdown-trigger"
-								:aria-expanded="menuOpen"
-								:aria-invalid="projectError ? true : undefined"
-								:aria-label="$t('task.attributes.project')"
-								@click="toggleOpen"
-							>
-								<span :class="{'is-placeholder': selectedProjectId === 0}">
-									{{ selectedProjectTitle }}
-								</span>
-								<Icon
-									icon="chevron-down"
-									class="select-dropdown-chevron"
-									:class="{'is-open': menuOpen}"
-								/>
-							</BaseButton>
-						</template>
-						<template #default="{close: closeMenu}">
-							<DropdownItem
-								v-for="project in selectableProjects"
-								:key="project.id"
-								:class="{'is-active': selectedProjectId === project.id}"
-								@click="selectProject(project.id, closeMenu)"
-							>
-								{{ project.title }}
-							</DropdownItem>
-						</template>
-					</Dropdown>
-				</FormField>
-
-				<FormField :label="$t('task.attributes.labels')">
-					<EditLabels
-						v-model="selectedLabels"
-						:task-id="0"
-					/>
-				</FormField>
-
-				<FormField
-					v-slot="{ id }"
-					:label="$t('task.attributes.description')"
-				>
-					<textarea
-						:id="id"
-						v-model="description"
-						class="textarea"
-						rows="4"
-						:placeholder="$t('task.description.placeholder')"
-					/>
-				</FormField>
-
-				<FormField :label="$t('task.attributes.priority')">
-					<PrioritySelect v-model="priority" />
-				</FormField>
-
-				<FormField
-					:label="$t('task.attributes.percentDone')"
-					:hint="$t('task.createModal.progressHint')"
-				>
-					<PercentDoneSelect v-model="percentDone" />
-				</FormField>
-
-				<p class="help">
-					{{ $t('task.createModal.datesHint') }}
-				</p>
-
-				<FormField :label="$t('task.attributes.dueDate')">
-					<Datepicker
-						v-model="dueDate"
-						:choose-date-label="$t('task.detail.chooseDueDate')"
-					/>
-				</FormField>
-
-				<FormField :label="$t('task.attributes.startDate')">
-					<Datepicker
-						v-model="startDate"
-						:choose-date-label="$t('task.detail.chooseStartDate')"
-					/>
-				</FormField>
-
-				<FormField :label="$t('task.attributes.endDate')">
-					<Datepicker
-						v-model="endDate"
-						:choose-date-label="$t('task.detail.chooseEndDate')"
-					/>
-				</FormField>
+				<TaskActionBar
+					:can-write="true"
+					:due-date="dueDate"
+					:priority="priority"
+					:labels="selectedLabels"
+					:reminders="reminders"
+					:project-id="selectedProjectId"
+					:pending-files="pendingFiles"
+					:subtask-titles="subtaskTitles"
+					@update:dueDate="dueDate = $event"
+					@update:priority="priority = $event"
+					@update:labels="selectedLabels = $event"
+					@update:reminders="reminders = $event"
+					@update:projectId="onProjectPicked"
+					@update:pendingFiles="pendingFiles = $event"
+					@update:subtaskTitles="subtaskTitles = $event"
+					@discard="close"
+				/>
 			</form>
 		</div>
 		<div class="actions">
@@ -157,25 +72,23 @@ import {useI18n} from 'vue-i18n'
 import {useRouter} from 'vue-router'
 
 import Modal from '@/components/misc/Modal.vue'
-import FormField from '@/components/input/FormField.vue'
-import Datepicker from '@/components/input/Datepicker.vue'
-import BaseButton from '@/components/base/BaseButton.vue'
-import Dropdown from '@/components/misc/Dropdown.vue'
-import DropdownItem from '@/components/misc/DropdownItem.vue'
-import PrioritySelect from '@/components/tasks/partials/PrioritySelect.vue'
-import PercentDoneSelect from '@/components/tasks/partials/PercentDoneSelect.vue'
-import EditLabels from '@/components/tasks/partials/EditLabels.vue'
+import TaskActionBar from '@/components/tasks/partials/TaskActionBar.vue'
 
 import {PRIORITIES} from '@/constants/priorities'
-import {getProjectTitle} from '@/helpers/getProjectTitle'
 import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
+import {uploadFile} from '@/helpers/attachments'
 import {error, success} from '@/message'
 import type {ILabel} from '@/modelTypes/ILabel'
 import type {ITask} from '@/modelTypes/ITask'
+import type {ITaskReminder} from '@/modelTypes/ITaskReminder'
+import TaskRelationModel from '@/models/taskRelation'
+import TaskRelationService from '@/services/taskRelation'
+import {RELATION_KIND} from '@/types/IRelationKind'
 import {useAuthStore} from '@/stores/auth'
 import {useLabelStore} from '@/stores/labels'
-import {useProjectStore} from '@/stores/projects'
 import {useTaskStore} from '@/stores/tasks'
+import {useIsPhone} from '@/composables/useIsPhone'
+import {useExpandedTask} from '@/composables/useExpandedTask'
 
 const props = withDefaults(defineProps<{
 	open: boolean
@@ -200,57 +113,29 @@ const emit = defineEmits<{
 const {t} = useI18n({useScope: 'global'})
 const router = useRouter()
 const authStore = useAuthStore()
-const projectStore = useProjectStore()
 const labelStore = useLabelStore()
 const taskStore = useTaskStore()
+const isPhone = useIsPhone()
+const {expand} = useExpandedTask()
+const taskRelationService = new TaskRelationService()
 
 const title = ref('')
-const description = ref('')
 const priority = ref(PRIORITIES.UNSET)
-const percentDone = ref(0)
 const dueDate = ref<Date | null>(null)
 const startDate = ref<Date | null>(null)
 const endDate = ref<Date | null>(null)
 const selectedProjectId = ref(0)
 const selectedLabels = ref<ILabel[]>([])
+const reminders = ref<ITaskReminder[]>([])
+const pendingFiles = ref<File[]>([])
+const subtaskTitles = ref<string[]>([])
 
 const loading = computed(() => taskStore.isLoading)
 
-const selectedProjectTitle = computed(() => {
-	if (selectedProjectId.value === 0) {
-		return t('task.createModal.chooseProject')
-	}
-	return selectableProjects.value.find(project => project.id === selectedProjectId.value)?.title
-		?? t('task.createModal.chooseProject')
-})
-
-function selectProject(id: number, close: () => void) {
+function onProjectPicked(id: number) {
 	selectedProjectId.value = id
 	projectError.value = null
-	close()
 }
-
-const selectableProjects = computed(() => {
-	const result: {id: number, title: string}[] = []
-
-	function walk(parentId: number, depth: number) {
-		const children = parentId === 0
-			? [...projectStore.notArchivedRootProjects]
-			: projectStore.getChildProjects(parentId).filter(p => !p.isArchived && p.id > 0)
-
-		for (const project of children) {
-			const prefix = depth > 0 ? `${'\u2014 '.repeat(depth)}` : ''
-			result.push({
-				id: project.id,
-				title: `${prefix}${getProjectTitle(project)}`,
-			})
-			walk(project.id, depth + 1)
-		}
-	}
-
-	walk(0, 0)
-	return result
-})
 
 const titleError = ref<string | null>(null)
 const projectError = ref<string | null>(null)
@@ -282,14 +167,15 @@ function initialProjectId() {
 
 function reset() {
 	title.value = props.defaultTitle
-	description.value = ''
 	priority.value = PRIORITIES.UNSET
-	percentDone.value = 0
 	dueDate.value = null
 	startDate.value = toDate(props.defaultStartDate)
 	endDate.value = toDate(props.defaultEndDate)
 	selectedProjectId.value = initialProjectId()
 	selectedLabels.value = []
+	reminders.value = []
+	pendingFiles.value = []
+	subtaskTitles.value = []
 	titleError.value = null
 	projectError.value = null
 }
@@ -320,20 +206,18 @@ async function submit() {
 		})
 
 		const extra = {
-			description: description.value,
 			priority: priority.value,
-			percentDone: percentDone.value,
 			dueDate: dueDate.value,
 			startDate: startDate.value,
 			endDate: endDate.value,
+			reminders: reminders.value,
 		}
 
-		const hasExtra = extra.description !== ''
-			|| extra.priority !== PRIORITIES.UNSET
-			|| extra.percentDone > 0
+		const hasExtra = extra.priority !== PRIORITIES.UNSET
 			|| extra.dueDate !== null
 			|| extra.startDate !== null
 			|| extra.endDate !== null
+			|| extra.reminders.length > 0
 
 		if (hasExtra) {
 			task = await taskStore.update({
@@ -346,9 +230,31 @@ async function submit() {
 			await taskStore.addLabel({label, taskId: task.id})
 		}
 
+		for (const file of pendingFiles.value) {
+			await uploadFile(task.id, file)
+		}
+
+		for (const subtaskTitle of subtaskTitles.value) {
+			const created = await taskStore.createNewTask({
+				title: subtaskTitle,
+				projectId,
+			})
+			await taskRelationService.create(new TaskRelationModel({
+				taskId: task.id,
+				otherTaskId: created.id,
+				relationKind: RELATION_KIND.SUBTASK,
+			}))
+		}
+
 		success({message: t('task.createSuccess'), title: false})
 		emit('created', task)
 		close()
+
+		if (isPhone.value) {
+			expand(task.id)
+			return
+		}
+
 		await router.push(taskDetailLocation(task.id, router.currentRoute.value.fullPath))
 	} catch (e) {
 		error(e)
@@ -364,7 +270,25 @@ async function submit() {
 	text-align: start;
 }
 
-.is-placeholder {
-	color: var(--text-muted);
+.create-task-title {
+	font-size: 1.25rem;
+	font-weight: 650;
+	min-block-size: 2.75rem;
+}
+
+.content {
+	padding: 1.5rem 1.5rem 0;
+	text-align: start;
+}
+
+.actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	padding: 1rem 1.5rem 1.5rem;
+}
+
+:deep(.task-action-bar) {
+	margin-block-start: 0.15rem;
 }
 </style>

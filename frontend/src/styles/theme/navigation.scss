@@ -37,6 +37,10 @@
       &:has(.router-link-exact-active) {
         background: var(--rail-active);
       }
+
+      &.labels-empty:hover {
+        background: transparent;
+      }
     }
 
     li > div {
@@ -62,6 +66,9 @@
 
     .menu-item-icon {
       color: var(--rail-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .menu-list-dropdown-trigger {

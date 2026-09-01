@@ -67,7 +67,7 @@ test.describe('Project View List', () => {
 		await page.reload()
 		await expect(page.locator('ul.tasks > div > .single-task')).toBeVisible()
 		await expect(page.locator('ul.tasks > div > .single-task').first()).toContainText('Parent multi task')
-		await expect(page.locator('ul.tasks > div > .subtask-nested')).toBeVisible()
+		await expect(page.locator('ul.tasks .subtask-nested')).toBeVisible()
 		await expect(page.locator('.subtask-nested')).toContainText('Sub multi task')
 	})
 
@@ -220,7 +220,7 @@ test.describe('Project View List', () => {
 		await expect(page.locator('.tasks')).toContainText('Subtask Same Project')
 
 		await expect(page.locator('ul.tasks > div > .single-task')).toBeVisible()
-		await expect(page.locator('ul.tasks > div > .subtask-nested')).toBeVisible()
+		await expect(page.locator('ul.tasks .subtask-nested')).toBeVisible()
 	})
 
 	test('Should respect filter query parameter from URL', async ({authenticatedPage: page}) => {

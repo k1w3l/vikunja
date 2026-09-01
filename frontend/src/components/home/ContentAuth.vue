@@ -1,13 +1,5 @@
 <template>
 	<div class="content-auth">
-		<BaseButton
-			v-show="menuActive"
-			:aria-label="$t('navigation.closeSidebar')"
-			class="menu-hide-button d-print-none"
-			@click="baseStore.setMenuActive(false)"
-		>
-			<Icon icon="times" />
-		</BaseButton>
 		<div
 			class="app-container"
 			:class="{
@@ -28,6 +20,7 @@
 				}"
 			/>
 			<Navigation class="d-print-none" />
+			<MobileTabBar v-show="!inspectorOpen" />
 			<main
 				id="main-content"
 				tabindex="-1"
@@ -83,6 +76,7 @@ import {watch, computed, onBeforeUnmount, defineAsyncComponent, type Component} 
 import {useRoute, useRouter} from 'vue-router'
 
 import Navigation from '@/components/home/Navigation.vue'
+import MobileTabBar from '@/components/home/MobileTabBar.vue'
 import QuickActions from '@/components/quick-actions/QuickActions.vue'
 import BaseButton from '@/components/base/BaseButton.vue'
 
@@ -187,31 +181,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-.menu-hide-button {
-	position: fixed;
-	inset-block-start: max(0.5rem, env(safe-area-inset-top, 0));
-	inset-inline-end: max(0.5rem, env(safe-area-inset-right, 0));
-	z-index: 31;
-	inline-size: 3rem;
-	block-size: 3rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-size: 1.75rem;
-	color: var(--grey-400);
-	line-height: 1;
-	transition: color $transition;
-
-	@media screen and (min-width: $tablet) {
-		display: none;
-	}
-
-	&:hover,
-	&:focus {
-		color: var(--grey-600);
-	}
-}
-
 .app-container {
 	--sidebar-width: #{$navbar-width};
 	--inspector-width: #{$inspector-width};
@@ -253,7 +222,7 @@ onBeforeUnmount(() => {
 		margin-inline-end: 0;
 		min-block-size: calc(100dvh - #{$chrome-top});
 		padding-block-start: 1rem;
-		padding-block-end: max(2rem, env(safe-area-inset-bottom, 0));
+		padding-block-end: calc(#{$mobile-tabbar-height} + 1.25rem);
 		padding-inline: max(0.9rem, env(safe-area-inset-left, 0)) max(0.9rem, env(safe-area-inset-right, 0));
 		border-inline-end: 0;
 	}

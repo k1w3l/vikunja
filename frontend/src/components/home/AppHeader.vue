@@ -1,6 +1,6 @@
 <template>
 	<header
-		:class="{ 'has-background': background, 'menu-active': menuActive }"
+		:class="{ 'has-background': background }"
 		aria-label="main navigation"
 		class="navbar d-print-none"
 	>
@@ -11,8 +11,6 @@
 		>
 			<Logo />
 		</RouterLink>
-
-		<MenuButton class="menu-button" />
 
 		<div
 			v-if="!currentProject?.id && pageTitle"
@@ -103,7 +101,6 @@ import Notifications from '@/components/notifications/Notifications.vue'
 import TimerBadge from '@/components/time-tracking/TimerBadge.vue'
 import Logo from '@/components/home/Logo.vue'
 import BaseButton from '@/components/base/BaseButton.vue'
-import MenuButton from '@/components/home/MenuButton.vue'
 import OpenQuickActions from '@/components/misc/OpenQuickActions.vue'
 
 import { useBaseStore } from '@/stores/base'
@@ -117,7 +114,6 @@ const currentProject = computed<IProject | null>(() => {
 	return project ? { ...project } as IProject : null
 })
 const background = computed(() => baseStore.background)
-const menuActive = computed(() => baseStore.menuActive)
 
 const route = useRoute()
 const { t } = useI18n()
@@ -165,12 +161,6 @@ $user-dropdown-width-mobile: 5rem;
 		align-items: stretch;
 	}
 
-	&.menu-active {
-		@media screen and (max-width: $tablet) {
-			z-index: 0;
-		}
-	}
-
 	// FIXME: notifications should provide a slot for the icon instead, so that we can style it as we want
 	:deep() {
 		.trigger-button {
@@ -189,7 +179,7 @@ $user-dropdown-width-mobile: 5rem;
 	min-inline-size: 0;
 
 	@media screen and (max-width: $tablet) {
-		display: none;
+		padding-inline-start: 1rem;
 	}
 
 	:deep(.brand) {
@@ -201,20 +191,6 @@ $user-dropdown-width-mobile: 5rem;
 		inline-size: 2.15rem;
 		block-size: 2.15rem;
 		flex-basis: 2.15rem;
-	}
-}
-
-.menu-button {
-	margin-inline-end: auto;
-	align-self: stretch;
-	flex: 0 0 auto;
-
-	@media screen and (min-width: $tablet) {
-		display: none;
-	}
-
-	@media screen and (max-width: $tablet) {
-		margin-inline-start: 1rem;
 	}
 }
 

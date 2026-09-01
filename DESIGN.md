@@ -201,7 +201,7 @@ Checking a task off is a sage stroke, not a cadmium wash. The checkbox stamps (1
 **Project.** Not list (list is a view).
 **Label.** Not tag.
 **Due date** is the deadline. **Start / end** is the scheduled window.
-**Add task** opens the form; the same words submit it.
+**Add task** opens the form; the same words submit it. The create modal has no heading — title field plus the action bar.
 
 Routine outcomes are one word: Created. Saved. Done. Deleted.
 
@@ -265,7 +265,7 @@ Hairline track (`3–4px`), sage fill, `scaleX` (composite, not width). Cadmium 
 - **Focus:** Border to Cadmium; keyboard ring via `.user-is-tabbing`
 
 ### Navigation
-Slim ground top bar: project title and trailing tools on the inline-end (no duplicate logo on desktop). Project edit is a hover-only pencil. Dark rail: cream wordmark, 4px items that fit the rail width without stray scrollbars, muted `#c4bdb4` idle, `#2a2522` active. Every item including projects has an icon (project glyphs derived from title). Inspector mounts only while a task is open.
+Slim ground top bar: project title and trailing tools on the inline-end. Logo + VikunjaX wordmark on the inline-start (no hamburger). Dark rail: cream items, 4px, muted `#c4bdb4` idle, `#2a2522` active. Shortcuts sit ungrouped at the top. Below, section headers (Projects, Filters when any exist, Labels) are label-size uppercase with a trailing `+` for create — never a full-width “New …” row. Filters have no `+` (create lives on the projects overview). Labels use a colored dot, not a glyph. Every project still has a glyph derived from its title. Inspector mounts only while a task is open. Below tablet: the rail becomes a bottom sheet (Projects tab); a three-item glass tab bar (Overview · Projects · Upcoming) sits on the footer with `backdrop-filter` blur, cadmium for the active item, rail-muted idle. Mod+E still toggles the sheet.
 
 ## Do's and Don'ts
 
@@ -273,6 +273,7 @@ Slim ground top bar: project title and trailing tools on the inline-end (no dupl
 - **Do** keep the VikunjaX wordmark (cadmium X). Cadmium is the only brand accent.
 - **Do** keep the inspector as a pane, never a modal overlay, on desktop.
 - **Do** hide subtasks as loose rows unless “Show in list” is on.
+- **Do** put the subtask chevron in a gutter left of the parent tile, not inside the card. Nested tiles share the parent’s left edge and the same `0.4rem` gap as the list.
 - **Do** use logical properties for spacing.
 - **Do** honor `prefers-reduced-motion`.
 - **Do** prefix any Tailwind utility with `tw-`.

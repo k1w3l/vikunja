@@ -39,6 +39,8 @@ $switch-view-height: 2.69rem;
 
 $navbar-height: 3.25rem;
 $chrome-top: calc(#{$navbar-height} + env(safe-area-inset-top, 0));
+$mobile-tabbar-content: 3.75rem;
+$mobile-tabbar-height: calc(#{$mobile-tabbar-content} + env(safe-area-inset-bottom, 0px));
 $navbar-width: 15rem;
 $navbar-padding: 2rem;
 $inspector-width: 30rem;

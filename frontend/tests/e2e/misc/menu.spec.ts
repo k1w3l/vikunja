@@ -11,11 +11,6 @@ test.describe('The Menu', () => {
 		await expect(page.locator('.menu-container')).toHaveClass(/is-active/)
 	})
 
-	test('Can be hidden on desktop', async ({authenticatedPage: page}) => {
-		await page.locator('button.menu-show-button:visible').click()
-		await expect(page.locator('.menu-container')).not.toHaveClass(/is-active/)
-	})
-
 	test('Can be toggled with keyboard shortcut on desktop', async ({authenticatedPage: page}) => {
 		await expect(page.locator('.menu-container')).toHaveClass(/is-active/)
 		await page.locator('body').click()
@@ -30,11 +25,12 @@ test.describe('The Menu', () => {
 	test('Is hidden by default on mobile', async ({authenticatedPage: page}) => {
 		await page.setViewportSize(iPhone8)
 		await expect(page.locator('.menu-container')).not.toHaveClass(/is-active/)
+		await expect(page.locator('.mobile-tab-bar')).toBeVisible()
 	})
 
 	test('Is can be shown on mobile', async ({authenticatedPage: page}) => {
 		await page.setViewportSize(iPhone8)
-		await page.locator('button.menu-show-button:visible').click()
+		await page.locator('[data-cy=mobile-tab-projects]').click()
 		await expect(page.locator('.menu-container')).toHaveClass(/is-active/)
 	})
 })

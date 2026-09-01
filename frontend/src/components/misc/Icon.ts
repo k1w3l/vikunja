@@ -41,9 +41,12 @@ import {
 	faFilePdf,
 	faFillDrip,
 	faFilter,
+	faFlag,
+	faFolder,
 	faForward,
 	faGripLines,
 	faHeader,
+	faHouse,
 	faHistory,
 	faImage,
 	faKeyboard,
@@ -69,6 +72,7 @@ import {
 	faStar as faStarSolid,
 	faStop,
 	faTachometerAlt,
+	faTag,
 	faTags,
 	faTasks,
 	faTh,
@@ -153,9 +157,12 @@ library.add(faEye)
 library.add(faEyeSlash)
 library.add(faFillDrip)
 library.add(faFilter)
+library.add(faFlag)
+library.add(faFolder)
 library.add(faForward)
 library.add(faGripLines)
 library.add(faHeader)
+library.add(faHouse)
 library.add(faHistory)
 library.add(faImage)
 library.add(faKeyboard)
@@ -184,6 +191,7 @@ library.add(faStarSolid)
 library.add(faStop)
 library.add(faSun)
 library.add(faTachometerAlt)
+library.add(faTag)
 library.add(faTags)
 library.add(faTasks)
 library.add(faTh)

@@ -2,10 +2,29 @@
 	<div
 		:data-task-id="task.id"
 		:data-project-id="task.projectId"
+		class="task-item"
+		:class="{'has-subtasks': hasSubtasks}"
 	>
+		<BaseButton
+			v-if="hasSubtasks"
+			class="subtask-toggle"
+			:aria-label="$t('task.toggleSubtasks')"
+			:aria-expanded="subtasksOpen"
+			@click.stop="subtasksOpen = !subtasksOpen"
+		>
+			<Icon
+				icon="chevron-down"
+				:class="{'is-collapsed': !subtasksOpen}"
+			/>
+		</BaseButton>
 		<div
+			v-if="!isRemoved"
 			ref="taskRoot"
-			:class="{'is-loading': taskService.loading, 'is-completing': isCompleting}"
+			:class="{
+				'is-loading': taskService.loading,
+				'is-completing': isCompleting,
+				'is-expanded': isExpanded,
+			}"
 			class="task loader-container single-task"
 			tabindex="-1"
 			:data-is-overdue="isOverdue || undefined"
@@ -14,18 +33,6 @@
 		>
 			<div class="task-lead">
 				<slot />
-				<BaseButton
-					v-if="hasSubtasks"
-					class="subtask-toggle"
-					:aria-label="$t('task.toggleSubtasks')"
-					:aria-expanded="subtasksOpen"
-					@click.stop="subtasksOpen = !subtasksOpen"
-				>
-					<Icon
-						icon="chevron-down"
-						:class="{'is-collapsed': !subtasksOpen}"
-					/>
-				</BaseButton>
 				<span
 					v-tooltip="!canMarkAsDone ? $t('task.readOnlyCheckbox') : ''"
 					class="is-inline-flex is-align-items-center"
@@ -54,6 +61,7 @@
 
 					<TaskGlanceTooltip :task="task">
 						<RouterLink
+							v-if="!isPhone"
 							ref="taskLinkRef"
 							:to="taskDetailRoute"
 							class="task-link"
@@ -61,11 +69,56 @@
 						>
 							{{ displayTaskTitle(task.title) }}
 						</RouterLink>
+						<button
+							v-else
+							class="task-link"
+							type="button"
+							:title="task.title"
+							@click="toggleExpanded(task.id)"
+						>
+							{{ displayTaskTitle(task.title) }}
+						</button>
 					</TaskGlanceTooltip>
 				</span>
+				<template v-if="isExpanded">
+					<button
+						v-if="!editingNotes"
+						class="task-notes"
+						:class="{'is-empty': notesPlain === ''}"
+						type="button"
+						@click.stop="startEditingNotes"
+					>
+						{{ notesPlain || $t('task.actionBar.notes') }}
+					</button>
+					<textarea
+						v-else
+						ref="notesField"
+						v-model="notesDraft"
+						class="task-notes-input"
+						rows="2"
+						:placeholder="$t('task.actionBar.notes')"
+						@click.stop
+						@blur="saveNotes"
+						@keydown.escape="cancelNotes"
+					/>
+					<Labels
+						v-if="task.labels.length > 0"
+						class="task-expanded-labels"
+						:labels="task.labels"
+					/>
+					<TaskActionBar
+						:task="task"
+						:can-write="canMarkAsDone && !isArchived && !disabled"
+						@update:task="onActionTaskUpdate"
+						@deleted="onTaskDeleted"
+					/>
+				</template>
 			</div>
 
-			<div class="task-meta">
+			<div
+				v-if="!isExpanded"
+				class="task-meta"
+			>
 				<div class="task-meta-labels">
 					<Labels
 						v-if="task.labels.length > 0"
@@ -178,7 +231,14 @@
 				</div>
 			</div>
 
+			<span
+				v-if="isPhone && !isExpanded && tilePipColor"
+				class="task-pip"
+				:style="{backgroundColor: tilePipColor}"
+				aria-hidden="true"
+			/>
 			<BaseButton
+				v-if="!isPhone || task.isFavorite"
 				:class="{'is-favorite': task.isFavorite}"
 				class="favorite"
 				@click.stop="toggleFavorite"
@@ -201,24 +261,26 @@
 			/>
 		</div>
 		<template v-if="hasSubtasks && subtasksOpen">
-			<template v-for="subtask in task.relatedTasks.subtask">
-				<template v-if="getTaskById(subtask.id)">
-					<single-task-in-project
-						:key="subtask.id"
-						:the-task="getTaskById(subtask.id)"
-						:disabled="disabled"
-						:can-mark-as-done="canMarkAsDone"
-						:all-tasks="allTasks"
-						class="subtask-nested"
-					/>
+			<div class="subtask-stack">
+				<template v-for="subtask in task.relatedTasks.subtask">
+					<template v-if="getTaskById(subtask.id)">
+						<single-task-in-project
+							:key="subtask.id"
+							:the-task="getTaskById(subtask.id)"
+							:disabled="disabled"
+							:can-mark-as-done="canMarkAsDone"
+							:all-tasks="allTasks"
+							class="subtask-nested"
+						/>
+					</template>
 				</template>
-			</template>
+			</div>
 		</template>
 	</div>
 </template>
 
 <script setup lang="ts">
-import {ref, watch, shallowReactive, onMounted, onBeforeUnmount, computed} from 'vue'
+import {ref, watch, shallowReactive, onMounted, onBeforeUnmount, computed, nextTick} from 'vue'
 import {useRouter} from 'vue-router'
 import {useI18n} from 'vue-i18n'
 
@@ -227,6 +289,7 @@ import type {ITask} from '@/modelTypes/ITask'
 
 import PriorityLabel from '@/components/tasks/partials/PriorityLabel.vue'
 import Labels from '@/components/tasks/partials/Labels.vue'
+import TaskActionBar from '@/components/tasks/partials/TaskActionBar.vue'
 import TaskGlanceTooltip from '@/components/tasks/partials/TaskGlanceTooltip.vue'
 import DeferTask from '@/components/tasks/partials/DeferTask.vue'
 import ChecklistSummary from '@/components/tasks/partials/ChecklistSummary.vue'
@@ -241,7 +304,7 @@ import Popup from '@/components/misc/Popup.vue'
 import TaskService from '@/services/task'
 
 import {formatDisplayDate, formatISO, formatDateLong} from '@/helpers/time/formatDate'
-import {success} from '@/message'
+import {success, error} from '@/message'
 
 import {useProjectStore} from '@/stores/projects'
 import {useBaseStore} from '@/stores/base'
@@ -249,9 +312,11 @@ import {useTaskStore} from '@/stores/tasks'
 import AssigneeList from '@/components/tasks/partials/AssigneeList.vue'
 import {useIntervalFn} from '@vueuse/core'
 import {playPopSound} from '@/helpers/playPop'
-import {isEditorContentEmpty} from '@/helpers/editorContentEmpty'
+import {editorHtmlFromPlainText, isEditorContentEmpty, plainTextFromEditor} from '@/helpers/editorContentEmpty'
 import {TASK_REPEAT_MODES} from '@/types/IRepeatMode'
 import {useGlobalNow} from '@/composables/useGlobalNow'
+import {useIsPhone} from '@/composables/useIsPhone'
+import {useExpandedTask} from '@/composables/useExpandedTask'
 import {taskDetailLocation} from '@/helpers/taskDetailBackdrop'
 import {displayTaskTitle} from '@/helpers/displayTaskTitle'
 
@@ -286,6 +351,13 @@ function getTaskById(taskId: number): ITask | undefined {
 
 const {t} = useI18n({useScope: 'global'})
 
+const isPhone = useIsPhone()
+const {expandedTaskId, toggle: toggleExpanded, collapse} = useExpandedTask()
+const isRemoved = ref(false)
+const editingNotes = ref(false)
+const notesDraft = ref('')
+const notesField = ref<HTMLTextAreaElement | null>(null)
+
 const taskService = shallowReactive(new TaskService())
 const task = ref<ITask>(new TaskModel())
 
@@ -314,6 +386,15 @@ const projectColor = computed(() => project.value ? project.value?.hexColor : ''
 
 const showProjectSeparately = computed(() => props.showForeignProject && !props.showProject && currentProject.value?.id !== task.value.projectId && project.value)
 const showProjectInMeta = computed(() => Boolean((props.showProject && project.value) || showProjectSeparately.value))
+const isExpanded = computed(() => isPhone.value && expandedTaskId.value === task.value.id)
+const notesPlain = computed(() => plainTextFromEditor(task.value.description))
+const tilePipColor = computed(() => {
+	const labeled = task.value.labels.find(label => getHexColor(label.hexColor))
+	if (labeled) {
+		return getHexColor(labeled.hexColor)
+	}
+	return getHexColor(projectColor.value)
+})
 
 const currentProject = computed(() => {
 	return typeof baseStore.currentProject === 'undefined' ? {
@@ -431,14 +512,75 @@ function hasTextSelected() {
 
 function openTaskDetail(event: MouseEvent | KeyboardEvent) {
 	if (event.target instanceof HTMLElement) {
-		const isInteractiveElement = event.target.closest('a, button, label, input[type="checkbox"], .favorite, [role="button"]')
+		const isInteractiveElement = event.target.closest('a, button, label, input[type="checkbox"], .favorite, [role="button"], textarea, .task-action-bar')
 		if (isInteractiveElement || hasTextSelected()) {
 			return
 		}
 	}
 
+	if (isPhone.value) {
+		toggleExpanded(task.value.id)
+		return
+	}
+
 	taskLinkRef.value?.$el.click()
 }
+
+function onActionTaskUpdate(updated: ITask) {
+	task.value = updated
+	emit('taskUpdated', updated)
+}
+
+function onTaskDeleted() {
+	isRemoved.value = true
+	if (expandedTaskId.value === task.value.id) {
+		collapse()
+	}
+}
+
+async function startEditingNotes() {
+	if (!props.canMarkAsDone || props.isArchived || props.disabled) {
+		return
+	}
+	notesDraft.value = notesPlain.value
+	editingNotes.value = true
+	await nextTick()
+	notesField.value?.focus()
+}
+
+async function saveNotes() {
+	if (!editingNotes.value) {
+		return
+	}
+	editingNotes.value = false
+	const next = editorHtmlFromPlainText(notesDraft.value)
+	const current = isEditorContentEmpty(task.value.description) ? '' : task.value.description
+	if (next === current || (next === '' && isEditorContentEmpty(task.value.description))) {
+		return
+	}
+	try {
+		const updated = await taskStore.update({
+			...task.value,
+			description: next,
+		})
+		task.value = updated
+		emit('taskUpdated', updated)
+	} catch (e) {
+		notesDraft.value = notesPlain.value
+		error(e)
+	}
+}
+
+function cancelNotes() {
+	notesDraft.value = notesPlain.value
+	editingNotes.value = false
+}
+
+watch(isExpanded, (expanded) => {
+	if (!expanded) {
+		editingNotes.value = false
+	}
+})
 
 onBeforeUnmount(() => {
 	clearTimeout(completingTimer)
@@ -533,6 +675,12 @@ defineExpose({
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
+		background: none;
+		border: 0;
+		padding: 0;
+		font: inherit;
+		text-align: start;
+		cursor: pointer;
 	}
 
 	.task-meta-labels,
@@ -804,14 +952,13 @@ defineExpose({
 	@media screen and (max-width: $tablet) {
 		content-visibility: visible;
 		contain: style;
-		grid-template-columns: auto minmax(0, 1fr) 2.75rem;
-		grid-template-areas:
-			'lead title fav'
-			'lead meta meta';
+		grid-template-columns: auto minmax(0, 1fr) 1.25rem;
+		grid-template-areas: 'lead title fav';
 		align-items: start;
 		column-gap: 0.35rem;
 		row-gap: 0.15rem;
 		padding: 0.55rem 0.45rem 0.55rem 0.3rem;
+		overflow: visible;
 
 		.task-lead {
 			grid-area: lead;
@@ -843,37 +990,16 @@ defineExpose({
 
 		.task-meta {
 			display: none;
-			flex-wrap: wrap;
-			align-items: center;
-			gap: 0.2rem 0.45rem;
-			grid-area: meta;
-			min-inline-size: 0;
-
-			&:has(.labels),
-			&:has(.priority-label),
-			&:has(.dueDate),
-			&:has(.task-project),
-			&:has(.project-task-icon:not(.is-placeholder)) {
-				display: flex;
-			}
 		}
 
-		.task-meta-labels:empty,
-		.task-meta-due:empty,
-		.task-meta-extra:empty {
-			display: none;
-		}
-
-		.task-meta-priority:not(:has(.priority-label)) {
-			display: none;
-		}
-
-		.task-meta-icons:not(:has(.project-task-icon:not(.is-placeholder))) {
-			display: none;
-		}
-
-		.project-task-icon.is-placeholder {
-			display: none;
+		.task-pip {
+			grid-area: fav;
+			justify-self: end;
+			align-self: start;
+			margin-block-start: 0.55rem;
+			inline-size: 0.55rem;
+			block-size: 0.55rem;
+			border-radius: 100%;
 		}
 
 		.favorite {
@@ -886,6 +1012,57 @@ defineExpose({
 			min-inline-size: 44px;
 			inline-size: 44px;
 			opacity: 1;
+		}
+
+		&.is-expanded {
+			z-index: 3;
+			border-color: var(--grey-200);
+			background-color: var(--white);
+
+			.task-link {
+				-webkit-line-clamp: unset;
+				line-clamp: unset;
+			}
+		}
+
+		.task-notes,
+		.task-notes-input {
+			display: block;
+			inline-size: 100%;
+			margin-block-start: 0.25rem;
+			font-size: 0.82rem;
+			line-height: 1.45;
+			color: var(--text-muted);
+			text-align: start;
+		}
+
+		.task-notes {
+			background: none;
+			border: 0;
+			padding: 0;
+			font: inherit;
+			font-size: 0.82rem;
+
+			&.is-empty {
+				opacity: 0.7;
+			}
+		}
+
+		.task-notes-input {
+			background: var(--white);
+			border: 1px solid var(--grey-200);
+			border-radius: $radius;
+			padding: 0.35rem 0.45rem;
+			color: var(--text);
+			resize: vertical;
+		}
+
+		.task-expanded-labels {
+			margin-block-start: 0.35rem;
+		}
+
+		:deep(.task-action-bar) {
+			margin-block-start: 0.45rem;
 		}
 
 		:deep(.handle) {
@@ -908,12 +1085,27 @@ defineExpose({
 	}
 }
 
+.task-item {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	align-items: start;
+	min-inline-size: 0;
+
+	&.has-subtasks {
+		grid-template-columns: 1.5rem minmax(0, 1fr);
+		column-gap: 0.25rem;
+	}
+}
+
 .subtask-toggle {
+	grid-column: 1;
+	grid-row: 1;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	inline-size: 1.15rem;
+	inline-size: 1.5rem;
 	block-size: 1.5rem;
+	margin-block-start: 0.5rem;
 	flex-shrink: 0;
 	color: var(--grey-600);
 
@@ -926,8 +1118,21 @@ defineExpose({
 	}
 }
 
+.has-subtasks > .single-task {
+	grid-column: 2;
+}
+
+.subtask-stack {
+	grid-column: 2;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	margin-block-start: 0.4rem;
+	min-inline-size: 0;
+}
+
 .subtask-nested {
-	margin-inline-start: 1.75rem;
+	min-inline-size: 0;
 }
 
 :deep(.popup) {

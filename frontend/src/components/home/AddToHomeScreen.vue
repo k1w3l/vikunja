@@ -72,12 +72,20 @@ const shouldShowMessage = computed(() => {
 		display: none;
 	}
 
+	@media screen and (max-width: $tablet) {
+		inset-block-end: calc(#{$mobile-tabbar-height} + 0.75rem);
+	}
+
 	@media print {
 		display: none;
 	}
 	
 	&.has-update-available {
 		inset-block-end: 5rem;
+
+		@media screen and (max-width: $tablet) {
+			inset-block-end: calc(#{$mobile-tabbar-height} + 4.5rem);
+		}
 	}
 }
 

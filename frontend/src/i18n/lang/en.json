@@ -779,7 +779,8 @@
     "home": "Vikunja home",
     "toggleChildProjects": "Toggle sub-projects",
     "main": "Main navigation",
-    "savedFilters": "Saved filters"
+    "savedFilters": "Saved filters",
+    "noLabels": "No labels yet"
   },
   "misc": {
     "loading": "Loading…",
@@ -985,6 +986,19 @@
       "titlePlaceholder": "Call the plumber",
       "progressHint": "How far this already is.",
       "datesHint": "Due is the deadline. Start and end are the scheduled window."
+    },
+    "actionBar": {
+      "searchLabels": "Search labels…",
+      "addSubtask": "Add subtask…",
+      "inOneHour": "In 1 hour",
+      "tomorrowMorning": "Tomorrow 9 AM",
+      "inThreeDays": "In 3 days",
+      "addReminder": "Add reminder",
+      "noFiles": "No files yet.",
+      "addFiles": "Add files",
+      "info": "Task info",
+      "identifier": "Identifier",
+      "notes": "Notes"
     },
     "createSuccess": "Created.",
     "toggleSubtasks": "Show or hide subtasks",
